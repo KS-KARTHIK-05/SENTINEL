@@ -1,0 +1,25 @@
+# ROS 2 Build and Install Artifacts
+build/
+install/
+log/
+.catkin_tools/
+
+# Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+
+# Large ML Weights & Datasets
+datasets/
+HIT-UAV/
+*.jpg
+*.jpeg
+*.png
+*.mp4
+
+# OS specific files
+.DS_Store
