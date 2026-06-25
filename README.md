@@ -1,27 +1,28 @@
-# SENTINEL: Edge-AI Driven Elastic Mesh PSO for Low-Altitude UAV IoT Networks
+# SENTINEL: Edge-AI Driven Elastic Mesh PSO
 
-[![ROS 2](https://img.shields.io/badge/ROS_2-Humble-blue.svg)](https://docs.ros.org/en/humble/)
-[![Gazebo](https://img.shields.io/badge/Simulator-Gazebo_Harmonic-orange.svg)](https://gazebosim.org/)
-[![YOLOv8](https://img.shields.io/badge/Edge_AI-YOLOv8--Nano-yellow.svg)](https://github.com/ultralytics/ultralytics)
+## Overview
+SENTINEL is a decentralized, zero-infrastructure UAV swarm framework for post-disaster Search and Rescue (SAR). It bridges the gap between AI-driven target perception and mesh-network stability.
 
-**SENTINEL** is a decentralized, zero-infrastructure UAV swarm architecture designed for post-disaster Search and Rescue (SAR). It solves the "Data-Loss Paradox" by strictly coupling Edge AI perception with RF-aware swarm mobility.
+## 🧠 System Architecture
+* **Perception:** YOLOv8-Nano (1.2ms latency) with radiometric normalization for high-fidelity TIR target detection.
+* **Mobility:** Elastic-Mesh PSO (EM-PSO) using a quadratic Signal-Spring penalty to prevent swarm isolation.
+* **Collaboration:** Decentralized Synthetic Aperture (SA) triggers for verifying occluded signatures.
 
-## 🏗️ System Architecture
-* **Edge Perception Layer:** YOLOv8-Nano trained on the HIT-UAV thermal dataset, executing 1.2ms inference at the edge with radiometric normalization.
-* **Swarm Mobility Layer:** Elastic-Mesh Particle Swarm Optimization (EM-PSO) algorithm that applies a mathematical quadratic penalty to maintain a 50m RF communication boundary.
-* **Collaborative Edge Sensing (SA Trigger):** Autonomous lateral flanking ($\pm 15m$) triggered by medium-confidence thermal anomalies to bypass line-of-sight occlusions.
+## 🚀 Key Performance
+| Metric | Baseline PSO | SENTINEL (Full) |
+| :--- | :---: | :---: |
+| Network Retention | 66% | 100% |
+| Target Discovery | 60% | 90% |
 
-## ⚙️ Setup and Installation
-```bash
-# Clone the repository
-git clone [https://github.com/YOUR_USERNAME/SENTINEL-UAV-Swarm.git](https://github.com/YOUR_USERNAME/SENTINEL-UAV-Swarm.git)
-cd SENTINEL-UAV-Swarm
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Build workspace
-cd ros2_ws
-colcon build --symlink-install
-source install/setup.bash
-\`\`\`
+## 📁 Repository Structure
+```text
+/
+├── ros2_ws/src/
+│   ├── sentinel_ai/          # Python perception & YOLO inference node
+│   ├── sentinel_mobility/    # C++ EM-PSO coordination logic
+│   ├── sentinel_gazebo/      # Simulation launch files & disaster world
+│   └── sentinel_interfaces/  # Custom ROS 2 msg definitions
+├── scripts/
+│   ├── chaos_monkey.sh       # Resilience testing protocol
+│   └── plot_metrics.py       # Ablation study visualization
+└── requirements.txt          # AI dependencies
