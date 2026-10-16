@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <model name="x500_thermal">
+    <include merge="true">
+      <uri>x500</uri>
+    </include>
+    <link name="thermal_link">
+      <!-- pitched +90 deg: the camera optical axis points straight down -->
+      <pose relative_to="base_link">0 0 -0.06 0 1.5707 0</pose>
+      <inertial>
+        <mass>0.05</mass>
+        <inertia><ixx>1e-5</ixx><iyy>1e-5</iyy><izz>1e-5</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia>
+      </inertial>
+      <visual name="thermal_visual">
+        <geometry><box><size>0.03 0.04 0.04</size></box></geometry>
+      </visual>
+      <sensor name="thermal_camera" type="thermal">
+        <camera>
+          <horizontal_fov>0.8727</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>512</height>
+            <format>L16</format>
+          </image>
+          <clip>
+            <near>0.5</near>
+            <far>200</far>
+          </clip>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>10</update_rate>
+        <visualize>false</visualize>
+        <!-- L16 radiometric output: pixel = temperature / 0.01 K (gz default resolution).
+             The gz L8 path saturates in gz-sim 8; the 8-bit white-hot conversion is done
+             explicitly in sentinel_ai/thermal_vision (t_min/t_max parameters). -->
+      </sensor>
+    </link>
+    <joint name="thermal_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>thermal_link</child>
+    </joint>
+  </model>
+</sdf>

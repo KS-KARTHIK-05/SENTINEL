@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <model name="rescue_randy_thermal">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry><mesh><uri>model://rescue_randy_thermal/meshes/rescue_randy.dae</uri></mesh></geometry>
+      </collision>
+      <visual name="visual">
+        <geometry><mesh><uri>model://rescue_randy_thermal/meshes/rescue_randy.dae</uri></mesh></geometry>
+        <material>
+          <diffuse>1.0 1.0 1.0</diffuse>
+          <pbr><metal>
+            <albedo_map>model://rescue_randy_thermal/materials/textures/rescue_randy_albedo.png</albedo_map>
+            <normal_map>model://rescue_randy_thermal/materials/textures/rescue_randy_normal.png</normal_map>
+          </metal></pbr>
+        </material>
+        <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal">
+          <heat_signature>model://rescue_randy_thermal/materials/textures/RescueRandy_Thermal.png</heat_signature>
+          <max_temp>310.15</max_temp>
+        </plugin>
+      </visual>
+    </link>
+  </model>
+</sdf>

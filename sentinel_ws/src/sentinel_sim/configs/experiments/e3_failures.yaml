@@ -1,0 +1,8 @@
+# E3 failure models (R2.3, R2.4): none, single, 30% simultaneous, cascading, high-rate Poisson, brownout.
+tuned_file: configs/tuned.yaml
+base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, policy_path: configs/mappo_policy.npz}
+grid:
+  channel.profile: [urban_rubble, severe]
+  failures: [{kind: none}, {kind: single, t: 240}, {kind: simultaneous, t: 240, fraction: 0.3}, {kind: cascading, t: 180, k: 3, gap: 60}, {kind: poisson, rate: 0.02}, {kind: brownout, t: 180, duration: 120, drop_db: 20}]
+methods: [sentinel, B0_pso, B1_v1, B2_commpso, B3_lambda2, B4_potential, B5_mappo, B6_lawnmower]
+seeds: 30

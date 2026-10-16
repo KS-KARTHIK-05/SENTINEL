@@ -1,0 +1,64 @@
+\documentclass[journal]{IEEEtran}
+% SENTINEL v2 manuscript. Every number in this paper must come from a script
+% in the repository (results/ -> tables/figures); see README in this folder.
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+\usepackage{cite}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xcolor}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+% Screenshot placeholder until the file exists in figures/ (see docs/SCREENSHOTS.md)
+\newcommand{\maybeimg}[2]{\IfFileExists{#2}{\includegraphics[width=#1]{#2}}{%
+  \fbox{\parbox[c][3cm][c]{\dimexpr #1-2\fboxsep-2\fboxrule\relax}{\centering\footnotesize\textcolor{red}{screenshot pending:}\\\tiny\texttt{\detokenize{#2}}}}}}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+
+\begin{document}
+\title{Information-Triggered Delivery for Timely Victim Reporting\\ in Infrastructure-Free UAV Search and Rescue}
+\author{Karthik~KS, Nicholas~Christo~T, and Balaji~Ganesh~Rajagopal}
+\maketitle
+
+\begin{abstract}
+Small UAV swarms with onboard thermal detectors can search disaster areas without infrastructure, but
+a victim found by a UAV helps only once the report reaches the responders, over radio links that are
+obstructed, fading and broken by UAV failures. Keeping the swarm connected at all times makes every
+report immediate but confines the search; searching freely leaves delivery to chance. We present
+SENTINEL, a decentralised framework that lets UAVs search freely and triggers delivery from the
+information each UAV has confirmed, fuses thermal detections from several viewpoints so that occluded
+angles cannot veto a clear one, and, while a report is being delivered, constrains the UAVs on the
+delivery path with an outage model and a local minimum spanning tree so that preserved links remain
+reliable for every feasible step. We bound the probability that a confirmed detection is lost before
+it is secured and show that nearest-neighbour distance constraints do not preserve connectivity. In
+about 11\,000 simulated missions against seven baselines tuned with the same budget (connectivity
+control, potential fields, communication-aware PSO, MAPPO and sweep search), with 30 seeds per
+setting and paired tests, SENTINEL reports 23--30\,\% more victims within 60\,s than the best
+baseline in urban rubble under six failure models, is significantly better than all baselines for
+3--50 UAVs on a 400\,m area, and is never significantly worse; PX4 software-in-the-loop flights in
+Gazebo agree with the fast simulator. Ablations attribute the gains to the delivery trigger and the
+fusion rule, not to continuous connectivity. The onboard YOLO26n detector matches YOLOv8n in accuracy
+on HIT-UAV with 31\,\% less compute.
+\end{abstract}
+
+\begin{IEEEkeywords}
+UAV swarms, intermittent connectivity, search and rescue, edge AI, particle swarm optimization, delay-tolerant networking.
+\end{IEEEkeywords}
+
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/system_model}
+\input{sections/method}
+\input{sections/implementation}
+\input{sections/evaluation}
+\input{sections/discussion}
+\input{sections/conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+\end{document}

@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <model name="warm_debris">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision"><geometry><box><size>1.6 0.7 0.3</size></box></geometry></collision>
+      <visual name="visual">
+        <geometry><box><size>1.6 0.7 0.3</size></box></geometry>
+        <material><diffuse>0.35 0.3 0.28 1</diffuse></material>
+        <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal">
+          <temperature>316</temperature>
+        </plugin>
+      </visual>
+    </link>
+  </model>
+</sdf>

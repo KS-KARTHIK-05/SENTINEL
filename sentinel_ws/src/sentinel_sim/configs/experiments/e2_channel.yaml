@@ -1,0 +1,7 @@
+# E2 communication conditions (R1.4, R2.5).
+tuned_file: configs/tuned.yaml
+base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, failures: {kind: poisson, rate: 0.01}, policy_path: configs/mappo_policy.npz}
+grid:
+  channel.profile: [open, suburban, urban_rubble, severe]
+methods: [sentinel, B0_pso, B1_v1, B2_commpso, B3_lambda2, B4_potential, B5_mappo, B6_lawnmower]
+seeds: 30

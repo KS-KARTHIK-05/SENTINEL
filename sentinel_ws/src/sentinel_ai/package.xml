@@ -2,19 +2,23 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>sentinel_ai</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="nicholas@todo.todo">nicholas</maintainer>
-  <license>TODO: License declaration</license>
+  <version>2.0.0</version>
+  <description>SENTINEL ROS 2 nodes: thermal perception, decentralised EM-PSO agent, PX4 offboard control, channel emulation, failure injection and metrics.</description>
+  <maintainer email="karthikzofficialmail@gmail.com">Karthik KS</maintainer>
+  <license>MIT</license>
 
   <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>px4_msgs</depend>
   <depend>cv_bridge</depend>
+  <depend>sentinel_interfaces</depend>
+  <depend>sentinel_core</depend>
+  <depend>sentinel_sim</depend>
+  <exec_depend>ros_gz_image</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
 
-  <test_depend>ament_copyright</test_depend>
-  <test_depend>ament_flake8</test_depend>
-  <test_depend>ament_pep257</test_depend>
   <test_depend>python3-pytest</test_depend>
 
   <export>

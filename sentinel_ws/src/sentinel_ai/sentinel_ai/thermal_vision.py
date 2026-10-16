@@ -1,113 +1,147 @@
-import sys
-import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import Image
-from geometry_msgs.msg import Point
-from cv_bridge import CvBridge
-import cv2
-from ultralytics import YOLO
+"""Onboard thermal perception for one UAV.
+
+Runs the detector on the nadir thermal image and publishes every detection
+geolocated to the world frame (``sentinel/targets``). v1 published a
+camera-frame pixel offset scaled by a constant, which made the shared ledger
+grow with every viewpoint (the "15 coordinates" inconsistency); here the
+position comes from the camera model, vehicle pose and heading.
+"""
+from __future__ import annotations
+
+import math
+import os
+
 import numpy as np
+import rclpy
+from rclpy.executors import ExternalShutdownException
+from cv_bridge import CvBridge
+from geometry_msgs.msg import PointStamped
+from px4_msgs.msg import VehicleAttitude
+from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
+from sensor_msgs.msg import Image
 
-class ThermalVisionNode(Node):
-    def __init__(self, namespace):
-        # STRIP THE SLASH BEFORE NAMING THE NODE
-        safe_name = namespace.replace('/', '') if namespace else 'px4_0'
-        super().__init__(f'thermal_vision_{safe_name}')
-        
-        # Keep the original namespace with the slash for subscribing to topics!
-        self.namespace = namespace if namespace else ''
+from sentinel_interfaces.msg import DetectorStats, TargetReport
+
+from .detector import ThermalDetector
+from .flight_commander import PX4_QOS
+from .frames import pixel_to_world, yaw_from_quat_ned
+
+
+def _default_model() -> str:
+    try:
+        from ament_index_python.packages import get_package_share_directory
+        return os.path.join(get_package_share_directory('sentinel_ai'), 'models',
+                            'yolo26n_thermal_best.pt')
+    except Exception:  # noqa: BLE001
+        return 'yolo26n_thermal_best.pt'
+
+
+class ThermalVision(Node):
+    def __init__(self):
+        super().__init__('thermal_vision')
+        p = self.declare_parameter
+        self.uav = p('uav_id', 0).value
+        model = p('model_path', '').value or _default_model()
+        self.hfov = p('hfov', 0.8727).value
+        self.cam_axes = tuple(p('cam_axes', [-1.0, 1.0]).value)
+        self.min_alt = p('min_altitude', 10.0).value
+        # radiometric L16 (0.01 K per count) -> 8-bit white-hot, as in HIT-UAV imagery
+        self.t_min = p('t_min', 270.0).value
+        self.t_max = p('t_max', 330.0).value
+        self.k_per_count = p('kelvin_per_count', 0.01).value
+        self.debug = p('publish_debug', False).value     # annotated frames for figures
+        image_topic = p('image_topic', '').value or (
+            f'/world/{p("world", "default").value}/model/x500_thermal_{self.uav}'
+            '/link/thermal_link/sensor/thermal_camera/image')
+        self.det = ThermalDetector(model, imgsz=p('imgsz', 640).value,
+                                   conf_floor=p('conf_floor', 0.25).value,
+                                   device=p('device', '').value,
+                                   preprocess=p('preprocess', 'clahe').value,
+                                   invert=p('invert', False).value)
+        self.get_logger().info(f'UAV {self.uav}: detector {model} on {image_topic}')
         self.bridge = CvBridge()
-        
-        self.get_logger().info(f"Loading YOLOv8 Model for {self.namespace}...")
-        self.model = YOLO('/home/nicholas/sentinel_ws/src/sentinel_ai/best.pt')
-        
-        # --- THE FIX: DYNAMIC ID EXTRACTION ---
-        # If namespace is '/px4_2', this removes '/px4_' and leaves '2'
-        drone_id = self.namespace.replace('/px4_', '') if self.namespace else '0'
-        
-        # Construct the unique Gazebo camera topic for this specific drone
-        cam_topic = f'/world/default/model/x500_depth_{drone_id}/link/camera_link/sensor/thermal_camera/image'
-        self.subscription = self.create_subscription(Image, cam_topic, self.image_callback, 10)
-            
-        # Publish error to a NAMESPACED topic to prevent swarm cross-talk (Double slash fixed)
-        self.error_pub = self.create_publisher(Point, f'{self.namespace}/target_error', 10)
-        
-        self.get_logger().info(f"SENTINEL AI {self.namespace} Active: Vision pipeline online.")
+        self.pose = None
+        self.yaw = 0.0
+        self.pub = self.create_publisher(TargetReport, 'sentinel/targets', 20)
+        self.pub_stats = self.create_publisher(DetectorStats, 'sentinel/detector_stats', 5)
+        self.pub_dbg = (self.create_publisher(Image, 'sentinel/thermal_annotated', 2)
+                        if self.debug else None)
+        self.create_subscription(PointStamped, 'sentinel/pose', self._on_pose, 10)
+        self.create_subscription(VehicleAttitude, 'fmu/out/vehicle_attitude', self._on_att, PX4_QOS)
+        self.create_subscription(Image, image_topic, self._on_image, qos_profile_sensor_data)
+        self.create_timer(5.0, self._publish_stats)
 
-    def image_callback(self, msg):
-        try:
-            # 1. Grab raw data
-            cv_image_16 = self.bridge.imgmsg_to_cv2(msg, desired_encoding='mono16')
-            
-            # 2. Standard 8-bit normalization
-            cv_image_8 = cv2.normalize(cv_image_16, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-            
-            # 3. FIX THE PHYSICS INVERSION: Gazebo renders the victims colder than the ground.
-            cv_image_inverted = cv2.bitwise_not(cv_image_8)
-            
-            # 4. HIGH-POWER CONTRAST: Force the edges to pop
-            clahe = cv2.createCLAHE(clipLimit=5.0, tileGridSize=(8,8))
-            cv_image_contrast = clahe.apply(cv_image_inverted)
-            
-            cv_image_rgb = cv2.cvtColor(cv_image_contrast, cv2.COLOR_GRAY2RGB)
-            
-            # 5. Prediction 
-            results = self.model.predict(cv_image_rgb, conf=0.50, verbose=False)
-            
-            if len(results[0].boxes) > 0:
-                box = results[0].boxes[0].xyxy[0].cpu().numpy()
-                confidence = float(results[0].boxes[0].conf[0].cpu().numpy())
-                
-                cx = (box[0] + box[2]) / 2.0
-                cy = (box[1] + box[3]) / 2.0
-                img_h, img_w = cv_image_rgb.shape[:2]
-                
-                # Pixel Error
-                err_x_pixels = cx - (img_w / 2.0)
-                err_y_pixels = cy - (img_h / 2.0)
-                
-                # TRANSLATION
-                meter_per_pixel = 0.05 
-                err_y_meters = err_x_pixels * meter_per_pixel
-                err_x_meters = -err_y_pixels * meter_per_pixel 
-                
-                error_msg = Point()
-                error_msg.x = float(err_x_meters)
-                error_msg.y = float(err_y_meters)
-                error_msg.z = confidence 
-                self.error_pub.publish(error_msg)
-            
-            annotated_frame = results[0].plot()
-            img_h, img_w = cv_image_rgb.shape[:2]
-            cv2.drawMarker(annotated_frame, (int(img_w/2), int(img_h/2)), (0, 255, 0), cv2.MARKER_CROSS, 20, 2)
-            
-            cv2.imshow(f"SENTINEL AI - Thermal Feed ({self.get_name()})", annotated_frame)
-            cv2.waitKey(1)
-            
-        except Exception as e:
-            self.get_logger().error(f"Vision Error: {e}")
+    def _on_pose(self, m: PointStamped):
+        self.pose = (m.point.x, m.point.y, m.point.z)
+
+    def _on_att(self, m: VehicleAttitude):
+        self.yaw = yaw_from_quat_ned(m.q)
+
+    def _on_image(self, msg: Image):
+        if self.pose is None or self.pose[2] < self.min_alt:
+            return
+        img = np.asarray(self.bridge.imgmsg_to_cv2(msg, desired_encoding='passthrough'))
+        if img.dtype == np.uint16:
+            temp = img.astype(np.float32) * self.k_per_count
+            img = np.clip((temp - self.t_min) / (self.t_max - self.t_min) * 255.0,
+                          0, 255).astype(np.uint8)
+        pose, yaw = self.pose, self.yaw
+        dets = self.det(img)
+        if self.pub_dbg is not None:
+            self._publish_debug(img, dets, msg.header)
+        for d in dets:
+            x, y, rng = pixel_to_world(d.u, d.v, msg.width, msg.height, self.hfov, pose, yaw,
+                                       self.cam_axes)
+            r = TargetReport()
+            r.header = msg.header
+            r.header.frame_id = 'world'
+            r.uav_id = self.uav
+            r.x, r.y = float(x), float(y)
+            r.confidence = float(d.conf)
+            r.slant_range = float(rng)
+            r.uav_x, r.uav_y, r.uav_z = map(float, pose)
+            self.pub.publish(r)
+
+    def _publish_debug(self, img, dets, header):
+        import cv2
+        vis = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR) if img.ndim == 2 else img.copy()
+        for d in dets:
+            x0, y0 = int(d.u - d.w / 2), int(d.v - d.h / 2)
+            x1, y1 = int(d.u + d.w / 2), int(d.v + d.h / 2)
+            colour = (0, 200, 0) if d.conf >= 0.70 else (0, 200, 255) if d.conf >= 0.40 else (0, 0, 255)
+            cv2.rectangle(vis, (x0, y0), (x1, y1), colour, 2)
+            cv2.putText(vis, f'victim {d.conf:.2f}', (x0, max(12, y0 - 4)),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.45, colour, 1, cv2.LINE_AA)
+        out = self.bridge.cv2_to_imgmsg(vis, encoding='bgr8')
+        out.header = header
+        self.pub_dbg.publish(out)
+
+    def _publish_stats(self):
+        s = self.det.stats()
+        if not s['frames']:
+            return
+        m = DetectorStats()
+        m.uav_id = self.uav
+        m.model = os.path.basename(self.det.model_path)
+        for k in ('preprocess_ms_p50', 'inference_ms_p50', 'inference_ms_p95', 'total_ms_p50',
+                  'total_ms_p95'):
+            setattr(m, k, float(s[k]) if math.isfinite(s[k]) else 0.0)
+        m.frames = int(s['frames'])
+        self.pub_stats.publish(m)
+
 
 def main(args=None):
     rclpy.init(args=args)
-    import sys
-    
-    namespace = ''
-    for arg in sys.argv[1:]:
-        if arg.startswith('/px4_'):
-            namespace = arg
-            break
-            
-    node = None
+    node = ThermalVision()
     try:
-        clean_name = namespace.replace('/', '') if namespace else 'px4_0'
-        node = ThermalVisionNode(namespace)
         rclpy.spin(node)
-    except Exception as e:
-        print(f"Vision Error: {e}")
+    except (KeyboardInterrupt, ExternalShutdownException):
+        pass
     finally:
-        if node:
-            node.destroy_node()
-        rclpy.shutdown()
+        node.destroy_node()
+        rclpy.try_shutdown()
+
 
 if __name__ == '__main__':
     main()

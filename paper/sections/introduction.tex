@@ -1,0 +1,72 @@
+\section{Introduction}\label{sec:intro}
+
+After earthquakes, floods and large fires, cellular and backhaul infrastructure is often unavailable
+precisely where responders need information. Small multirotor UAVs carrying thermal cameras can
+search such areas quickly, and onboard detectors now run in a few milliseconds on embedded GPUs, so
+victims can be detected without streaming video to a server \cite{hituav}. What remains hard is
+getting each detection to the responders \emph{in time}. Without infrastructure, a report travels
+only over the UAVs' own short-range radio links, which are obstructed by buildings, fade, and break
+when UAVs fail.
+
+Two families of methods address the communication side. Connectivity-maintenance controllers keep
+the swarm's communication graph connected at all times, either through the algebraic connectivity
+of the graph \cite{sabattini2013,zavlanos2008} or through edge potentials that never let a link
+break \cite{ji2007}. Every detection then reaches the responder immediately, but the whole swarm is
+tied to the responder's neighbourhood, which limits how far it can search. Intermittent-connectivity
+and data-ferrying approaches let robots disconnect and meet according to a schedule
+\cite{kantaros2017}, or plan ferry routes to sources whose positions are known in advance
+\cite{cui2023ferry,bafarassat2026aoi}. In search and rescue neither assumption fits well: the information
+sources, the victims, are \emph{discovered by the search itself}, at unknown places and times.
+
+In an earlier version of this system we coupled a thermal detector with particle swarm
+optimisation (PSO) and a distance penalty that kept UAVs within 50\,m of their nearest neighbour.
+That design has three limitations, which also shaped this work. A fixed distance does not describe
+a radio link behind rubble; keeping the nearest neighbour close does not keep the network connected
+(Lemma~\ref{lem:nn}); and the evaluation used a 25\,m area that is far smaller than the radio range,
+in which, as we show in Section~\ref{sec:eval:sitl}, every method stays connected and the methods
+cannot be told apart.
+
+This paper studies the \emph{discovery--delivery trade-off} directly. We measure the share of
+victims whose report reaches the responder within a deadline, and we treat connectivity as a means
+to that end rather than as an objective. Our contributions are:
+\begin{itemize}
+\item \textbf{Information-triggered delivery.} Each UAV searches without connectivity constraints and
+switches to a delivery mode when a victim it confirmed has not reached the responder after a hold
+time $T_h$ (Section~\ref{sec:method}). Rendezvous are triggered by information that the search
+itself discovers, rather than by a schedule or by known source locations. $T_h$ exposes the
+trade-off explicitly, and we bound the probability that a confirmed detection is lost to UAV
+failures before it is secured (Proposition~\ref{prop:exposure}).
+\item \textbf{Corroborative multi-view sensing.} Weak detections request a lateral second view from a
+neighbour, and views from different directions are fused so that occluded viewpoints cannot veto a
+clear one (Section~\ref{sec:fusion}). In dense swarms this fusion rule is the largest single
+contributor to performance.
+\item \textbf{A link-preservation safety layer with guarantees.} While a delivery is in progress,
+the UAVs on the delivery path constrain their steps using a realistic outage model (path loss,
+obstructions, shadowing, fading, interference) and a local minimum spanning tree. Preserved links
+remain reliable for every feasible step (Proposition~\ref{prop:link}), and the delivering component
+stays connected (Corollary~\ref{cor:conn}). We show why nearest-neighbour constraints do not
+suffice (Lemma~\ref{lem:nn}).
+\item \textbf{A reproducible evaluation.} We compare against seven baselines covering
+communication-aware optimisation, algebraic-connectivity control, potential-based topology control,
+multi-agent reinforcement learning and classical sweep search, all tuned with the same budget. The
+evaluation spans 3--50 UAVs, four channel profiles, six failure models, moving obstacles and
+detector uncertainty, uses 30 seeds per configuration with paired significance tests, and is
+cross-checked against PX4 software-in-the-loop flight in Gazebo. Code, scenarios and results are
+released.
+\end{itemize}
+
+Across the scenarios SENTINEL reports 23--30\,\% more victims within 60\,s than the best baseline in
+urban rubble under all failure models, and it is significantly better than all baselines on the
+400\,m area at every swarm size from 3 to 50; in the harshest channel it is ahead of or tied with the
+best baseline. The ablation shows where this comes from: the delivery trigger and the fusion rule
+account for the gains, whereas the link-preservation layer has no significant effect on performance
+and fulfils its safety role, with $3.4\times10^{-5}$ link violations per preserved link-step. We
+also report what does not work as well: keeping the swarm connected at all times lowers on-time
+reporting to 0.03--0.13; in small, dense swarms a MAPPO policy trained to convergence comes close to
+SENTINEL (differences not significant for $N=10$--20 on the 200\,m area); and the thermal detector,
+trained on real imagery, transfers poorly to rendered Gazebo scenes.
+
+Section~\ref{sec:related} positions this work against prior approaches,
+Section~\ref{sec:model} defines the system model and problem, Section~\ref{sec:method} presents
+SENTINEL, Section~\ref{sec:impl} describes the implementation, Section~\ref{sec:eval} reports the
+evaluation and Section~\ref{sec:discussion} discusses limitations.

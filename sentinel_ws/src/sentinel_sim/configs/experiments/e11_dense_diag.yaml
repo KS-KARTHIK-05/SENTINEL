@@ -1,0 +1,6 @@
+# E11 dense-swarm diagnosis (200 m, N=50): which SENTINEL component costs performance
+# when contacts are dense (E1 regime boundary). 30 seeds, paired.
+tuned_file: configs/tuned.yaml
+base: {n_uav: 50, duration_s: 600, map: {kind: generate, size: 200, n_targets: 25, base: true}, channel: {profile: urban_rubble}, failures: {kind: poisson, rate: 0.01}}
+methods: [sentinel, abl_no_sa, abl_no_fusion, abl_no_sa_no_fusion, B0_pso, abl_naive_fusion]
+seeds: 30

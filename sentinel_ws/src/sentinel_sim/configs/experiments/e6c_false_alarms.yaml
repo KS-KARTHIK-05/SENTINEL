@@ -1,0 +1,10 @@
+# E6c realistic false alarms (R2.7). The default detector model gives warm clutter a low,
+# noise-independent confidence (0.22 +- 0.08), so E6 could not show a false-alarm cost.
+# Here hot clutter scores higher (Gazebo test: best.pt scored warm debris at 0.66) and the
+# confidence noise also perturbs false positives.
+tuned_file: configs/tuned.yaml
+base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, channel: {profile: urban_rubble}, failures: {kind: poisson, rate: 0.01}}
+grid:
+  detector: [{fp_mu: 0.22, fp_rate: 0.1, fp_noise_coupled: true, sigma: 0.15}, {fp_mu: 0.40, fp_rate: 0.1, fp_noise_coupled: true, sigma: 0.15}, {fp_mu: 0.55, fp_rate: 0.1, fp_noise_coupled: true, sigma: 0.15}, {fp_mu: 0.55, fp_rate: 0.3, fp_noise_coupled: true, sigma: 0.15}]
+methods: [sentinel, abl_no_sa, abl_no_fusion, B0_pso, B6_lawnmower]
+seeds: 30

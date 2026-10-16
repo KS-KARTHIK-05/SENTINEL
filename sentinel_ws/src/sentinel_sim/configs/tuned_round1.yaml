@@ -1,0 +1,43 @@
+B0_pso:
+  agent:
+    sector_bias: 2.783999808255491
+    w_goal: 1.568427024350815
+B1_v1:
+  agent:
+    sector_bias: 1.5646904936328845
+    w_goal: 0.1982466464407921
+  spring:
+    lam0: 0.31963416608353995
+    r_max: 63.8715975197088
+B2_commpso:
+  agent:
+    sector_bias: 0.2137374720298738
+    w_goal: 1.7747579142056245
+  spring:
+    eps0: 0.0670927213721537
+    lam0: 0.2815120105204046
+B3_lambda2:
+  agent:
+    sector_bias: 1.8319213158049674
+    w_goal: 1.667195688578244
+  agent_attrs:
+    gain: 1.0127267482246174
+    lam_min: 0.0020748117940691266
+B4_potential:
+  agent:
+    sector_bias: 0.13540334023700676
+    w_goal: 0.35064723291077327
+  agent_attrs:
+    gain: 0.10324336146261005
+    hyst: 13.680452133778713
+B6_lawnmower:
+  agent_attrs:
+    lane_factor: 1.505275127170615
+sentinel:
+  agent:
+    sector_bias: 2.7993157535875834
+    t_hold_s: 115.14480342803793
+    w_goal: 0.2894283781234629
+  spring:
+    beta: 0.7469976414632686
+    lam0: 0.45496517390228025

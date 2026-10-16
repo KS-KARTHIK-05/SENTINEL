@@ -1,0 +1,7 @@
+# E4 dynamic obstacles (R2.4): moving tall debris blocking links and occluding victims.
+tuned_file: configs/tuned.yaml
+base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, channel: {profile: urban_rubble}, failures: {kind: poisson, rate: 0.01}, policy_path: configs/mappo_policy.npz}
+grid:
+  map.n_moving: [0, 5, 15]
+methods: [sentinel, B0_pso, B1_v1, B2_commpso, B3_lambda2, B4_potential, B5_mappo, B6_lawnmower]
+seeds: 30

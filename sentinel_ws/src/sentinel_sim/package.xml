@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>sentinel_sim</name>
+  <version>2.0.0</version>
+  <description>Fast multi-UAV simulator and experiment runner for SENTINEL (uses sentinel_core).</description>
+  <maintainer email="karthikzofficialmail@gmail.com">Karthik KS</maintainer>
+  <license>MIT</license>
+  <exec_depend>sentinel_core</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-scipy</exec_depend>
+  <test_depend>python3-pytest</test_depend>
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

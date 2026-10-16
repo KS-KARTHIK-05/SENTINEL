@@ -1,0 +1,10 @@
+# Pilot 4: where does information-triggered delivery help? Sparse contacts + continuous failures.
+base:
+  duration_s: 600
+  map: {kind: generate, size: 400, n_targets: 25, base: true}
+  failures: {kind: poisson, rate: 0.01}
+grid:
+  channel.profile: [urban_rubble, severe]
+  n_uav: [4, 8]
+methods: [sentinel, sentinel_th0, sentinel_th30, sentinel_th120, sentinel_strict, B0_pso, B6_lawnmower]
+seeds: 6

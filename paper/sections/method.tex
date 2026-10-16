@@ -1,0 +1,225 @@
+\section{SENTINEL}\label{sec:method}
+
+Each UAV runs the same decentralised agent (Algorithm~\ref{alg:agent}), built from three parts.
+(i)~\emph{Information-triggered delivery}: the agent alternates between two modes driven by its own
+information state; in \textsc{Explore} it searches without any connectivity constraint, in
+\textsc{Deliver} it returns toward the responder until the victims it has confirmed are secured.
+(ii)~\emph{Corroborative multi-view sensing}: weak detections request a second viewpoint from a
+neighbour, and views are fused so that occluded angles cannot veto a clear one.
+(iii)~\emph{A link-preservation safety layer}: while delivering, a UAV and the relays between it and
+the responder constrain their motion so that the links they rely on stay reliable, with a
+guarantee for feasible steps (Proposition~\ref{prop:link}). Section~\ref{sec:eval:ablation} shows that (i) and (ii) produce the
+performance gains, while (iii) ensures that deliveries are not interrupted by the swarm's own
+motion.
+
+\subsection{Mode switching}
+Let $\mathcal{E}_i(t)$ be the confirmed entries held by UAV $i$ that are not secured and for which
+$i$ is responsible (it created them, or the creator has been silent for $3T_h$, i.e.\ the copy is
+orphaned). UAV $i$ switches to \textsc{Deliver} when the oldest such entry reaches age $T_h$,
+\begin{equation}
+\max_{e\in\mathcal{E}_i(t)}\,(t-\tau_e)\;\ge\;T_h,\label{eq:trigger}
+\end{equation}
+and back to \textsc{Explore} when $\mathcal{E}_i(t)=\emptyset$. The hold time $T_h$ is the single
+parameter that trades discovery against delivery latency: $T_h=0$ delivers every confirmation
+immediately, $T_h\to\infty$ never interrupts the search. Whether a UAV is connected to the
+responder is known locally from a heartbeat: the responder stamps its beacons with the current
+time and every UAV relays the freshest stamp it received; UAV $i$ is \emph{connected} if its
+freshest stamp is younger than $T_{\mathrm{hb}}$.
+
+\subsection{Waypoint optimisation (EM-PSO)}
+Every planning period the agent chooses its next waypoint inside the reachable disk
+$\mathcal{D}_i=\{x:\|x-x_i\|\le v T_p\}\setminus\mathcal{O}$ by maximising
+\begin{multline}
+F_i(x)=w_c\,\hat G_i(x)+w_d\!\!\sum_{e\in\mathcal{T}_i}\!c_e\,e^{-\frac{\|x-x_e\|^2}{2s^2}}\\
++w_g\,\frac{\|x_i-g_i\|-\|x-g_i\|}{vT_p}-S_i(x),\label{eq:fitness}
+\end{multline}
+where $\hat G_i(x)$ is the normalised expected number of detections of a look at $x$ computed on
+the UAV's own search map (cells inside footprints claimed by neighbours removed), $\mathcal{T}_i$
+the tentative entries, and $g_i$ a frontier goal (the map cell maximising expected detections
+discounted by distance). The \emph{signal spring} acts only while the UAV is tethered (in
+\textsc{Deliver} and connected, or holding a relay tether, Section~\ref{sec:tether}):
+\begin{equation}
+S_i(x)=\lambda_i\sum_{j\in\mathcal{S}_i}\left(\frac{[P_{\mathrm{out}}(\|x-x_j\|,n(x,x_j))-\varepsilon_i]_+}{\varepsilon_i}\right)^2,
+\label{eq:spring}
+\end{equation}
+with $\lambda_i=\lambda_0(1+\beta U_i)$ and $\varepsilon_i=\varepsilon/(1+\beta U_i)$, where $U_i$ is the
+number of entries only $i$ holds. Unlike a distance penalty, \eqref{eq:spring} penalises the
+predicted \emph{outage} of the link, so it accounts for obstructions and fading, and it tightens
+with the amount of unique information the UAV carries. The maximisation uses a
+constriction-coefficient PSO ($\chi=0.7298$, $c_1=c_2=2.05$) \cite{clerc2002}, whose
+particles are seeded with the previous waypoint, the step toward $g_i$ and the waypoints
+broadcast by neighbours.
+
+\subsection{Link preservation (safety layer)}\label{sec:proj}
+The spring~\eqref{eq:spring} steers the search toward reliable links but cannot ensure that they
+survive. While tethered, UAV $i$ therefore projects its step onto a feasible set built from its
+preserved neighbours $\mathcal{S}_i$.
+
+\begin{definition}[Local MST neighbours]
+Let $\hat{\mathcal{G}}_i$ be the subgraph of the reliable graph induced by $i$ and the neighbours it
+heard within the last $T_{\mathrm{hb}}$, with edge weights $(d_{jk},\max(j,k),\min(j,k))$ ordered
+lexicographically. $\mathcal{S}_i$ is the set of neighbours adjacent to $i$ in the minimum
+spanning tree of $\hat{\mathcal{G}}_i$ \cite{li2003lmst}.
+\end{definition}
+
+\begin{lemma}[Nearest-neighbour constraints do not imply connectivity]\label{lem:nn}
+There are configurations in which every UAV is within $R$ of its nearest neighbour while the
+communication graph is disconnected.
+\end{lemma}
+\begin{proof}
+Four UAVs at $(0,0),(10,0),(200,0),(210,0)$ with $R=50$\,m: each has a neighbour at 10\,m, yet no
+edge joins $\{1,2\}$ to $\{3,4\}$.
+\end{proof}
+Lemma~\ref{lem:nn} is why the nearest-neighbour spring of the earlier SENTINEL design cannot certify
+network maintenance.
+
+\begin{lemma}[LMST spans the reliable graph \cite{li2003lmst}]\label{lem:lmst}
+Let $\mathcal{G}^-$ contain edge $(i,j)$ iff $j\in\mathcal{S}_i$ and $i\in\mathcal{S}_j$, all
+computed from the same positions. Then $\mathcal{G}^-$ contains the minimum spanning forest of
+the reliable graph, hence has the same connected components.
+\end{lemma}
+\begin{proof}
+Let $(i,j)$ be an edge of the global minimum spanning forest $\mathcal{M}$. If $(i,j)$ were not
+in the local MST of $\hat{\mathcal{G}}_i$, the cycle property would give a cycle in
+$\hat{\mathcal{G}}_i$ on which $(i,j)$ is the unique heaviest edge; that cycle exists in the
+reliable graph, contradicting $(i,j)\in\mathcal{M}$. The same holds for $\hat{\mathcal{G}}_j$, so
+$(i,j)\in\mathcal{G}^-$. Since $\mathcal{M}\subseteq\mathcal{G}^-$ and $\mathcal{G}^-$ only uses
+reliable links, the components coincide.
+\end{proof}
+
+\paragraph{Midpoint-ball projection}
+For each $j\in\mathcal{S}_i$ let $\hat x_j$ be $j$'s last reported position, of age $a_{ij}$,
+$m_{ij}=(x_i+\hat x_j)/2$, and $\delta_{ij}=v(\Delta t+a_{ij})$ the furthest $j$ can move before
+the next check. The proposed step $u_i$ is scaled to the largest $\alpha\in[0,1]$ such that
+$x_i'=x_i+\alpha u_i$ satisfies, for all $j\in\mathcal{S}_i$,
+\begin{equation}
+\|x_i'-m_{ij}\|\le \tfrac12 r_{ij}(x_i')-\tfrac12 v\,a_{ij},\quad
+r_{ij}(x_i')=R_\varepsilon\big(n^{\delta_{ij}}(x_i',\hat x_j)\big),\label{eq:proj}
+\end{equation}
+where $n^{\delta}(a,b)$ counts obstacles inflated by $\delta$ that cross $[a,b]$. If no
+$\alpha>0$ satisfies \eqref{eq:proj} the UAV hovers, or, if it is already outside a constraint,
+takes the largest step toward the violated centre that does not enlarge any other violation.
+Each UAV evaluates \eqref{eq:proj} with local information only.
+
+\begin{proposition}[Link preservation]\label{prop:link}
+Suppose $j\in\mathcal{S}_i$ and $i\in\mathcal{S}_j$, both UAVs are tethered, speeds are
+bounded by $v$, positions are exchanged with staleness at most $a$, and the steps of both
+UAVs satisfy \eqref{eq:proj}. Then the link $(i,j)$ is $\varepsilon$-reliable at $t+\Delta t$.
+\end{proposition}
+\begin{proof}
+Let $m=(x_i+x_j)/2$ be the true midpoint. Since $\|\hat x_j-x_j\|\le va_{ij}$, we have
+$\|m_{ij}-m\|\le va_{ij}/2$ and, symmetrically, $\|m_{ji}-m\|\le va_{ji}/2$. By \eqref{eq:proj} and
+the triangle inequality,
+$\|x_i'-x_j'\|\le\|x_i'-m_{ij}\|+\|m_{ij}-m\|+\|m-m_{ji}\|+\|m_{ji}-x_j'\|\le\tfrac12(r_{ij}+r_{ji})$.
+The segment $[x_i',x_j']$ lies within $\|x_j'-\hat x_j\|\le\delta_{ij}$ of $[x_i',\hat x_j]$, so
+every obstacle crossing it, un-inflated, crosses $[x_i',\hat x_j]$ when inflated by
+$\delta_{ij}$: $n(x_i',x_j')\le n^{\delta_{ij}}(x_i',\hat x_j)$ and, $R_\varepsilon$ being
+non-increasing in $n$, $R_\varepsilon(n(x_i',x_j'))\ge r_{ij}$. Likewise
+$R_\varepsilon(n(x_i',x_j'))\ge r_{ji}$. Hence
+$\|x_i'-x_j'\|\le\max(r_{ij},r_{ji})\le R_\varepsilon(n(x_i',x_j'))$.
+\end{proof}
+
+\begin{corollary}[Connectivity during delivery]\label{cor:conn}
+If all UAVs of a connected component of $\mathcal{G}_\varepsilon(t)$ containing the responder
+are tethered, take steps satisfying \eqref{eq:proj}, and no UAV fails, that component remains
+connected at $t+\Delta t$.
+\end{corollary}
+\noindent\emph{Remark.} Proposition~\ref{prop:link} is a one-step guarantee for feasible steps;
+it does not by itself make \eqref{eq:proj} feasible at every step (the inflated obstruction count
+can shrink $r_{ij}$ even for a hovering UAV). We therefore also report the empirical rate of
+preserved-link violations in all experiments, and a Monte-Carlo check of the obstacle-free
+synchronous case ($10^4$ random swarms of 2--50 UAVs, 25 adversarial steps each, no violation).
+\begin{proof}
+By Lemma~\ref{lem:lmst} the mutually selected edges span the component, and by
+Proposition~\ref{prop:link} each of them is reliable at $t+\Delta t$ (the responder never moves,
+so a one-sided constraint suffices for its edges).
+\end{proof}
+
+\begin{proposition}[Probabilistic delivery path]\label{prop:prob}
+Under Corollary~\ref{cor:conn}, the probability that, in a slot, the realised (fading) network
+restricted to the preserved spanning tree $\mathcal{M}$ is disconnected satisfies
+$\Pr[\text{disc.}]\le\sum_{e\in\mathcal{M}}P_{\mathrm{out}}(e)\le(|\mathcal{M}|)\,\varepsilon$.
+\end{proposition}
+\begin{proof}
+The realised tree is disconnected only if at least one of its edges is in outage; apply the union
+bound and $P_{\mathrm{out}}(e)\le\varepsilon$ for preserved edges.
+\end{proof}
+
+\subsection{Relay tether}\label{sec:tether}
+Proposition~\ref{prop:link} needs \emph{both} endpoints tethered, but the relays between a
+delivering UAV and the responder are usually exploring. A delivering, connected UAV therefore
+stamps $t_{\mathrm{tether}}=t+T_{\mathrm{rel}}$ in its beacon; stamps propagate by maximum, and a
+connected UAV is tethered while $t\le t_{\mathrm{tether}}$. The whole connected component thus
+holds its links during a delivery and is released $T_{\mathrm{rel}}$ after it ends; because the
+stamp is set only by delivering UAVs, tethers cannot sustain each other indefinitely.
+
+\subsection{Information exposure}
+\begin{proposition}[Exposure bound]\label{prop:exposure}
+Assume the creator of a confirmed entry stays alive until it is secured or fails, flies at speed
+$v$ along paths at most $\kappa\ge1$ times the straight-line distance, and that delivery
+completes within $\tau_c$ of reaching the responder's connected component. Then the entry is
+unsecured for at most $W=T_h+\kappa D/v+\tau_c$, with $D=\max_{x\in\mathcal{A}}\|x-x_0\|$. If the
+UAVs holding it fail independently at rate $\lambda_f$ and the entry has $k$ holders during
+that window,
+\begin{equation}
+\Pr[\text{entry lost}]\le\left(1-e^{-\lambda_f W}\right)^k\le(\lambda_f W)^k.\label{eq:exposure}
+\end{equation}
+\end{proposition}
+\begin{proof}
+By \eqref{eq:trigger}, \textsc{Deliver} starts at most $T_h$ after confirmation; the return takes
+at most $\kappa D/v$ and the hand-off at most $\tau_c$, after which $0\in H_e$ and the entry is
+secured (the responder does not fail). It is lost only if every holder fails within the window,
+which has probability $(1-e^{-\lambda_fW})^k$ under independence; $1-e^{-z}\le z$.
+\end{proof}
+Proposition~\ref{prop:exposure} makes the role of $T_h$ explicit: it bounds the exposure of
+confirmed information to UAV failures (the information-loss side), while larger $T_h$ leaves
+more time for search (the discovery side). Section~\ref{sec:eval} measures the resulting
+trade-off and compares the measured losses with \eqref{eq:exposure}.
+
+\subsection{Collaborative synthetic-aperture sensing}
+A tentative entry ($c_{\mathrm{lo}}\le c_e<c_{\mathrm{hi}}$) requests a second view from the
+nearest neighbour at a lateral offset of $\pm b$ ($b=15$\,m) perpendicular to the observer--target
+direction, admitted only if the flank point keeps that neighbour's preserved links feasible.
+The flanking view enters the corroborative fusion below.
+
+\subsection{Corroborative multi-view fusion}\label{sec:fusion}
+A victim is observed by several UAVs from different directions. For each entry the ledger keeps the
+best confidence $c_{e,v}$ per viewing sector $v$ (eight azimuth sectors around the entry), so repeated
+frames from one viewpoint are not counted twice. The textbook naive-Bayes rule
+$\mathrm{logit}\,c_e=\sum_v\mathrm{logit}\,c_{e,v}$ treats every low-confidence view as evidence
+\emph{against} a victim. Under occlusion this is wrong: a victim partly covered by a slab returns weak
+detections from the occluded side and strong ones from the open side, and a weak view from a blocked
+angle says little about absence. With many UAVs the many weak views outvote a clear view and the
+victim is never confirmed. We therefore fuse corroboratively,
+\begin{equation}
+\mathrm{logit}\,c_e=\max_v\mathrm{logit}\,c_{e,v}+\sum_{v\neq v^\star}\big[\mathrm{logit}\,c_{e,v}\big]_+,
+\label{eq:fusion}
+\end{equation}
+where $v^\star$ is the best view: the best view sets the confidence, other views can only add
+corroborating evidence, and a single view keeps its own confidence. Equation~\eqref{eq:fusion} is
+the component with the largest measured effect in dense swarms (Section~\ref{sec:eval:ablation}); its
+cost is that two independent false alarms on the same spot corroborate each other, which we evaluate
+with deliberately adverse clutter (Section~\ref{sec:eval:uncertainty}).
+
+\subsection{Complexity}
+Per planning step a UAV evaluates $P$ particles for $I$ iterations; each evaluation costs
+$O(k)$ for $k=|\mathcal{S}_i|$ outage look-ups plus an $O(1)$ map look-up (the footprint
+convolution is computed once per step, $O(M)$ for $M$ map cells). The local MST costs
+$O(k_h^2\log k_h)$ for the $k_h$ neighbours heard. None of these terms depends on $N$; the
+measured per-agent compute time versus $N$ is reported in Section~\ref{sec:eval}.
+
+\begin{algorithm}[t]\caption{SENTINEL agent $i$ (every slot $\Delta t$)}\label{alg:agent}
+\begin{algorithmic}[1]
+\State sense: record look, add geolocated detections to the ledger (fused per viewpoint)
+\State broadcast beacon $(x_i,\text{ledger},\text{acks},\text{heartbeat},t_{\mathrm{tether}})$; merge received beacons
+\If{planning slot}
+  \State update mode with \eqref{eq:trigger}; issue SA flank requests for own tentative entries
+  \If{\textsc{Deliver} and not connected} \State waypoint $\gets x_0$
+  \Else \State waypoint $\gets\arg\max_{x\in\mathcal{D}_i}F_i(x)$ by PSO \Comment{$S_i\equiv0$ unless tethered}
+  \EndIf
+\EndIf
+\State $u_i\gets$ step toward waypoint (rotated away from $\mathcal{O}$)
+\If{tethered} \State $u_i\gets\alpha^\star u_i$ with $\alpha^\star$ from \eqref{eq:proj} \EndIf
+\State fly $x_i\gets x_i+u_i$
+\end{algorithmic}
+\end{algorithm}

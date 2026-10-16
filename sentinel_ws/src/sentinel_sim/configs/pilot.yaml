@@ -1,0 +1,9 @@
+# Pilot: all methods, one representative cell, single crash at 40% of the mission.
+base:
+  n_uav: 6
+  duration_s: 400
+  map: {kind: generate, size: 150, n_targets: 15, base: true}
+  channel: {profile: urban_rubble}
+  failures: {kind: single, t: 160}
+methods: [sentinel, B0_pso, B1_v1, B2_commpso, B3_lambda2, B4_potential, B6_lawnmower]
+seeds: 8

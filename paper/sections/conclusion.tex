@@ -1,0 +1,14 @@
+\section{Conclusion}\label{sec:conclusion}
+
+We studied how a UAV swarm without infrastructure can get victim reports to responders in time.
+SENTINEL lets UAVs search freely, triggers delivery from the information each UAV has confirmed,
+fuses views so that occluded angles cannot veto a clear detection, and preserves the links of a
+delivery path for every feasible step (Proposition~\ref{prop:link}). In about 11\,000 simulated missions against seven
+tuned baselines, it reported significantly more victims within 60\,s than every baseline in most
+settings (urban, suburban and open channels, all failure models in urban rubble, swarms of 3--50 UAVs
+on the 400\,m area, moving obstacles and detector uncertainty); in the severe channel it was ahead
+of or tied with the best baseline, and it was never significantly worse. A PX4/Gazebo cross-check
+agreed with the fast simulator within 0.07.
+The ablation located the gains in the delivery trigger and the fusion rule rather than in
+continuous connectivity. Future work will adapt the delivery trigger to the observed contact rate,
+calibrate the channel model with measurements, and validate the system in hardware flights.
