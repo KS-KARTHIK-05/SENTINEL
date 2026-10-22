@@ -67,7 +67,7 @@ def _setup(context):
                      output='screen'),
             ]
         else:
-            # E8 cross-validation: same calibrated detector model as the fast simulator
+            # E8 cross-validation: same parameterised detector model as the fast simulator
             nodes.append(Node(package='sentinel_ai', executable='sim_detector', namespace=ns,
                               parameters=[{**per, 'truth_json': truth, 'seed': int(a['seed'])}],
                               output='screen'))

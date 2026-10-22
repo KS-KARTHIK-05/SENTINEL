@@ -4,6 +4,7 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{array}
 \usepackage{adjustbox}
 \usepackage{cite}
 \usepackage{algorithm}
@@ -39,11 +40,11 @@ it is secured and show that nearest-neighbour distance constraints do not preser
 about 11\,000 simulated missions against seven baselines tuned with the same budget (connectivity
 control, potential fields, communication-aware PSO, MAPPO and sweep search), with 30 seeds per
 setting and paired tests, SENTINEL reports 23--30\,\% more victims within 60\,s than the best
-baseline in urban rubble under six failure models, is significantly better than all baselines for
+baseline in urban rubble in six failure settings, is significantly better than all baselines for
 3--50 UAVs on a 400\,m area, and is never significantly worse; PX4 software-in-the-loop flights in
-Gazebo agree with the fast simulator. Ablations attribute the gains to the delivery trigger and the
-fusion rule, not to continuous connectivity. The onboard YOLO26n detector matches YOLOv8n in accuracy
-on HIT-UAV with 31\,\% less compute.
+Gazebo agree with the fast simulator. Ablations show significant effects of the fusion rule and, in
+the severe channel, of the delivery trigger, and none of continuous connectivity. The onboard YOLO26n
+detector matches YOLOv8n in validation accuracy on HIT-UAV with 31\,\% less compute.
 \end{abstract}
 
 \begin{IEEEkeywords}

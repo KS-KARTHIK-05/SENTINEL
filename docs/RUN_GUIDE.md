@@ -29,7 +29,7 @@ This single command:
 Useful options (`-h` for all):
 ```bash
 ~/sentinel_ws/run_sentinel_demo.sh -w sentinel_d25_s0          # the v1 25 m scene
-~/sentinel_ws/run_sentinel_demo.sh -p model                    # calibrated detector model instead of YOLO26n
+~/sentinel_ws/run_sentinel_demo.sh -p model                    # parameterised detector model instead of YOLO26n
 ~/sentinel_ws/run_sentinel_demo.sh -m B0_pso                   # run a baseline instead of SENTINEL
 ~/sentinel_ws/run_sentinel_demo.sh -n 9 -t 300 --no-crash      # 9 drones (maximum on this PC), stop after 300 s, no crash
 ~/sentinel_ws/run_sentinel_demo.sh -n 3                        # 3 drones (fastest, real-time)
@@ -56,7 +56,7 @@ ros2 launch sentinel_ai swarm_launch.py n_uav:=6 world:=sentinel_g100_s0 percept
 ```
 - The drones take off to 30 m (about 20 s), then spread out and search.
 - `perception:=yolo` runs YOLO26n on the Gazebo thermal camera.
-- `perception:=model` uses the calibrated detector model instead (this is what the E8 cross-validation uses).
+- `perception:=model` uses the parameterised detector model instead (this is what the E8 cross-validation uses).
 - UAV 1 is crashed at t = 150 s (chaos monkey). Watch the others continue and deliver reports.
 
 ### Terminal C — watch the thermal camera and the reports

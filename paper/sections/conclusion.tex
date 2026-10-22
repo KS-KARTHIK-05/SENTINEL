@@ -5,10 +5,11 @@ SENTINEL lets UAVs search freely, triggers delivery from the information each UA
 fuses views so that occluded angles cannot veto a clear detection, and preserves the links of a
 delivery path for every feasible step (Proposition~\ref{prop:link}). In about 11\,000 simulated missions against seven
 tuned baselines, it reported significantly more victims within 60\,s than every baseline in most
-settings (urban, suburban and open channels, all failure models in urban rubble, swarms of 3--50 UAVs
-on the 400\,m area, moving obstacles and detector uncertainty); in the severe channel it was ahead
-of or tied with the best baseline, and it was never significantly worse. A PX4/Gazebo cross-check
+settings (urban, suburban and open channels, all failure settings in urban rubble, swarms of 3--50
+UAVs on the 400\,m area and moving obstacles), it stayed significantly ahead of the two baselines
+tested under detector uncertainty, in the severe channel it was ahead of or tied with the best
+baseline, and it was never significantly worse. A PX4/Gazebo cross-check
 agreed with the fast simulator within 0.07.
-The ablation located the gains in the delivery trigger and the fusion rule rather than in
-continuous connectivity. Future work will adapt the delivery trigger to the observed contact rate,
+The ablation found significant effects for the fusion rule and, in the severe channel, the
+delivery trigger, and none for continuous connectivity. Future work will adapt the delivery trigger to the observed contact rate,
 calibrate the channel model with measurements, and validate the system in hardware flights.

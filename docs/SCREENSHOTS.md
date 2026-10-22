@@ -13,7 +13,7 @@ after ~20 s and start searching. The terminal prints a status line every 10 s.
 Variants used for some screenshots:
 ```bash
 ~/sentinel_ws/run_sentinel_demo.sh -w sentinel_d25_s0      # small 25 m scene (rebuild of the original v1 world)
-~/sentinel_ws/run_sentinel_demo.sh -p model                # perception from the calibrated detector model (no YOLO window boxes)
+~/sentinel_ws/run_sentinel_demo.sh -p model                # perception from the parameterised detector model (no YOLO window boxes)
 ```
 
 ## 2. How to capture

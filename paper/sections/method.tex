@@ -8,14 +8,14 @@ information state; in \textsc{Explore} it searches without any connectivity cons
 neighbour, and views are fused so that occluded angles cannot veto a clear one.
 (iii)~\emph{A link-preservation safety layer}: while delivering, a UAV and the relays between it and
 the responder constrain their motion so that the links they rely on stay reliable, with a
-guarantee for feasible steps (Proposition~\ref{prop:link}). Section~\ref{sec:eval:ablation} shows that (i) and (ii) produce the
-performance gains, while (iii) ensures that deliveries are not interrupted by the swarm's own
+guarantee for feasible steps (Proposition~\ref{prop:link}). Section~\ref{sec:eval:ablation} shows that (i) and (ii) are the components with significant
+effects on performance, while (iii) keeps deliveries from being interrupted by the swarm's own
 motion.
 
 \subsection{Mode switching}
 Let $\mathcal{E}_i(t)$ be the confirmed entries held by UAV $i$ that are not secured and for which
-$i$ is responsible (it created them, or the creator has been silent for $3T_h$, i.e.\ the copy is
-orphaned). UAV $i$ switches to \textsc{Deliver} when the oldest such entry reaches age $T_h$,
+$i$ is responsible: it created them, or they are older than $3T_h$, so that a copy whose creator
+failed is eventually delivered by another holder. UAV $i$ switches to \textsc{Deliver} when the oldest such entry reaches age $T_h$,
 \begin{equation}
 \max_{e\in\mathcal{E}_i(t)}\,(t-\tau_e)\;\ge\;T_h,\label{eq:trigger}
 \end{equation}
@@ -31,12 +31,15 @@ Every planning period the agent chooses its next waypoint inside the reachable d
 $\mathcal{D}_i=\{x:\|x-x_i\|\le v T_p\}\setminus\mathcal{O}$ by maximising
 \begin{multline}
 F_i(x)=w_c\,\hat G_i(x)+w_d\!\!\sum_{e\in\mathcal{T}_i}\!c_e\,e^{-\frac{\|x-x_e\|^2}{2s^2}}\\
-+w_g\,\frac{\|x_i-g_i\|-\|x-g_i\|}{vT_p}-S_i(x),\label{eq:fitness}
++\frac{w_g(\|x_i-g_i\|-\|x-g_i\|)-w_t\|x-x_i\|}{vT_p}-S_i(x),\label{eq:fitness}
 \end{multline}
 where $\hat G_i(x)$ is the normalised expected number of detections of a look at $x$ computed on
 the UAV's own search map (cells inside footprints claimed by neighbours removed), $\mathcal{T}_i$
-the tentative entries, and $g_i$ a frontier goal (the map cell maximising expected detections
-discounted by distance). The \emph{signal spring} acts only while the UAV is tethered (in
+the tentative entries, $g_i$ a frontier goal and $w_t$ a small travel cost. The frontier goal is the
+map cell $z$ maximising $\hat G_i(z)\,(1+b_s\mathbb{1}[z\in\Theta_i])/(1+\|z-x_i\|/\ell_g)$, where
+$\Theta_i$ is an angular sector around the responder assigned to $i$ by its identifier and cells near
+neighbours' waypoints are excluded; $w_g$ and $b_s$ are tuned exploration aids and not claimed as
+contributions. The \emph{signal spring} acts only while the UAV is tethered (in
 \textsc{Deliver} and connected, or holding a relay tether, Section~\ref{sec:tether}):
 \begin{equation}
 S_i(x)=\lambda_i\sum_{j\in\mathcal{S}_i}\left(\frac{[P_{\mathrm{out}}(\|x-x_j\|,n(x,x_j))-\varepsilon_i]_+}{\varepsilon_i}\right)^2,
@@ -57,7 +60,7 @@ preserved neighbours $\mathcal{S}_i$.
 
 \begin{definition}[Local MST neighbours]
 Let $\hat{\mathcal{G}}_i$ be the subgraph of the reliable graph induced by $i$ and the neighbours it
-heard within the last $T_{\mathrm{hb}}$, with edge weights $(d_{jk},\max(j,k),\min(j,k))$ ordered
+heard within the last $T_{\mathrm{nb}}$, with edge weights $(d_{jk},\max(j,k),\min(j,k))$ ordered
 lexicographically. $\mathcal{S}_i$ is the set of neighbours adjacent to $i$ in the minimum
 spanning tree of $\hat{\mathcal{G}}_i$ \cite{li2003lmst}.
 \end{definition}
@@ -75,13 +78,15 @@ network maintenance.
 
 \begin{lemma}[LMST spans the reliable graph \cite{li2003lmst}]\label{lem:lmst}
 Let $\mathcal{G}^-$ contain edge $(i,j)$ iff $j\in\mathcal{S}_i$ and $i\in\mathcal{S}_j$, all
-computed from the same positions. Then $\mathcal{G}^-$ contains the minimum spanning forest of
+computed from the same positions, and assume every UAV has heard each of its reliable neighbours
+within $T_{\mathrm{nb}}$. Then $\mathcal{G}^-$ contains the minimum spanning forest of
 the reliable graph, hence has the same connected components.
 \end{lemma}
 \begin{proof}
 Let $(i,j)$ be an edge of the global minimum spanning forest $\mathcal{M}$. If $(i,j)$ were not
 in the local MST of $\hat{\mathcal{G}}_i$, the cycle property would give a cycle in
-$\hat{\mathcal{G}}_i$ on which $(i,j)$ is the unique heaviest edge; that cycle exists in the
+$\hat{\mathcal{G}}_i$ on which $(i,j)$ is the unique heaviest edge (by the assumption, $\hat{\mathcal{G}}_i$
+contains all reliable edges at $i$, and its other edges are reliable); that cycle exists in the
 reliable graph, contradicting $(i,j)\in\mathcal{M}$. The same holds for $\hat{\mathcal{G}}_j$, so
 $(i,j)\in\mathcal{G}^-$. Since $\mathcal{M}\subseteq\mathcal{G}^-$ and $\mathcal{G}^-$ only uses
 reliable links, the components coincide.
@@ -124,16 +129,16 @@ If all UAVs of a connected component of $\mathcal{G}_\varepsilon(t)$ containing 
 are tethered, take steps satisfying \eqref{eq:proj}, and no UAV fails, that component remains
 connected at $t+\Delta t$.
 \end{corollary}
-\noindent\emph{Remark.} Proposition~\ref{prop:link} is a one-step guarantee for feasible steps;
-it does not by itself make \eqref{eq:proj} feasible at every step (the inflated obstruction count
-can shrink $r_{ij}$ even for a hovering UAV). We therefore also report the empirical rate of
-preserved-link violations in all experiments, and a Monte-Carlo check of the obstacle-free
-synchronous case ($10^4$ random swarms of 2--50 UAVs, 25 adversarial steps each, no violation).
 \begin{proof}
 By Lemma~\ref{lem:lmst} the mutually selected edges span the component, and by
 Proposition~\ref{prop:link} each of them is reliable at $t+\Delta t$ (the responder never moves,
 so a one-sided constraint suffices for its edges).
 \end{proof}
+\noindent\emph{Remark.} Proposition~\ref{prop:link} is a one-step guarantee for feasible steps;
+it does not by itself make \eqref{eq:proj} feasible at every step (the inflated obstruction count
+can shrink $r_{ij}$ even for a hovering UAV). We therefore also report the empirical rate of
+preserved-link violations in all experiments, and a Monte-Carlo check of the obstacle-free
+synchronous case with exact positions ($10^4$ random swarms of 2--50 UAVs, 25 adversarial steps each, no violation).
 
 \begin{proposition}[Probabilistic delivery path]\label{prop:prob}
 Under Corollary~\ref{cor:conn}, the probability that, in a slot, the realised (fading) network
@@ -155,21 +160,25 @@ stamp is set only by delivering UAVs, tethers cannot sustain each other indefini
 
 \subsection{Information exposure}
 \begin{proposition}[Exposure bound]\label{prop:exposure}
-Assume the creator of a confirmed entry stays alive until it is secured or fails, flies at speed
-$v$ along paths at most $\kappa\ge1$ times the straight-line distance, and that delivery
-completes within $\tau_c$ of reaching the responder's connected component. Then the entry is
-unsecured for at most $W=T_h+\kappa D/v+\tau_c$, with $D=\max_{x\in\mathcal{A}}\|x-x_0\|$. If the
-UAVs holding it fail independently at rate $\lambda_f$ and the entry has $k$ holders during
-that window,
+Suppose UAVs fly at speed $v$ along paths at most $\kappa\ge1$ times the straight-line distance, a
+delivering UAV completes the hand-off within $\tau_c$ of reaching the responder's connected
+component, and an entry confirmed at $\tau_e$ is held from $\tau_e$ on by $k$ UAVs (its creator
+and $k-1$ replicas). Let $D=\max_{x\in\mathcal{A}}\|x-x_0\|$, $W=T_h+\kappa D/v+\tau_c$ and
+$\bar W=3T_h+\kappa D/v+\tau_c\ (\ge W)$. If the holders fail independently at rate $\lambda_f$,
 \begin{equation}
-\Pr[\text{entry lost}]\le\left(1-e^{-\lambda_f W}\right)^k\le(\lambda_f W)^k.\label{eq:exposure}
+\Pr[\text{entry lost}]\le\left(1-e^{-\lambda_f W}\right)\left(1-e^{-\lambda_f\bar W}\right)^{k-1}\le(\lambda_f\bar W)^k.\label{eq:exposure}
 \end{equation}
 \end{proposition}
 \begin{proof}
-By \eqref{eq:trigger}, \textsc{Deliver} starts at most $T_h$ after confirmation; the return takes
-at most $\kappa D/v$ and the hand-off at most $\tau_c$, after which $0\in H_e$ and the entry is
-secured (the responder does not fail). It is lost only if every holder fails within the window,
-which has probability $(1-e^{-\lambda_fW})^k$ under independence; $1-e^{-z}\le z$.
+If the creator is alive at $\tau_e+W$, the entry is secured by then: by \eqref{eq:trigger}
+\textsc{Deliver} starts at most $T_h$ after confirmation, the return takes at most $\kappa D/v$
+and the hand-off at most $\tau_c$, after which $0\in H_e$ (the responder does not fail).
+Otherwise the creator fails before $\tau_e+W$. Every other holder becomes responsible for the
+entry when it is older than $3T_h$, i.e.\ at the latest at $\tau_e+3T_h$; the entry is then older than $T_h$, so a
+surviving holder switches to \textsc{Deliver} at once and secures the entry by
+$\tau_e+3T_h+\kappa D/v+\tau_c=\tau_e+\bar W$. Hence the entry is lost only if the creator fails within
+$W$ and each of the other $k-1$ holders fails within $\bar W$, which under independence has the
+stated probability; the last step uses $1-e^{-z}\le z$ and $W\le\bar W$.
 \end{proof}
 Proposition~\ref{prop:exposure} makes the role of $T_h$ explicit: it bounds the exposure of
 confirmed information to UAV failures (the information-loss side), while larger $T_h$ leaves

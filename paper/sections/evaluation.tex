@@ -7,11 +7,27 @@ multi-agent simulator and by the ROS~2 nodes running against PX4 SITL in Gazebo
 (Section~\ref{sec:impl}). The fast simulator advances all UAVs with a 0.5\,s control step, samples
 every broadcast through the channel model of Section~\ref{sec:model} (path loss, building
 obstructions, correlated shadowing, Rician/Rayleigh fading, collision interference) and produces
-detections with the calibrated sensing model. Each run starts from a procedurally generated
+detections with the sensing model of Section~\ref{sec:model}. Each run starts from a procedurally generated
 disaster area (tall buildings that are no-fly zones and obstruct links, low rubble that occludes
 victims, warm debris that causes false alarms, 25 victims of which one is fully buried) and lasts
 600\,s. Unless stated otherwise the area is 400\,m$\times$400\,m, $N=8$, the channel is
 urban-rubble, and UAVs fail as a Poisson process with rate 0.01\,s$^{-1}$ per swarm.
+Table~\ref{tab:params} lists the remaining parameters.
+
+\begin{table}[t]\centering\caption{Default parameters (fast simulator and SITL). $^\dagger$: tuned (Section~\ref{sec:eval:method}).}\label{tab:params}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}l>{\raggedright\arraybackslash}p{0.74\columnwidth}@{}}\toprule
+Group & Values\\\midrule
+Kinematics & $\Delta t=0.5$\,s, $v=5$\,m/s, $h=30$\,m, $r_f=12$\,m, look every 1\,s\\
+Planning & every 1\,s, horizon $T_p=4$\,s, PSO $P=24$, $I=12$, $\chi=0.7298$, $c_{1,2}=2.05$\\
+Fitness & $w_c=w_d=1$, $s=8$\,m, $w_t=0.05$, $w_g=0.066^\dagger$, $b_s=1.03^\dagger$, $\ell_g=60$\,m\\
+Spring & $\lambda_0=1.20^\dagger$, $\beta=1.09^\dagger$, $\varepsilon=0.05$\\
+Delivery & $T_h=116$\,s$^\dagger$, orphan age $3T_h$, $T_{\mathrm{hb}}=4$\,s, $T_{\mathrm{nb}}=3$\,s, $T_{\mathrm{rel}}=2$\,s\\
+Ledger, SA & gate 5\,m, 8 sectors, $c_{\mathrm{lo}}=0.40$, $c_{\mathrm{hi}}=0.70$, $b=15$\,m\\
+Detector & $c_{\max}=0.92$, $\gamma=1.5$, $r_{\mathrm{ref}}=35$\,m, $r_s=60$\,m, $\sigma_c=0.08$, $\kappa_o=0.8$\\
+False alarms & 0.02 per look, confidence $\mathcal{N}(0.22,0.08^2)$\\
+Objective & $\theta=300$\,s in \eqref{eq:J}\\\bottomrule
+\end{tabular}\end{table}
 
 \paragraph{Metrics}
 The primary metric is the share of all victims whose report reaches the responder within 60\,s of
@@ -29,12 +45,16 @@ a soft outage penalty on all neighbours; B3: algebraic-connectivity gradient con
 (an oracle that favours B3); B4: edge-tension potential with hysteresis \cite{ji2007};
 B5: MAPPO \cite{yu2022mappo} with a parameter-shared actor on local observations and a centralised
 critic; B6: boustrophedon sweep of static sectors. All methods share sensing, gossip, the ledger and
-the channel, so they differ only in how UAVs move.
+the channel. The baselines keep the best single view of each victim and do not request second views,
+as in their published designs; SENTINEL's fusion rule and flanking are therefore part of the
+comparison, and Section~\ref{sec:eval:ablation} measures their share.
 
 \paragraph{Fair tuning and statistics}
 Every method's free parameters were tuned with the same budget (Optuna TPE, 30 trials, each scored
-on six runs in an urban $N=8$ and a severe $N=4$ scenario) on seeds 1000--1002, which are never used
-for evaluation. MAPPO was trained for 600 PPO iterations of 16 episodes each (9\,600 missions) on
+by the report value $J$ of \eqref{eq:J} on six runs in an urban $N=8$ and a severe $N=4$ scenario)
+on seeds 1000--1002, which are never used for evaluation. $J$ rewards early reports over the whole
+mission and is therefore not identical to the 60\,s metric; Section~\ref{sec:discussion} discusses
+the consequence for $T_h$. MAPPO was trained for 600 PPO iterations of 16 episodes each (9\,600 missions) on
 separate seeds and selected on the same tuning seeds; its training return plateaus after about 150
 iterations (Fig.~\ref{fig:mappo}), so the reported policy is not limited by training length. Each
 configuration is evaluated on seeds 0--29; all methods see the same area, victims and failure
@@ -73,14 +93,14 @@ never arrive, and some of these arrive late.
 \input{tables/e2_channel_rep60}
 
 \subsection{Failures}\label{sec:eval:failures}
-Tables~\ref{tab:e3_urban_rubble} and~\ref{tab:e3_severe} apply six failure models: none, a single
+Tables~\ref{tab:e3_urban_rubble} and~\ref{tab:e3_severe} apply six failure settings: no failures, a single
 crash, 30\,\% of the swarm crashing simultaneously, three cascading crashes, Poisson crashes at twice
 the default rate, and a gradual transmit-power brownout. In the urban channel SENTINEL is
-significantly better than every baseline under every failure model, by 23--30\,\% over the best
+significantly better than every baseline in every failure setting, by 23--30\,\% over the best
 baseline. In the severe channel it is ahead of or tied with the best baseline (often the lawnmower
 sweep), with no significant loss. Information loss, i.e.\ confirmed victims whose every holder
-failed before reporting, is small for \emph{all} methods: at most 0.9\,\% averaged over all failure
-models and at most 8.5\,\% under high-rate Poisson crashes in the severe channel (3.2\,\% for
+failed before reporting, is small for \emph{all} methods: at most 0.9\,\% averaged over all failure settings
+and at most 8.5\,\% under high-rate Poisson crashes in the severe channel (3.2\,\% for
 SENTINEL). Gossip replication between UAVs that meet during the search protects most information,
 so we make no claim that SENTINEL reduces loss compared with the baselines.
 \input{tables/e3_failures_urban_rubble_rep60}
@@ -112,20 +132,24 @@ significantly better than all baselines (best baseline 0.48--0.51).
 \input{tables/e4_dynamic_rep60}
 
 \subsection{Detection uncertainty}\label{sec:eval:uncertainty}
-We perturbed the calibrated detector model around its default: confidence noise
+We perturbed the detector model around its default: confidence noise
 $\sigma\in\{0.04,0.08,0.15,0.25\}$, a weaker detector ($c_{\max}\in\{0.8,0.7\}$) and more frequent
-false alarms. SENTINEL stays significantly ahead of B0 and B6 in all eight settings (0.45--0.81 vs.\
-at most 0.59). Because the default false-alarm confidences rarely exceed the confirmation threshold,
+false alarms. SENTINEL stays significantly ahead of the two baselines run in this study, B0 and B6, in all eight
+settings (0.45--0.81 vs.\ at most 0.59). On-time reporting rises with $\sigma$ for every method
+(SENTINEL 0.52 at $\sigma=0.04$, 0.81 at $\sigma=0.25$): confirmation requires $c\ge c_{\mathrm{hi}}$
+and the noise is symmetric, so a larger $\sigma$ lets partly occluded victims, whose mean confidence
+lies below $c_{\mathrm{hi}}$, cross the threshold more often, while false alarms keep their low
+confidences. The adverse case below removes this asymmetry. Because the default false-alarm confidences rarely exceed the confirmation threshold,
 we also ran a deliberately adverse case (Table~\ref{tab:e6c}): hot clutter that scores up to a mean of
-0.55, the confidence noise applied to false alarms as well, and false alarms three times more
-frequent. SENTINEL still reports 0.71--0.73 of the victims within 60\,s against at most 0.50 (B0), with
+0.55, the confidence noise applied to false alarms as well, and false-alarm rates of 0.1 and 0.3 per look
+(default 0.02). SENTINEL still reports 0.71--0.73 of the victims within 60\,s against at most 0.50 (B0), with
 0.18 false confirmed entries per mission on average (B0: 0.29). Moving the SA band and the
-confirmation threshold (0.3/0.6 to 0.4/0.85) changes the on-time share between 0.64 and 0.74 without
+confirmation threshold over four settings from 0.3/0.6 to 0.5/0.8 (default 0.4/0.7, $\sigma=0.15$) changes the on-time share between 0.64 and 0.74 without
 producing false confirmations.
 \input{tables/e6c_false_alarms_rep60}
 
 \subsection{What produces the gains}\label{sec:eval:ablation}
-Table~\ref{tab:e7} removes one component at a time. Two components matter. First, multi-view fusion:
+Table~\ref{tab:e7} removes one component at a time. Two components have significant effects. First, multi-view fusion:
 removing it reduces on-time reports significantly (urban, $N=8$: 0.519 vs.\ 0.575), and in the dense
 swarm of Table~\ref{tab:e11_dense_diag} the corroborative rule is decisive (0.809, against 0.656 with
 plain naive-Bayes fusion and 0.720 for B0). Second, the delivery trigger: Fig.~\ref{fig:thold} sweeps
@@ -136,7 +160,10 @@ present but not significant. The remaining components (outage-based instead of d
 LMST instead of nearest-neighbour preserved set, information-dependent tension, projection) do not
 change the outcome significantly, and the SA flank is not significant in the tuned configuration.
 These mechanisms act only during the short delivery tethers; we regard them as the safety layer
-examined next, not as the source of the performance gains. Keeping the swarm connected at all times
+examined next, not as the source of the performance gains. Neither significant component alone
+accounts for SENTINEL's whole margin in the urban default: without fusion it reports 0.519 and
+without delivery ($T_h=\infty$) 0.552, both still above the best baseline (0.475). The rest of the
+margin is not attributable to any single component that we removed. Keeping the swarm connected at all times
 (SENTINEL-strict) lowers on-time reporting to 0.03--0.13.
 \input{tables/e7_ablation_rep60}
 \input{tables/e11_dense_diag_rep60}
@@ -152,7 +179,11 @@ Proposition~\ref{prop:link} is a one-step guarantee for feasible steps. Over all
 counted the tethered, mutually preserved links that were reliable before a step and unreliable after
 it: 15 violations in 436\,057 link-steps ($3.4\times10^{-5}$); with the swarm tethered at all times
 (SENTINEL-strict) the rate is $2.6\times10^{-3}$. The residual violations come from steps where the
-constraint was infeasible and the UAV hovered (Section~\ref{sec:proj}). Information loss did not vary
+constraint was infeasible and the UAV hovered (Section~\ref{sec:proj}). Because tethers are short,
+the ablations that change the preserved set or the tension alter few decisions (several cells of
+Table~\ref{tab:e7} are identical to SENTINEL), and without the projection the violation rate is not
+defined; the low rate therefore shows that the constraint holds when it is applied, not how many
+violations it prevents. Information loss did not vary
 consistently with $T_h$ at the failure rates studied (at most 6.2\,\% in any cell), so the exposure
 bound of Proposition~\ref{prop:exposure} could not be confirmed or refuted empirically; it remains a
 design guarantee.
@@ -164,9 +195,13 @@ crash of one UAV at 150\,s), with the same agent code, tuned values, channel emu
 model. The share of reported victims (SENTINEL 0.53 vs.\ 0.60 in the fast simulator; B0 0.60 vs.\
 0.62), the packet delivery ratio (0.79--0.81 vs.\ 0.80--0.83) and the connected fraction agree within
 0.07; coverage of SENTINEL is higher in SITL (0.99 vs.\ 0.83). With three seeds this is a consistency
-check rather than a statistical comparison. Finally, re-running the scenario of the earlier SENTINEL design
-(25\,m area, three UAVs, one crash) shows that it cannot separate the methods: the
-area is far smaller than the radio range, every method stays connected throughout, and 64--69\,\% of
-the victims are reported by all of them. The remaining victims are either buried or so close to
+check rather than a statistical comparison. In this 100\,m area, which is comparable to the reliable
+range, B0 reports slightly more victims than SENTINEL in both environments; as in the 25\,m scenario
+below, connectivity is rarely limiting there, so this check tests agreement between the
+environments, not the methods. Finally, re-running the scenario of the earlier SENTINEL design
+(25\,m area, three UAVs, one crash) shows that it separates the methods only weakly: the
+area is far smaller than the radio range, every method stays connected throughout, and all of them
+report 64--69\,\% of the victims (SENTINEL 0.69, significantly above B0 with 0.64 but not above
+the earlier design with 0.65). The remaining victims are either buried or so close to
 another victim (4--5\,m) that their reports merge (7.8--11\,\% of confirmations), which is a
 limitation of the association gate rather than of connectivity.

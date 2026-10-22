@@ -56,10 +56,10 @@ beacons through the radio emulator; there is no central coordinator.}\label{fig:
 
 \paragraph{Perception in the loop}
 Fig.~\ref{fig:pipeline} shows YOLO26n running on the Gazebo thermal feed during flight. Because the
-detector is trained on real thermal imagery, the rendered scenes produce false boxes on rubble edges
+detector is trained on real thermal imagery, the rendered scenes produce false boxes on rubble and building edges
 and missed mannequins; we therefore evaluate detection accuracy on HIT-UAV
 (Section~\ref{sec:eval:perception}), and the cross-check of Section~\ref{sec:eval:sitl} uses the
-calibrated detector model of the fast simulator, so that both environments see the same perception.
+detector model of the fast simulator, so that both environments see the same perception.
 \begin{figure}[t]\centering
 \maybeimg{0.48\columnwidth}{figures/S5_yolo26n_pipeline.png}\hfill
 \maybeimg{0.48\columnwidth}{figures/S3_swarm_in_flight.png}

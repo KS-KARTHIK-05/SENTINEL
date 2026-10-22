@@ -7,7 +7,7 @@
 # Options:
 #   -n N          number of drones (default 6; this PC handles up to 9)
 #   -w WORLD      sentinel_g100_s0 | sentinel_g100_s1 | sentinel_g100_s2 | sentinel_g200_s0 | sentinel_d25_s0
-#   -p MODE       yolo (YOLO26n on the Gazebo thermal camera, default) | model (calibrated detector model)
+#   -p MODE       yolo (YOLO26n on the Gazebo thermal camera, default) | model (parameterised detector model)
 #   -m METHOD     sentinel (default) | B0_pso | B6_lawnmower | ... (any method name)
 #   -t SECONDS    stop automatically after this many seconds (default: run until Ctrl-C)
 #   --no-crash    do not crash UAV 1 at t = 150 s

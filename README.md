@@ -92,7 +92,7 @@ The metric is the **share of victims reported to the responder within 60 s**.
 | Channel: open / suburban / urban rubble | 0.577 / 0.560 / 0.575 | 0.501 / 0.456 / 0.475 | significantly better than all 7 |
 | Channel: severe | 0.433 | 0.377 | ahead, not significant vs. the best |
 | Failures, urban, 6 failure models | 0.46–0.69 | 0.36–0.56 | significantly better than all 7 in every model |
-| Scalability, 400 m, N = 3–50 | 0.20–0.79 | 0.15–0.71 | significantly better than all 7 at every N |
+| Scalability, 400 m, N = 3–50 | 0.20–0.79 | 0.15–0.73 | significantly better than all 7 at every N |
 | Scalability, 200 m | 0.48–0.81 | 0.46–0.78 | better at N = 50; tied with MAPPO at N = 10–20 |
 | Moving obstacles | 0.58 | ≤ 0.51 | significantly better than all 7 |
 | Dense swarm (200 m, N = 50) | 0.809 | 0.720 | significantly better; naive fusion gives 0.656 |
@@ -192,7 +192,7 @@ YOLO26n, and opens the camera and node-graph viewers. Press `Ctrl-C` to stop eve
 |---|---|
 | `-n N` | number of drones (default 6; about 9 is the limit on a desktop CPU) |
 | `-w WORLD` | `sentinel_g100_s0/1/2`, `sentinel_g200_s0`, or `sentinel_d25_s0` (the original 25 m scene) |
-| `-p model` | calibrated detector model instead of YOLO (lighter; drones have no camera) |
+| `-p model` | parameterised detector model instead of YOLO (lighter; drones have no camera) |
 | `-m METHOD` | fly a baseline instead, e.g. `B0_pso`, `B6_lawnmower` |
 | `--no-crash` | no injected UAV failure (default: UAV 1 fails at t = 150 s) |
 | `--headless` | no GUI windows |

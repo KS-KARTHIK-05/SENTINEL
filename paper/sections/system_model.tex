@@ -16,9 +16,10 @@ The received SINR of the broadcast from $i$ at $j$ in slot $t$ is
 \gamma_{ij}(t)=\frac{P_t G^2\, 10^{-(\mathrm{PL}(d_{ij})+n_{ij}L_o+X_{ij})/10}\; |h_{ij}|^2}
 {\sigma^2+\sum_{k\in\mathcal{I}_j(t)}\bar P_{kj}},\label{eq:sinr}
 \end{equation}
-where $\mathrm{PL}(d)=\mathrm{PL}(d_0)+10\eta\log_{10}(d/d_0)$ is log-distance path loss,
+where $P_t$ is the transmit power, $G$ the antenna gain per side, $\sigma^2$ the noise power,
+$\mathrm{PL}(d)=\mathrm{PL}(d_0)+10\eta\log_{10}(d/d_0)$ log-distance path loss (in dB, as are $L_o$ and $X_{ij}$),
 $n_{ij}$ the number of obstacles crossing the segment $[x_i,x_j]$ with per-obstruction loss $L_o$,
-$X_{ij}\sim\mathcal{N}(0,\sigma_X^2)$ log-normal shadowing evolving with the Gudmundson
+$X_{ij}\sim\mathcal{N}(0,\sigma_X^2)$ (dB) log-normal shadowing evolving with the Gudmundson
 correlation $\rho=e^{-\Delta/d_c}$ for endpoint displacement $\Delta$, $|h_{ij}|^2$ unit-mean
 Rician fading with factor $K$ ($K=0$, Rayleigh, once obstructed), and $\mathcal{I}_j(t)$ the set
 of transmitters colliding in the slot, each present with probability $p_a$. A packet is decoded
@@ -39,8 +40,8 @@ in rubble (Section~\ref{sec:discussion}). For the urban-rubble profile $R_{0.05}
 which places the fixed 50\,m range of the earlier SENTINEL design in context: it is the
 reliable range of a link behind one obstruction, not a property of the radio alone.
 
-\begin{table}[t]\centering\caption{Channel profiles ($f=2.4$\,GHz, $P_t=20$\,dBm, $B=20$\,MHz,
-$\gamma_{\mathrm{th}}=5$\,dB) and resulting reliable ranges at $\varepsilon=0.05$.}\label{tab:channel}
+\begin{table}[t]\centering\caption{Channel profiles ($f=2.4$\,GHz, $P_t=20$\,dBm, $G=2$\,dBi, $B=20$\,MHz, noise figure 7\,dB,
+$\gamma_{\mathrm{th}}=5$\,dB) and resulting reliable ranges at $\varepsilon=0.05$ ($\sigma_X$ in dB).}\label{tab:channel}
 \begin{tabular}{lcccccc}\toprule
 Profile & $\eta$ & $\sigma_X$ & $K$ (LoS) & $L_o$ & $R(0)$ & $R(1)$\\\midrule
 open & 2.0 & 2 & 10\,dB & 6\,dB & 2434\,m & 684\,m\\
@@ -52,9 +53,16 @@ severe & 3.5 & 8 & Rayleigh & 8\,dB & 35\,m & 21\,m\\\bottomrule
 \subsection{Sensing Model}
 Each UAV carries a nadir thermal camera with ground footprint radius $r_f$ and an onboard
 detector (Section~\ref{sec:impl}). A look at a cell updates the residual probability that an
-undetected victim is present by Bayes' rule, $p\leftarrow p(1-P_d)/(1-pP_d)$ \cite{stone1975}. The detector returns a confidence $c\in[0,1]$ whose distribution depends on
-slant range and on view-dependent occlusion (calibrated from the detector, Section~\ref{sec:eval});
-false positives from warm debris arrive as a Poisson process per look.
+undetected victim is present by Bayes' rule, $p\leftarrow p(1-P_d)/(1-pP_d)$ \cite{stone1975}. For a
+victim at slant range $r$ the detector returns a confidence
+$c\sim\mathrm{clip}_{[0,1]}\,\mathcal{N}(\mu,\sigma_c^2)$ with
+$\mu=c_{\max}(1-o)^{\gamma}e^{-[r-r_{\mathrm{ref}}]_+/r_s}$, where the occlusion
+$o=\mathrm{clip}_{[0,1]}\big(o_0+\kappa_o\sin\vartheta\cos(\phi-\phi_b)\big)$ grows when the victim is
+viewed from the side of the covering structure (off-nadir angle $\vartheta$, azimuth $\phi$, blocking
+direction $\phi_b$, base occlusion $o_0$; $o=1$ for buried victims). False positives from warm
+debris arrive as a Poisson process per look with low confidences. The parameters
+(Table~\ref{tab:params}) are set to reproduce the qualitative behaviour of the onboard detector, not
+fitted to it, and Section~\ref{sec:eval:uncertainty} sweeps them.
 
 \subsection{Information Model}
 Every UAV keeps a ledger of world-frame target entries. Observations within a gate are
@@ -71,9 +79,9 @@ cannot communicate) or by gradual brownout (transmit power decays). We study sin
 simultaneous, cascading and Poisson failures with per-UAV rate $\lambda_f$.
 
 \subsection{Problem}
-Let $\tau_k$ be the time victim $k$ is first confirmed by any UAV and $T_k\ge\tau_k$ the time
-its report reaches the responder ($T_k=\infty$ if never). With mission horizon $T$ and value
-discount $\theta$, the team maximises the time-discounted report value
+Let $\tau_k$ be the time victim $k$ is first confirmed by any UAV and $T_k\ge\tau_k$ the time,
+measured from the start of the mission, at which its report reaches the responder ($T_k=\infty$ if
+this does not happen before the mission horizon $T$). With value discount $\theta$, the team maximises the time-discounted report value
 \begin{equation}
 J=\frac{1}{|\mathcal{V}|}\sum_{k\in\mathcal{V}} e^{-T_k/\theta},\label{eq:J}
 \end{equation}

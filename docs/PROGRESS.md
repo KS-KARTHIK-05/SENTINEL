@@ -641,3 +641,51 @@ All code is in `src/SENTINEL/sentinel_ws/src/` on git branch **`revision-v2`**. 
 - Old → new hashes: 09bcc55→680e05e, c657c70→ff5835e, de143c7→b68c36a, f97d0db→43fb088, 42f6f22→8616269. Earlier log entries that cite the old hashes refer to these.
 - Backup of the old branch: local `backup/revision-v2-before-msg-rewrite`.
 - Remote `karthik/v2` still has the old commits, so the user must force-push. Future commits carry no attribution trailer.
+
+### 2026-10-22 — Force-push done; next: PR to Nicholas's repo
+- The user force-pushed the rewritten v2 and then deleted `karthik_handover.md` from v2 on GitHub (commit 9ababff). The local `revision-v2` is fast-forwarded to match `karthik/v2` (9ababff).
+- `nicholaschristo/SENTINEL` `main` (cba14f7) is the base of v2, which is 7 commits ahead, so a PR from KS-KARTHIK-05:v2 to nicholaschristo:main merges cleanly.
+- The user asked for no further changes to the repo.
+
+### 2026-10-22 — Internal reviewer-style audit of the paper (no changes made)
+Every section, table and figure was read and each number checked against `docs/RESULTS.md`, the configs and the code. All numbers in the text match the results. The main findings:
+- **Critical:**
+  - (1) "Calibrated" detector model: there is no calibration. `scripts/calibrate_detector.py`, cited in the `detector_model.py` docstring, does not exist. The paper claims calibration in 5 places.
+  - (2) Methodology says methods "differ only in how UAVs move", but the baselines run without multi-view fusion and SA (`methods.py` `_NO_COMM`).
+  - (3) Attribution of the gains: in urban N=8 the never-deliver variant (0.552) and the no-fusion variant (0.519) are both still far above the best baseline (0.475). The tuned T_h (116 s) exceeds the 60 s deadline, and the trigger effect is significant only in severe N=8.
+- **Major:**
+  - The tuning objective (J, θ = 300 s) is not stated in the Methodology.
+  - The proof of Prop. 3 has a gap: orphan takeover happens after 3T_h, and the assumption is circular.
+  - There is no counterfactual for the safety layer: the violation rate is undefined without projection, and the NN-set/no-tension ablations are identical to SENTINEL.
+  - E6 reporting rises with detector noise (0.52→0.81).
+  - The Conclusion overclaims "every baseline" for detector uncertainty, where only B0 and B6 were run.
+  - E9 says it "cannot separate methods", but B0 differs significantly.
+  - E8 shows SENTINEL below B0 in both environments, which is not discussed.
+  - There is no parameter table.
+- **Minor:** see the chat report; the items were wording, proof assumptions and the response-document claim for R1.6.
+
+### 2026-10-22 — Text-only fixes from the internal audit
+Experiment-dependent items 3 and 6 were not resolved, but their wording was made accurate. All other findings are fixed:
+- **(1)** "Calibrated" detector model → "parameterised". §III-C now gives the model equation and states that its parameters are not fitted. Fixed in the paper, `response_to_reviewers.md`, README, the demo script, the launch file, RUN_GUIDE, SCREENSHOTS and the handover. The `detector_model.py` docstring no longer cites the nonexistent `calibrate_detector.py`.
+- **(2)** §VI-A now states that the baselines use the best single view and no second views, and that fusion and flanking are part of the comparison.
+- **(3)** Abstract, introduction, §IV, §VI-H, §VII and the conclusion now say "significant effects of fusion and, in the severe channel, of the trigger". §VI-H states that neither component alone explains the urban margin (no fusion 0.519, T_h=∞ 0.552, best baseline 0.475).
+- **(4)** §VI-A states the tuning objective (J, θ = 300 s). §VII explains that T_h = 116 s exceeds the 60 s deadline.
+- **(5)** Prop. 3 is restated and re-proved to match the code. The orphan rule is entry age > 3T_h, not creator silence; `agent.py` `unsecured()`. The bound is now (1−e^{−λW})(1−e^{−λW̄})^{k−1} ≤ (λW̄)^k with W̄ = 3T_h+κD/v+τ_c. The mode-switching text was fixed to match.
+- **(6)** §VI-I states that the violation rate shows the constraint holds when applied, not how many violations it prevents.
+- **(7)** E6 now explains the rise with σ: symmetric noise with a one-sided threshold.
+- **(8)** The conclusion now says "the two baselines tested under detector uncertainty".
+- **(9)** E9: "separates the methods only weakly" (SENTINEL 0.69 vs B0 0.64 significant, vs B1 0.65 not). The introduction says "differ by at most five points".
+- **(10)** E8 discussion added (B0 slightly ahead in both environments; the check tests agreement).
+- **(11)** New Table III with default parameters, taken from code defaults and `tuned.yaml`.
+- **Minor fixes:**
+  - (12) Lemma 2 assumption added; Definition 1 uses T_nb.
+  - (13) Remark moved after the proof.
+  - (14) "Failure settings" wording.
+  - (15) E6b range.
+  - (16) Rubble and building edges.
+  - (17) HIT-UAV citation sentence.
+  - (18) G, σ_X units and the J horizon are defined.
+  - (19) Response doc R1.6/R2.7.
+  - (20) README 0.15–0.73.
+- **Also:** Eq. (5) now includes the travel-cost term w_t and describes the frontier goal with sector bias exactly as implemented. The E6c false-alarm rates are now explicit.
+- **Build:** 12 pages (was 11, because of the parameter table), 0 overfull boxes, 0 undefined references, lint 0. No result or table value changed.

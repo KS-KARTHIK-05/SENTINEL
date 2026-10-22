@@ -13,9 +13,9 @@ when viewed from that side and less occluded from the opposite side:
 
 (theta: off-nadir angle, az: azimuth of the UAV seen from the target). Buried
 targets have occ = 1 from every viewpoint. False positives from warm clutter
-arrive as a Poisson process per look with low confidences. All parameters are
-calibrated from YOLO runs (``scripts/calibrate_detector.py``) and swept in the
-detection-uncertainty sensitivity study.
+arrive as a Poisson process per look with low confidences. The parameters are set
+by hand to reproduce the qualitative behaviour of the onboard detector (they are not
+fitted to detector outputs) and are swept in the detection-uncertainty study (E6).
 """
 from __future__ import annotations
 

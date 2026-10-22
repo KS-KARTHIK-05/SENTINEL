@@ -2,8 +2,9 @@
 
 After earthquakes, floods and large fires, cellular and backhaul infrastructure is often unavailable
 precisely where responders need information. Small multirotor UAVs carrying thermal cameras can
-search such areas quickly, and onboard detectors now run in a few milliseconds on embedded GPUs, so
-victims can be detected without streaming video to a server \cite{hituav}. What remains hard is
+search such areas quickly, and lightweight detectors trained on aerial thermal imagery
+\cite{hituav} need only a few GFLOPs per frame, so victims can be detected on board without
+streaming video to a server. What remains hard is
 getting each detection to the responders \emph{in time}. Without infrastructure, a report travels
 only over the UAVs' own short-range radio links, which are obstructed by buildings, fade, and break
 when UAVs fail.
@@ -24,7 +25,7 @@ That design has three limitations, which also shaped this work. A fixed distance
 a radio link behind rubble; keeping the nearest neighbour close does not keep the network connected
 (Lemma~\ref{lem:nn}); and the evaluation used a 25\,m area that is far smaller than the radio range,
 in which, as we show in Section~\ref{sec:eval:sitl}, every method stays connected and the methods
-cannot be told apart.
+differ by at most five percentage points.
 
 This paper studies the \emph{discovery--delivery trade-off} directly. We measure the share of
 victims whose report reaches the responder within a deadline, and we treat connectivity as a means
@@ -49,18 +50,19 @@ suffice (Lemma~\ref{lem:nn}).
 \item \textbf{A reproducible evaluation.} We compare against seven baselines covering
 communication-aware optimisation, algebraic-connectivity control, potential-based topology control,
 multi-agent reinforcement learning and classical sweep search, all tuned with the same budget. The
-evaluation spans 3--50 UAVs, four channel profiles, six failure models, moving obstacles and
+evaluation spans 3--50 UAVs, four channel profiles, five failure models and a failure-free reference, moving obstacles and
 detector uncertainty, uses 30 seeds per configuration with paired significance tests, and is
 cross-checked against PX4 software-in-the-loop flight in Gazebo. Code, scenarios and results are
 released.
 \end{itemize}
 
 Across the scenarios SENTINEL reports 23--30\,\% more victims within 60\,s than the best baseline in
-urban rubble under all failure models, and it is significantly better than all baselines on the
+urban rubble in all failure settings, and it is significantly better than all baselines on the
 400\,m area at every swarm size from 3 to 50; in the harshest channel it is ahead of or tied with the
-best baseline. The ablation shows where this comes from: the delivery trigger and the fusion rule
-account for the gains, whereas the link-preservation layer has no significant effect on performance
-and fulfils its safety role, with $3.4\times10^{-5}$ link violations per preserved link-step. We
+best baseline. The ablation shows which components matter: the fusion rule and, in the severe channel, the
+delivery trigger have significant effects, whereas the link-preservation layer has no significant
+effect on performance and holds when applied, with $3.4\times10^{-5}$ link violations per preserved
+link-step. We
 also report what does not work as well: keeping the swarm connected at all times lowers on-time
 reporting to 0.03--0.13; in small, dense swarms a MAPPO policy trained to convergence comes close to
 SENTINEL (differences not significant for $N=10$--20 on the 200\,m area); and the thermal detector,
