@@ -629,3 +629,4 @@ All code is in `src/SENTINEL/sentinel_ws/src/` on git branch **`revision-v2`**. 
 - Committed on `revision-v2`: screenshots S1–S6, the Fig. 3 diagram, the victim/slab scene fix with regenerated worlds, the thermal-frame helper (.py + .sh) and updated docs.
 - The spare screenshots are not committed.
 - The push failed again because this machine has no GitHub credentials. The user has to push from their own terminal. Branch `revision-v2` is 2 commits ahead of `main` (09bcc55, c657c70).
+- 2026-10-22: removed the forced line break in the title, which had left "Reporting" alone on the second line. The title now wraps naturally over three lines; still 11 pages.
