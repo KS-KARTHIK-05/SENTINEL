@@ -1,0 +1,87 @@
+\section{System Model and Problem Formulation}\label{sec:model}
+
+\subsection{Network and Mobility}
+A swarm $\mathcal{U}=\{1,\dots,N\}$ of multirotor UAVs flies at a common altitude $h$ over a
+disaster area $\mathcal{A}\subset\mathbb{R}^2$ containing static obstacles. Obstacles taller than
+$h$ form a no-fly set $\mathcal{O}\subset\mathcal{A}$ and obstruct radio links; low rubble only
+occludes ground targets. A responder radio (node $0$) is fixed at the launch point
+$x_0\in\mathcal{A}$; it is the only sink for victim reports and is assumed not to fail. UAV $i$
+has position $x_i(t)\in\mathcal{A}\setminus\mathcal{O}$ and speed $\|\dot x_i\|\le v$. Time is
+slotted with control period $\Delta t$; every UAV broadcasts one beacon per slot containing its
+position, its target ledger and acknowledgements (Section~\ref{sec:method}).
+
+\subsection{Channel Model}
+The received SINR of the broadcast from $i$ at $j$ in slot $t$ is
+\begin{equation}
+\gamma_{ij}(t)=\frac{P_t G^2\, 10^{-(\mathrm{PL}(d_{ij})+n_{ij}L_o+X_{ij})/10}\; |h_{ij}|^2}
+{\sigma^2+\sum_{k\in\mathcal{I}_j(t)}\bar P_{kj}},\label{eq:sinr}
+\end{equation}
+where $\mathrm{PL}(d)=\mathrm{PL}(d_0)+10\eta\log_{10}(d/d_0)$ is log-distance path loss,
+$n_{ij}$ the number of obstacles crossing the segment $[x_i,x_j]$ with per-obstruction loss $L_o$,
+$X_{ij}\sim\mathcal{N}(0,\sigma_X^2)$ log-normal shadowing evolving with the Gudmundson
+correlation $\rho=e^{-\Delta/d_c}$ for endpoint displacement $\Delta$, $|h_{ij}|^2$ unit-mean
+Rician fading with factor $K$ ($K=0$, Rayleigh, once obstructed), and $\mathcal{I}_j(t)$ the set
+of transmitters colliding in the slot, each present with probability $p_a$. A packet is decoded
+iff $\gamma_{ij}\ge\gamma_{\mathrm{th}}$. The link outage probability, averaged over fading and
+shadowing, is
+\begin{equation}
+P_{\mathrm{out}}(d,n)=\mathbb{E}_X\!\left[F_{|h|^2}\!\left(\frac{\gamma_{\mathrm{th}}}{\bar\gamma(d,n)\,10^{X/10}}\right)\right],
+\label{eq:pout}
+\end{equation}
+with $F_{|h|^2}$ the non-central $\chi^2_2$ CDF (computed in closed form; the outer expectation
+by Gauss--Hermite quadrature). The \emph{reliable range} for target outage $\varepsilon$ is
+$R_\varepsilon(n)=\max\{d: P_{\mathrm{out}}(d,n)\le\varepsilon\}$, and the \emph{reliable graph}
+$\mathcal{G}_\varepsilon(t)$ joins $i,j$ iff $P_{\mathrm{out}}(d_{ij},n_{ij})\le\varepsilon$.
+Table~\ref{tab:channel} lists the four environment profiles; their parameters follow the ranges
+reported for low-altitude aerial and street-level links \cite{tr36777,itup1411}, with
+shadowing correlation following \cite{gudmundson1991}; they are not calibrated against measurements
+in rubble (Section~\ref{sec:discussion}). For the urban-rubble profile $R_{0.05}(0)=91$\,m and $R_{0.05}(1)=48$\,m,
+which places the fixed 50\,m range of the earlier SENTINEL design in context: it is the
+reliable range of a link behind one obstruction, not a property of the radio alone.
+
+\begin{table}[t]\centering\caption{Channel profiles ($f=2.4$\,GHz, $P_t=20$\,dBm, $B=20$\,MHz,
+$\gamma_{\mathrm{th}}=5$\,dB) and resulting reliable ranges at $\varepsilon=0.05$.}\label{tab:channel}
+\begin{tabular}{lcccccc}\toprule
+Profile & $\eta$ & $\sigma_X$ & $K$ (LoS) & $L_o$ & $R(0)$ & $R(1)$\\\midrule
+open & 2.0 & 2 & 10\,dB & 6\,dB & 2434\,m & 684\,m\\
+suburban & 2.5 & 4 & 6\,dB & 10\,dB & 339\,m & 95\,m\\
+urban-rubble & 3.0 & 6 & 3\,dB & 6\,dB & 91\,m & 48\,m\\
+severe & 3.5 & 8 & Rayleigh & 8\,dB & 35\,m & 21\,m\\\bottomrule
+\end{tabular}\end{table}
+
+\subsection{Sensing Model}
+Each UAV carries a nadir thermal camera with ground footprint radius $r_f$ and an onboard
+detector (Section~\ref{sec:impl}). A look at a cell updates the residual probability that an
+undetected victim is present by Bayes' rule, $p\leftarrow p(1-P_d)/(1-pP_d)$ \cite{stone1975}. The detector returns a confidence $c\in[0,1]$ whose distribution depends on
+slant range and on view-dependent occlusion (calibrated from the detector, Section~\ref{sec:eval});
+false positives from warm debris arrive as a Poisson process per look.
+
+\subsection{Information Model}
+Every UAV keeps a ledger of world-frame target entries. Observations within a gate are
+associated to one entry; the best confidence per viewing sector is kept and the sectors are fused
+into one confidence $c_e$ (Section~\ref{sec:fusion}). An entry is \emph{confirmed} when
+$c_e\ge c_{\mathrm{hi}}$ and \emph{tentative} when $c_{\mathrm{lo}}\le c_e<c_{\mathrm{hi}}$.
+Ledgers are replicated by gossip with acknowledgements, so each entry carries its holder set
+$H_e(t)$. An entry is \emph{secured} once $0\in H_e$ (the responder holds it) and \emph{lost}
+if it was confirmed but no alive node holds it.
+
+\subsection{Failure Model}
+UAVs fail by crashing (the node and its ledger copy disappear), by radio loss (it flies but
+cannot communicate) or by gradual brownout (transmit power decays). We study single,
+simultaneous, cascading and Poisson failures with per-UAV rate $\lambda_f$.
+
+\subsection{Problem}
+Let $\tau_k$ be the time victim $k$ is first confirmed by any UAV and $T_k\ge\tau_k$ the time
+its report reaches the responder ($T_k=\infty$ if never). With mission horizon $T$ and value
+discount $\theta$, the team maximises the time-discounted report value
+\begin{equation}
+J=\frac{1}{|\mathcal{V}|}\sum_{k\in\mathcal{V}} e^{-T_k/\theta},\label{eq:J}
+\end{equation}
+subject to the dynamics, $x_i\notin\mathcal{O}$, and decentralised information (each UAV acts on
+its own sensing and on beacons it actually received). $J$ couples three quantities that prior
+work optimises separately: discovery (a victim must be found), delivery (its report must reach
+the responder), and timeliness (sooner is better, in the spirit of age of information
+\cite{kaul2012aoi}). Maintaining $\mathcal{G}_\varepsilon$ connected at all times makes delivery
+immediate but restricts discovery; pure exploration maximises discovery but leaves delivery to
+chance contacts, so confirmed information can wait arbitrarily long or be lost with its carrier.
+We refer to this tension as the \emph{discovery--delivery trade-off}.

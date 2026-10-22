@@ -1,0 +1,7 @@
+# E6b SA band / confirmation thresholds (R2.7).
+tuned_file: configs/tuned.yaml
+base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, channel: {profile: urban_rubble}, failures: {kind: poisson, rate: 0.01}, detector: {sigma: 0.15}}
+grid:
+  thresholds: [{low: 0.3, high: 0.6}, {low: 0.4, high: 0.7}, {low: 0.5, high: 0.8}, {low: 0.4, high: 0.85}]
+methods: [sentinel, abl_no_sa]
+seeds: 30

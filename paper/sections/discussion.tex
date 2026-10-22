@@ -1,0 +1,35 @@
+\section{Discussion and Limitations}\label{sec:discussion}
+
+\paragraph{Where the gains come from}
+The experiments support a narrower claim than "keeping the network alive". Connectivity in itself
+is not the bottleneck in the scenarios we studied: keeping the swarm connected at all times
+(SENTINEL-strict, B3, B4) limits the search and lowers on-time reporting, and gossip between UAVs
+that meet during the search already protects most information from failures. What raised timely
+reporting was deciding \emph{when} a UAV should stop searching to deliver what it found, and
+combining views so that occlusion does not hide confirmed victims. The link-preservation layer
+(Proposition~\ref{prop:link}) did not change performance measurably; its role is to make deliveries reliable when
+they happen.
+
+\paragraph{Choice of $T_h$}
+$T_h$ trades on-time reporting against total discovery. The value tuned on our mixed objective
+(116\,s) is not the best for a 60\,s deadline in the severe channel, where $T_h=0$ was significantly
+better. In practice $T_h$ should follow the responders' reporting deadline; adapting it online to the
+observed contact rate is a natural extension.
+
+\paragraph{Tuning sensitivity}
+An earlier configuration of SENTINEL that also tethered UAVs softly while exploring helped dense
+swarms but reduced coverage in the severe channel; the evaluated design does not use this tether.
+Results of that configuration are released with the others.
+
+\paragraph{Limitations}
+(i)~All results are from simulation: a fast multi-agent simulator and PX4 software-in-the-loop in
+Gazebo; no hardware flights were performed. (ii)~The channel model is parameterised from published
+ranges and has not been calibrated against measurements in rubble. (iii)~Detection accuracy is
+reported from the validation split recorded by the training runs; the detector transfers poorly to
+rendered thermal scenes, which is why the in-the-loop comparison uses a calibrated detector model.
+(iv)~Victims closer than the association gate (about 5\,m) can be merged into one report.
+(v)~MAPPO was trained to a plateau (600 iterations) with one observation and reward design; other
+MARL formulations may perform better, in particular in dense swarms, where it is already the strongest
+baseline. (vi)~The exposure bound
+(Proposition~\ref{prop:exposure}) could not be tested empirically because losses were rare at the
+failure rates studied. (vii)~Latency was measured on a desktop GPU, not on embedded hardware.

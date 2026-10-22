@@ -1,0 +1,7 @@
+# E8 fast-simulator side of the SITL cross-validation: same worlds (generator seeds 0-2,
+# 100 m, 20 victims, responder), 3 UAVs, crash of UAV 1 at t=150 s, 300 s, urban channel.
+# The SITL side (scripts/run_e8_sitl.sh) uses the same worlds, tuned values and detector model.
+tuned_file: configs/tuned.yaml
+base: {n_uav: 3, duration_s: 300, map: {kind: generate, size: 100, n_targets: 20, base: true}, channel: {profile: urban_rubble}, failures: {kind: single, t: 150, uav: 1}}
+methods: [sentinel, B0_pso]
+seeds: 3

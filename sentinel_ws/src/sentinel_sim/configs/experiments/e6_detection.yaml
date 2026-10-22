@@ -1,0 +1,8 @@
+# E6 detection-uncertainty sensitivity (R2.7). Detector parameters are perturbed around the
+# calibrated model; thresholds of the SA band / confirmation are swept separately (e6b).
+tuned_file: configs/tuned.yaml
+base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, channel: {profile: urban_rubble}, failures: {kind: poisson, rate: 0.01}}
+grid:
+  detector: [{sigma: 0.04}, {sigma: 0.08}, {sigma: 0.15}, {sigma: 0.25}, {fp_rate: 0.1}, {fp_rate: 0.3}, {c_max: 0.8}, {c_max: 0.7}]
+methods: [sentinel, abl_no_sa, abl_no_fusion, B0_pso, B6_lawnmower]
+seeds: 30

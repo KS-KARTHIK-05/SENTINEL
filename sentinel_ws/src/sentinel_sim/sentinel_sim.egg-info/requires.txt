@@ -1,0 +1,9 @@
+setuptools
+numpy
+scipy
+shapely
+pandas
+pyyaml
+
+[test]
+pytest

@@ -1,0 +1,1 @@
+"""SENTINEL Gazebo assets."""

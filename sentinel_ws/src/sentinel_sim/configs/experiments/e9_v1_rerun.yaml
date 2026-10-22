@@ -1,0 +1,5 @@
+# E9 faithful re-run of the v1 scenario: 25x25 m, 10 victims (one buried), 3 UAVs, no responder,
+# crash of UAV 1 at t = 100 s, 300 s mission. Reports what v1's claims look like when measured.
+base: {n_uav: 3, duration_s: 300, map: {kind: disaster_25, base: false}, channel: {profile: urban_rubble}, failures: {kind: single, t: 100, uav: 1}, agent: {v_max: 2.0, footprint_r: 8.0}}
+methods: [sentinel, sentinel_strict, B1_v1, B0_pso]
+seeds: 30

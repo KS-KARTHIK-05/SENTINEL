@@ -1,0 +1,11 @@
+# Pilot 3: stressed regime (large map, severe/urban channel) + SENTINEL soft-spring strength.
+base:
+  n_uav: 8
+  duration_s: 500
+  map: {kind: generate, size: 400, n_targets: 25, base: true}
+  failures: {kind: simultaneous, t: 200, fraction: 0.25}
+grid:
+  channel.profile: [urban_rubble, severe]
+  spring.lam0: [1.0, 0.1, 0.0]
+methods: [sentinel, B0_pso, B3_lambda2, B6_lawnmower]
+seeds: 8

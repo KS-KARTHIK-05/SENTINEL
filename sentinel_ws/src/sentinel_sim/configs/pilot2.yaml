@@ -1,0 +1,10 @@
+# Pilot 2: report latency and harsher failures (single vs 30% simultaneous vs Poisson).
+base:
+  n_uav: 6
+  duration_s: 400
+  map: {kind: generate, size: 150, n_targets: 15, base: true}
+  channel: {profile: urban_rubble}
+grid:
+  failures: [{kind: single, t: 160}, {kind: simultaneous, t: 160, fraction: 0.3}, {kind: poisson, rate: 0.008}]
+methods: [sentinel, B0_pso, B1_v1, B2_commpso, B3_lambda2, B6_lawnmower]
+seeds: 10

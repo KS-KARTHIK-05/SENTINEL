@@ -1,0 +1,8 @@
+# E10 latency-discovery trade-off of the delivery trigger T_hold (Amendment A1).
+base: {duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, failures: {kind: poisson, rate: 0.01}}
+grid:
+  channel.profile: [urban_rubble, severe]
+  n_uav: [4, 8]
+  agent.t_hold_s: [0, 15, 30, 60, 120, 240, 100000]
+methods: [sentinel]
+seeds: 30

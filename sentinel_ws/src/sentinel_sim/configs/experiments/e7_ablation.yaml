@@ -1,0 +1,8 @@
+# E7 ablation of SENTINEL components in a dense and a sparse regime.
+tuned_file: configs/tuned.yaml
+base: {duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, failures: {kind: poisson, rate: 0.01}}
+grid:
+  channel.profile: [urban_rubble, severe]
+  n_uav: [4, 8]
+methods: [sentinel, sentinel_strict, abl_distance_spring, abl_nn_set, abl_no_info_tension, abl_no_projection, abl_no_sa, abl_no_fusion, abl_naive_fusion]
+seeds: 30

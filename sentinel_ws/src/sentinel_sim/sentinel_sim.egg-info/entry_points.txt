@@ -1,0 +1,2 @@
+[console_scripts]
+sentinel_run = sentinel_sim.runner:main

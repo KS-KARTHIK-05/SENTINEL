@@ -1,0 +1,73 @@
+\section{Related Work}\label{sec:related}
+
+\paragraph{Continuous connectivity maintenance}
+A large body of work keeps a multi-robot communication graph connected at all times. Zavlanos and
+Pappas control the robots so that the graph Laplacian keeps a positive second eigenvalue
+\cite{zavlanos2008}; Sabattini et al.\ estimate the algebraic connectivity $\lambda_2$ in a
+decentralised way and follow its gradient without requiring local links to persist
+\cite{sabattini2013}; Ji and Egerstedt preserve edges through potentials that grow unbounded as a
+link approaches its range, with hysteresis on edge creation \cite{ji2007}. Local topology-control
+rules such as the local minimum spanning tree (LMST) \cite{li2003lmst} reduce the set of links that
+must be kept. These methods prove that connectivity is maintained, but under a disk communication
+model and at the price of tying every robot to the network at every instant. Our baselines B3 and B4
+implement the second and third approach (B3 with the exact $\lambda_2$), and our measurements show
+that in large areas this tie lowers the share of victims reported in time. SENTINEL applies such
+constraints only for the duration of a delivery (Proposition~\ref{prop:link}) and replaces the disk model by a predicted outage
+model that accounts for obstructions and fading.
+
+\paragraph{Intermittent connectivity, data ferrying and information age}
+Kantaros and Zavlanos let robots disconnect and enforce that they meet at the vertices of a mobility
+graph infinitely often, with meeting schedules specified in temporal logic \cite{kantaros2017}.
+UAV data-ferrying and delay-tolerant designs carry data physically between sources and a sink
+\cite{cui2023ferry,chandran2024disaster}, and age-of-information (AoI) formulations optimise how fresh the
+collected data are \cite{kaul2012aoi,amodu2023aoi,bafarassat2026aoi}. These approaches assume that the sources (sensors) are
+known in advance or that meetings follow a predefined schedule. In search and rescue the sources
+are the victims, discovered online by the search itself; SENTINEL's rendezvous are triggered by
+that discovered information, and our deadline metric is AoI-like (time from confirmation to the
+responder).
+
+\paragraph{Communication-aware swarm search and learning}
+PSO and its variants are widely used for multi-UAV coverage and search \cite{clerc2002,phung2020mpso};
+distributed planners such as DAPSO run a local PSO on each UAV and exchange information over local
+links, but assume that communication is available when needed \cite{yang2024dapso}.
+Communication-aware variants add link-quality terms to the fitness; our baseline B2 represents this
+family with the same outage model as SENTINEL applied as a soft penalty to all neighbours. Distributed Bayesian search reduces
+traffic by flooding only positive detections but assumes a connected, lossless network
+\cite{niu2026eventbayes}, and decentralised mountain-SAR search uses distance-limited links without a
+responder sink \cite{zhu2026mountain}. Multi-agent reinforcement learning, with MAPPO as a strong
+general baseline \cite{yu2022mappo}, has been applied to UAV coverage and communication-aware
+coordination \cite{shi2025symmetry}; we include MAPPO with the same observations and objective as
+baseline B5.
+
+\paragraph{Onboard thermal perception}
+Thermal datasets such as HIT-UAV \cite{hituav} enable lightweight detectors that run on the UAV, and
+recent YOLO generations target edge deployment by removing non-maximum suppression and reducing
+compute \cite{yolo26}. We use such a detector as an enabling component and evaluate it on real
+thermal imagery; we do not claim it as a contribution.
+
+\paragraph{Positioning}
+Table~\ref{tab:related} summarises the comparison. To our knowledge, no prior work combines
+online-discovered information sources, an explicit reporting deadline, a channel model with
+obstructions and fading, failure-aware evaluation, and provable link preservation during delivery
+(Proposition~\ref{prop:link}).
+
+\begin{table*}[t]\centering
+\caption{Comparison with the closest approaches (\checkmark: addressed; $\circ$: partially; --: not addressed).}
+\label{tab:related}
+\begin{adjustbox}{max width=\textwidth}\begin{tabular}{lcccccc}\toprule
+Approach & Sources discovered & Delivery deadline & Obstruction/fading & UAV & Connectivity & Free search \\
+ & online & / timeliness metric & channel model & failures & proof (Prop.~\ref{prop:link}) & (no permanent tie) \\\midrule
+$\lambda_2$ control \cite{zavlanos2008,sabattini2013} & -- & -- & -- & $\circ$ & \checkmark & -- \\
+Edge potentials \cite{ji2007} & -- & -- & -- & -- & \checkmark & -- \\
+Intermittent connectivity \cite{kantaros2017} & -- & $\circ$ & -- & -- & \checkmark & \checkmark \\
+Data ferrying / DTN \cite{cui2023ferry,chandran2024disaster} & -- & \checkmark & $\circ$ & -- & -- & \checkmark \\
+AoI UAV data collection \cite{kaul2012aoi,bafarassat2026aoi,amodu2023aoi} & -- & \checkmark & $\circ$ & -- & $\circ$ & \checkmark \\
+Distributed PSO search \cite{yang2024dapso,phung2020mpso} & \checkmark & -- & -- & -- & -- & \checkmark \\
+Event-driven Bayesian search \cite{niu2026eventbayes} & \checkmark & -- & -- & -- & -- & \checkmark \\
+MARL coordination \cite{yu2022mappo,shi2025symmetry} & $\circ$ & $\circ$ & $\circ$ & $\circ$ & -- & \checkmark \\
+Earlier SENTINEL design (B1) & \checkmark & -- & -- & $\circ$ & -- & $\circ$ \\
+\textbf{SENTINEL (this work)} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark$^{\dagger}$ & \checkmark \\
+\bottomrule
+\multicolumn{7}{l}{\footnotesize $^{\dagger}$ during delivery, for feasible steps (Proposition~\ref{prop:link}, Corollary~\ref{cor:conn}).}
+\end{tabular}\end{adjustbox}
+\end{table*}

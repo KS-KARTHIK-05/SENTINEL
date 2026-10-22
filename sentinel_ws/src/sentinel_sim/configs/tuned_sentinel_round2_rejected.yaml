@@ -1,0 +1,6 @@
+# Round-2 SENTINEL tuning with the extra 'explore_lam' parameter (30 trials).
+# Best report_value 0.2509 < round-1 0.2929, so it was NOT adopted (equal 30-trial budget
+# per method; round 1 is used). Kept for transparency.
+sentinel:
+  agent: {w_goal: 0.7741875794929597, sector_bias: 2.2331228726166823, t_hold_s: 113.28868143911929, explore_lam: 0.15450152578502177}
+  spring: {lam0: 0.06664575065049362, beta: 1.4359331463060871}
