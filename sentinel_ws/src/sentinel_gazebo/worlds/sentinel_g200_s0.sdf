@@ -955,10 +955,10 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_0</name><uri>model://rescue_randy_thermal</uri><pose>136.992 178.509 0.000 0 0 0.0743</pose></include>
+    <include><name>victim_0</name><uri>model://rescue_randy_thermal</uri><pose>136.924 179.417 0.180 1.5708 0 0.0743</pose></include>
     <model name="slab_0">
       <static>true</static>
-      <pose>136.992 178.509 1.150 0 0 0.0000</pose>
+      <pose>136.992 178.509 0.600 0 0 0.0743</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>3.000 3.000 0.300</size></box></geometry></collision>
         <visual name="v">
@@ -968,10 +968,58 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_1</name><uri>model://rescue_randy_thermal</uri><pose>41.611 104.607 0.000 0 0 2.8303</pose></include>
+    <model name="slab_0_post0">
+      <static>true</static>
+      <pose>138.238 179.956 0.225 0 0 0.0743</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_0_post1">
+      <static>true</static>
+      <pose>138.438 177.263 0.225 0 0 0.0743</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_0_post2">
+      <static>true</static>
+      <pose>135.545 179.755 0.225 0 0 0.0743</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_0_post3">
+      <static>true</static>
+      <pose>135.746 177.063 0.225 0 0 0.0743</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_1</name><uri>model://rescue_randy_thermal</uri><pose>41.333 103.741 0.180 1.5708 0 2.8303</pose></include>
     <model name="slab_1">
       <static>true</static>
-      <pose>40.335 104.709 1.200 0 0 3.0616</pose>
+      <pose>40.335 104.709 0.575 0 0 3.0616</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -981,10 +1029,34 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_2</name><uri>model://rescue_randy_thermal</uri><pose>82.833 142.747 0.000 0 0 -2.2358</pose></include>
+    <model name="slab_1_post0">
+      <static>true</static>
+      <pose>39.312 103.838 0.225 0 0 3.0616</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_1_post1">
+      <static>true</static>
+      <pose>39.464 105.732 0.225 0 0 3.0616</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_2</name><uri>model://rescue_randy_thermal</uri><pose>83.549 142.186 0.180 1.5708 0 -2.2358</pose></include>
     <model name="slab_2">
       <static>true</static>
-      <pose>82.423 142.256 1.200 0 0 4.0161</pose>
+      <pose>82.423 142.256 0.575 0 0 4.0161</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -994,10 +1066,34 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_3</name><uri>model://rescue_randy_thermal</uri><pose>177.033 88.501 0.000 0 0 2.8189</pose></include>
+    <model name="slab_2_post0">
+      <static>true</static>
+      <pose>82.542 140.918 0.225 0 0 4.0161</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_2_post1">
+      <static>true</static>
+      <pose>81.084 142.137 0.225 0 0 4.0161</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_3</name><uri>model://rescue_randy_thermal</uri><pose>176.744 87.638 0.180 1.5708 0 2.8189</pose></include>
     <model name="slab_3">
       <static>true</static>
-      <pose>175.774 88.269 1.200 0 0 3.3238</pose>
+      <pose>175.774 88.269 0.575 0 0 3.3238</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1007,10 +1103,34 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_4</name><uri>model://rescue_randy_thermal</uri><pose>132.098 17.196 0.000 0 0 -1.1823</pose></include>
+    <model name="slab_3_post0">
+      <static>true</static>
+      <pose>175.012 87.163 0.225 0 0 3.3238</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_3_post1">
+      <static>true</static>
+      <pose>174.668 89.031 0.225 0 0 3.3238</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_4</name><uri>model://rescue_randy_thermal</uri><pose>132.940 17.540 0.180 1.5708 0 -1.1823</pose></include>
     <model name="slab_4">
       <static>true</static>
-      <pose>130.928 17.715 1.200 0 0 2.7237</pose>
+      <pose>130.928 17.715 0.575 0 0 2.7237</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1020,13 +1140,49 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_5</name><uri>model://rescue_randy_thermal</uri><pose>52.872 65.118 0.000 0 0 -0.4818</pose></include>
-    <include><name>victim_6</name><uri>model://rescue_randy_thermal</uri><pose>73.113 183.990 0.000 0 0 2.0590</pose></include>
-    <include><name>victim_7</name><uri>model://rescue_randy_thermal</uri><pose>28.220 70.536 0.000 0 0 -0.5705</pose></include>
-    <include><name>victim_8</name><uri>model://rescue_randy_thermal</uri><pose>166.706 183.333 0.000 0 0 0.3116</pose></include>
+    <model name="slab_4_post0">
+      <static>true</static>
+      <pose>129.674 17.232 0.225 0 0 2.7237</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_4_post1">
+      <static>true</static>
+      <pose>130.445 18.969 0.225 0 0 2.7237</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_4_post3">
+      <static>true</static>
+      <pose>132.182 18.198 0.225 0 0 2.7237</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_5</name><uri>model://rescue_randy_thermal</uri><pose>53.294 65.924 0.180 1.5708 0 -0.4818</pose></include>
+    <include><name>victim_6</name><uri>model://rescue_randy_thermal</uri><pose>72.309 183.563 0.180 1.5708 0 2.0590</pose></include>
+    <include><name>victim_7</name><uri>model://rescue_randy_thermal</uri><pose>28.711 71.302 0.180 1.5708 0 -0.5705</pose></include>
+    <include><name>victim_8</name><uri>model://rescue_randy_thermal</uri><pose>166.427 184.199 0.180 1.5708 0 0.3116</pose></include>
     <model name="slab_8">
       <static>true</static>
-      <pose>166.195 184.049 1.200 0 0 2.1909</pose>
+      <pose>166.195 184.049 0.575 0 0 2.1909</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1036,13 +1192,61 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_9</name><uri>model://rescue_randy_thermal</uri><pose>61.105 65.847 0.000 0 0 -2.9684</pose></include>
-    <include><name>victim_10</name><uri>model://rescue_randy_thermal</uri><pose>134.957 154.468 0.000 0 0 1.5929</pose></include>
-    <include><name>victim_11</name><uri>model://rescue_randy_thermal</uri><pose>11.740 135.573 0.000 0 0 0.2397</pose></include>
-    <include><name>victim_12</name><uri>model://rescue_randy_thermal</uri><pose>36.649 57.613 0.000 0 0 -1.0698</pose></include>
+    <model name="slab_8_post0">
+      <static>true</static>
+      <pose>164.870 184.270 0.225 0 0 2.1909</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_8_post1">
+      <static>true</static>
+      <pose>166.416 185.374 0.225 0 0 2.1909</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_8_post2">
+      <static>true</static>
+      <pose>165.974 182.724 0.225 0 0 2.1909</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_8_post3">
+      <static>true</static>
+      <pose>167.520 183.828 0.225 0 0 2.1909</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_9</name><uri>model://rescue_randy_thermal</uri><pose>61.262 64.950 0.180 1.5708 0 -2.9684</pose></include>
+    <include><name>victim_10</name><uri>model://rescue_randy_thermal</uri><pose>134.047 154.448 0.180 1.5708 0 1.5929</pose></include>
+    <include><name>victim_11</name><uri>model://rescue_randy_thermal</uri><pose>11.524 136.457 0.180 1.5708 0 0.2397</pose></include>
+    <include><name>victim_12</name><uri>model://rescue_randy_thermal</uri><pose>37.447 58.050 0.180 1.5708 0 -1.0698</pose></include>
     <model name="slab_12">
       <static>true</static>
-      <pose>36.533 58.485 1.200 0 0 1.7027</pose>
+      <pose>36.533 58.485 0.575 0 0 1.7027</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1052,10 +1256,34 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_13</name><uri>model://rescue_randy_thermal</uri><pose>166.840 160.027 0.000 0 0 1.8123</pose></include>
+    <model name="slab_12_post0">
+      <static>true</static>
+      <pose>35.466 59.302 0.225 0 0 1.7027</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_12_post1">
+      <static>true</static>
+      <pose>37.350 59.552 0.225 0 0 1.7027</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_13</name><uri>model://rescue_randy_thermal</uri><pose>165.956 159.810 0.180 1.5708 0 1.8123</pose></include>
     <model name="slab_13">
       <static>true</static>
-      <pose>166.268 159.740 1.200 0 0 3.6069</pose>
+      <pose>166.268 159.740 0.575 0 0 3.6069</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1065,12 +1293,48 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_14</name><uri>model://rescue_randy_thermal</uri><pose>104.413 179.073 0.000 0 0 -1.2366</pose></include>
-    <include><name>victim_15</name><uri>model://rescue_randy_thermal</uri><pose>82.636 180.000 0.000 0 0 -0.2922</pose></include>
-    <include><name>victim_16</name><uri>model://rescue_randy_thermal</uri><pose>13.623 160.547 0.000 0 0 -2.2994</pose></include>
+    <model name="slab_13_post0">
+      <static>true</static>
+      <pose>165.845 158.465 0.225 0 0 3.6069</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_13_post1">
+      <static>true</static>
+      <pose>164.992 160.163 0.225 0 0 3.6069</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_13_post3">
+      <static>true</static>
+      <pose>166.690 161.016 0.225 0 0 3.6069</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_14</name><uri>model://rescue_randy_thermal</uri><pose>105.272 179.372 0.180 1.5708 0 -1.2366</pose></include>
+    <include><name>victim_15</name><uri>model://rescue_randy_thermal</uri><pose>82.898 180.871 0.180 1.5708 0 -0.2922</pose></include>
+    <include><name>victim_16</name><uri>model://rescue_randy_thermal</uri><pose>14.302 159.941 0.180 1.5708 0 -2.2994</pose></include>
     <model name="slab_16">
       <static>true</static>
-      <pose>14.457 160.828 1.200 0 0 0.3254</pose>
+      <pose>14.457 160.828 0.575 0 0 0.3254</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1080,10 +1344,34 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_17</name><uri>model://rescue_randy_thermal</uri><pose>105.363 33.872 0.000 0 0 -0.6088</pose></include>
+    <model name="slab_16_post0">
+      <static>true</static>
+      <pose>15.053 162.032 0.225 0 0 0.3254</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_16_post1">
+      <static>true</static>
+      <pose>15.660 160.232 0.225 0 0 0.3254</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_17</name><uri>model://rescue_randy_thermal</uri><pose>105.883 34.618 0.180 1.5708 0 -0.6088</pose></include>
     <model name="slab_17">
       <static>true</static>
-      <pose>104.492 34.810 1.200 0 0 2.3191</pose>
+      <pose>104.492 34.810 0.575 0 0 2.3191</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1093,12 +1381,36 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_18</name><uri>model://rescue_randy_thermal</uri><pose>40.602 125.735 0.000 0 0 -1.8632</pose></include>
-    <include><name>victim_19</name><uri>model://rescue_randy_thermal</uri><pose>15.403 169.592 0.000 0 0 -1.4934</pose></include>
-    <include><name>victim_20</name><uri>model://rescue_randy_thermal</uri><pose>188.128 36.628 0.000 0 0 1.5731</pose></include>
+    <model name="slab_17_post0">
+      <static>true</static>
+      <pose>103.149 34.860 0.225 0 0 2.3191</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_17_post1">
+      <static>true</static>
+      <pose>104.542 36.152 0.225 0 0 2.3191</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_18</name><uri>model://rescue_randy_thermal</uri><pose>41.474 125.472 0.180 1.5708 0 -1.8632</pose></include>
+    <include><name>victim_19</name><uri>model://rescue_randy_thermal</uri><pose>16.310 169.662 0.180 1.5708 0 -1.4934</pose></include>
+    <include><name>victim_20</name><uri>model://rescue_randy_thermal</uri><pose>187.218 36.626 0.180 1.5708 0 1.5731</pose></include>
     <model name="slab_20">
       <static>true</static>
-      <pose>187.400 36.134 1.200 0 0 3.7387</pose>
+      <pose>187.400 36.134 0.575 0 0 3.7387</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1108,11 +1420,35 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_21</name><uri>model://rescue_randy_thermal</uri><pose>125.017 144.609 0.000 0 0 -1.3797</pose></include>
-    <include><name>victim_22</name><uri>model://rescue_randy_thermal</uri><pose>118.980 184.275 0.000 0 0 -0.0930</pose></include>
+    <model name="slab_20_post0">
+      <static>true</static>
+      <pose>187.149 34.814 0.225 0 0 3.7387</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_20_post1">
+      <static>true</static>
+      <pose>186.081 36.385 0.225 0 0 3.7387</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_21</name><uri>model://rescue_randy_thermal</uri><pose>125.910 144.782 0.180 1.5708 0 -1.3797</pose></include>
+    <include><name>victim_22</name><uri>model://rescue_randy_thermal</uri><pose>119.065 185.181 0.180 1.5708 0 -0.0930</pose></include>
     <model name="slab_22">
       <static>true</static>
-      <pose>119.526 183.117 1.200 0 0 5.1529</pose>
+      <pose>119.526 183.117 0.575 0 0 5.1529</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1122,10 +1458,46 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_23</name><uri>model://rescue_randy_thermal</uri><pose>18.537 87.470 0.000 0 0 3.0206</pose></include>
+    <model name="slab_22_post0">
+      <static>true</static>
+      <pose>120.790 182.663 0.225 0 0 5.1529</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_22_post1">
+      <static>true</static>
+      <pose>119.072 181.852 0.225 0 0 5.1529</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_22_post2">
+      <static>true</static>
+      <pose>119.980 184.381 0.225 0 0 5.1529</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_23</name><uri>model://rescue_randy_thermal</uri><pose>18.427 86.566 0.180 1.5708 0 3.0206</pose></include>
     <model name="slab_23">
       <static>true</static>
-      <pose>18.312 86.871 1.200 0 0 4.3525</pose>
+      <pose>18.312 86.871 0.575 0 0 4.3525</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1135,10 +1507,46 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_24</name><uri>model://rescue_randy_thermal</uri><pose>21.879 142.417 0.000 0 0 2.9007</pose></include>
+    <model name="slab_23_post0">
+      <static>true</static>
+      <pose>18.866 85.647 0.225 0 0 4.3525</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_23_post1">
+      <static>true</static>
+      <pose>17.088 86.316 0.225 0 0 4.3525</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_23_post2">
+      <static>true</static>
+      <pose>19.536 87.425 0.225 0 0 4.3525</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_24</name><uri>model://rescue_randy_thermal</uri><pose>21.662 141.533 0.180 1.5708 0 2.9007</pose></include>
     <model name="slab_24">
       <static>true</static>
-      <pose>21.559 141.862 1.200 0 0 4.1892</pose>
+      <pose>21.559 141.862 0.575 0 0 4.1892</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1148,11 +1556,47 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_25</name><uri>model://rescue_randy_thermal</uri><pose>141.036 119.758 0.000 0 0 1.4124</pose></include>
-    <include><name>victim_26</name><uri>model://rescue_randy_thermal</uri><pose>27.900 35.637 0.000 0 0 0.2590</pose></include>
+    <model name="slab_24_post0">
+      <static>true</static>
+      <pose>21.908 140.565 0.225 0 0 4.1892</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_24_post1">
+      <static>true</static>
+      <pose>20.262 141.514 0.225 0 0 4.1892</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_24_post2">
+      <static>true</static>
+      <pose>22.857 142.211 0.225 0 0 4.1892</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_25</name><uri>model://rescue_randy_thermal</uri><pose>140.138 119.902 0.180 1.5708 0 1.4124</pose></include>
+    <include><name>victim_26</name><uri>model://rescue_randy_thermal</uri><pose>27.667 36.516 0.180 1.5708 0 0.2590</pose></include>
     <model name="slab_26">
       <static>true</static>
-      <pose>26.891 34.849 1.200 0 0 3.8042</pose>
+      <pose>26.891 34.849 0.575 0 0 3.8042</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1162,11 +1606,35 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_27</name><uri>model://rescue_randy_thermal</uri><pose>50.397 145.784 0.000 0 0 -1.4018</pose></include>
-    <include><name>victim_28</name><uri>model://rescue_randy_thermal</uri><pose>17.845 81.213 0.000 0 0 -2.1322</pose></include>
+    <model name="slab_26_post0">
+      <static>true</static>
+      <pose>26.727 33.516 0.225 0 0 3.8042</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_26_post1">
+      <static>true</static>
+      <pose>25.558 35.014 0.225 0 0 3.8042</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_27</name><uri>model://rescue_randy_thermal</uri><pose>51.294 145.937 0.180 1.5708 0 -1.4018</pose></include>
+    <include><name>victim_28</name><uri>model://rescue_randy_thermal</uri><pose>18.615 80.729 0.180 1.5708 0 -2.1322</pose></include>
     <model name="slab_28">
       <static>true</static>
-      <pose>16.911 82.088 1.200 0 0 2.3887</pose>
+      <pose>16.911 82.088 0.575 0 0 2.3887</pose>
       <link name="link">
         <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
         <visual name="v">
@@ -1176,126 +1644,162 @@
         </visual>
       </link>
     </model>
-    <include><name>victim_29</name><uri>model://rescue_randy_thermal</uri><pose>10.353 66.004 0.000 0 0 2.9526</pose></include>
-    <include><name>warm_debris_0</name><uri>model://warm_debris</uri><pose>146.428 152.320 0.150 0 0 0.1010</pose></include>
-    <include><name>warm_debris_1</name><uri>model://warm_debris</uri><pose>147.157 151.075 0.150 0 0 -2.4136</pose></include>
-    <include><name>warm_debris_2</name><uri>model://warm_debris</uri><pose>129.763 91.981 0.150 0 0 0.7759</pose></include>
-    <include><name>warm_debris_3</name><uri>model://warm_debris</uri><pose>130.031 93.192 0.150 0 0 1.7385</pose></include>
-    <include><name>warm_debris_4</name><uri>model://warm_debris</uri><pose>109.601 185.780 0.150 0 0 0.7100</pose></include>
-    <include><name>warm_debris_5</name><uri>model://warm_debris</uri><pose>109.753 182.761 0.150 0 0 2.6220</pose></include>
-    <include><name>warm_debris_6</name><uri>model://warm_debris</uri><pose>122.461 78.680 0.150 0 0 -2.8928</pose></include>
-    <include><name>warm_debris_7</name><uri>model://warm_debris</uri><pose>119.671 79.707 0.150 0 0 0.1796</pose></include>
-    <include><name>warm_debris_8</name><uri>model://warm_debris</uri><pose>131.552 12.807 0.150 0 0 -0.2555</pose></include>
-    <include><name>warm_debris_9</name><uri>model://warm_debris</uri><pose>130.846 14.182 0.150 0 0 -2.7498</pose></include>
-    <include><name>warm_debris_10</name><uri>model://warm_debris</uri><pose>182.247 136.557 0.150 0 0 0.8880</pose></include>
-    <include><name>warm_debris_11</name><uri>model://warm_debris</uri><pose>182.918 134.412 0.150 0 0 2.2157</pose></include>
-    <include><name>warm_debris_12</name><uri>model://warm_debris</uri><pose>106.541 16.458 0.150 0 0 0.5840</pose></include>
-    <include><name>warm_debris_13</name><uri>model://warm_debris</uri><pose>106.571 18.298 0.150 0 0 -1.5074</pose></include>
-    <include><name>warm_debris_14</name><uri>model://warm_debris</uri><pose>22.687 65.698 0.150 0 0 2.1355</pose></include>
-    <include><name>warm_debris_15</name><uri>model://warm_debris</uri><pose>24.659 65.445 0.150 0 0 0.0597</pose></include>
-    <include><name>warm_debris_16</name><uri>model://warm_debris</uri><pose>107.561 82.480 0.150 0 0 0.0684</pose></include>
-    <include><name>warm_debris_17</name><uri>model://warm_debris</uri><pose>107.170 82.570 0.150 0 0 1.5898</pose></include>
-    <include><name>warm_debris_18</name><uri>model://warm_debris</uri><pose>179.363 71.923 0.150 0 0 -2.2122</pose></include>
-    <include><name>warm_debris_19</name><uri>model://warm_debris</uri><pose>179.113 74.258 0.150 0 0 2.0083</pose></include>
-    <include><name>warm_debris_20</name><uri>model://warm_debris</uri><pose>93.859 49.507 0.150 0 0 1.1516</pose></include>
-    <include><name>warm_debris_21</name><uri>model://warm_debris</uri><pose>93.142 49.241 0.150 0 0 1.8039</pose></include>
-    <include><name>warm_debris_22</name><uri>model://warm_debris</uri><pose>122.911 58.007 0.150 0 0 -1.9376</pose></include>
-    <include><name>warm_debris_23</name><uri>model://warm_debris</uri><pose>123.255 58.374 0.150 0 0 1.8998</pose></include>
-    <include><name>warm_debris_24</name><uri>model://warm_debris</uri><pose>105.871 145.560 0.150 0 0 -1.9395</pose></include>
-    <include><name>warm_debris_25</name><uri>model://warm_debris</uri><pose>108.538 143.928 0.150 0 0 -2.6292</pose></include>
-    <include><name>warm_debris_26</name><uri>model://warm_debris</uri><pose>120.462 103.321 0.150 0 0 2.2320</pose></include>
-    <include><name>warm_debris_27</name><uri>model://warm_debris</uri><pose>121.184 101.612 0.150 0 0 2.2700</pose></include>
-    <include><name>warm_debris_28</name><uri>model://warm_debris</uri><pose>14.861 151.532 0.150 0 0 2.3659</pose></include>
-    <include><name>warm_debris_29</name><uri>model://warm_debris</uri><pose>16.309 151.268 0.150 0 0 -0.1765</pose></include>
-    <include><name>warm_debris_30</name><uri>model://warm_debris</uri><pose>140.869 21.324 0.150 0 0 -1.4197</pose></include>
-    <include><name>warm_debris_31</name><uri>model://warm_debris</uri><pose>139.834 19.025 0.150 0 0 -3.0970</pose></include>
-    <include><name>warm_debris_32</name><uri>model://warm_debris</uri><pose>28.827 98.406 0.150 0 0 0.9156</pose></include>
-    <include><name>warm_debris_33</name><uri>model://warm_debris</uri><pose>31.354 100.304 0.150 0 0 1.3817</pose></include>
-    <include><name>warm_debris_34</name><uri>model://warm_debris</uri><pose>120.230 79.944 0.150 0 0 2.1084</pose></include>
-    <include><name>warm_debris_35</name><uri>model://warm_debris</uri><pose>120.439 79.921 0.150 0 0 -1.3705</pose></include>
-    <include><name>warm_debris_36</name><uri>model://warm_debris</uri><pose>49.059 110.917 0.150 0 0 -1.7893</pose></include>
-    <include><name>warm_debris_37</name><uri>model://warm_debris</uri><pose>47.201 109.216 0.150 0 0 0.8754</pose></include>
-    <include><name>warm_debris_38</name><uri>model://warm_debris</uri><pose>161.032 92.351 0.150 0 0 1.9167</pose></include>
-    <include><name>warm_debris_39</name><uri>model://warm_debris</uri><pose>159.541 88.756 0.150 0 0 2.9133</pose></include>
-    <include><name>warm_debris_40</name><uri>model://warm_debris</uri><pose>131.476 163.957 0.150 0 0 -2.1958</pose></include>
-    <include><name>warm_debris_41</name><uri>model://warm_debris</uri><pose>130.829 164.579 0.150 0 0 -0.1118</pose></include>
-    <include><name>warm_debris_42</name><uri>model://warm_debris</uri><pose>27.674 24.849 0.150 0 0 2.4801</pose></include>
-    <include><name>warm_debris_43</name><uri>model://warm_debris</uri><pose>29.806 26.896 0.150 0 0 -0.4856</pose></include>
-    <include><name>warm_debris_44</name><uri>model://warm_debris</uri><pose>54.995 88.706 0.150 0 0 0.5624</pose></include>
-    <include><name>warm_debris_45</name><uri>model://warm_debris</uri><pose>54.542 90.749 0.150 0 0 -2.9877</pose></include>
-    <include><name>warm_debris_46</name><uri>model://warm_debris</uri><pose>20.242 49.299 0.150 0 0 1.0899</pose></include>
-    <include><name>warm_debris_47</name><uri>model://warm_debris</uri><pose>18.592 50.102 0.150 0 0 2.6332</pose></include>
-    <include><name>warm_debris_48</name><uri>model://warm_debris</uri><pose>130.363 29.689 0.150 0 0 2.0535</pose></include>
-    <include><name>warm_debris_49</name><uri>model://warm_debris</uri><pose>131.846 29.317 0.150 0 0 2.4223</pose></include>
-    <include><name>warm_debris_50</name><uri>model://warm_debris</uri><pose>96.753 58.223 0.150 0 0 1.0075</pose></include>
-    <include><name>warm_debris_51</name><uri>model://warm_debris</uri><pose>94.896 58.164 0.150 0 0 -1.5987</pose></include>
-    <include><name>warm_debris_52</name><uri>model://warm_debris</uri><pose>150.953 120.894 0.150 0 0 1.6871</pose></include>
-    <include><name>warm_debris_53</name><uri>model://warm_debris</uri><pose>150.604 119.421 0.150 0 0 -1.8116</pose></include>
-    <include><name>warm_debris_54</name><uri>model://warm_debris</uri><pose>156.291 14.442 0.150 0 0 2.0815</pose></include>
-    <include><name>warm_debris_55</name><uri>model://warm_debris</uri><pose>155.885 14.256 0.150 0 0 -2.7475</pose></include>
-    <include><name>warm_debris_56</name><uri>model://warm_debris</uri><pose>145.808 78.666 0.150 0 0 2.0451</pose></include>
-    <include><name>warm_debris_57</name><uri>model://warm_debris</uri><pose>146.104 79.351 0.150 0 0 -2.1080</pose></include>
-    <include><name>warm_debris_58</name><uri>model://warm_debris</uri><pose>80.923 121.370 0.150 0 0 -0.7845</pose></include>
-    <include><name>warm_debris_59</name><uri>model://warm_debris</uri><pose>83.031 120.528 0.150 0 0 -1.1515</pose></include>
-    <include><name>warm_debris_60</name><uri>model://warm_debris</uri><pose>144.251 103.829 0.150 0 0 1.2022</pose></include>
-    <include><name>warm_debris_61</name><uri>model://warm_debris</uri><pose>143.394 104.838 0.150 0 0 -2.0196</pose></include>
-    <include><name>warm_debris_62</name><uri>model://warm_debris</uri><pose>71.477 16.325 0.150 0 0 -0.6518</pose></include>
-    <include><name>warm_debris_63</name><uri>model://warm_debris</uri><pose>70.179 15.089 0.150 0 0 -3.1050</pose></include>
-    <include><name>warm_debris_64</name><uri>model://warm_debris</uri><pose>167.259 179.617 0.150 0 0 -1.4923</pose></include>
-    <include><name>warm_debris_65</name><uri>model://warm_debris</uri><pose>167.734 179.561 0.150 0 0 -0.4952</pose></include>
-    <include><name>warm_debris_66</name><uri>model://warm_debris</uri><pose>29.898 167.537 0.150 0 0 -2.4761</pose></include>
-    <include><name>warm_debris_67</name><uri>model://warm_debris</uri><pose>30.740 166.538 0.150 0 0 0.8367</pose></include>
-    <include><name>warm_debris_68</name><uri>model://warm_debris</uri><pose>92.271 14.212 0.150 0 0 -0.7513</pose></include>
-    <include><name>warm_debris_69</name><uri>model://warm_debris</uri><pose>92.375 12.066 0.150 0 0 1.4156</pose></include>
-    <include><name>warm_debris_70</name><uri>model://warm_debris</uri><pose>30.609 21.209 0.150 0 0 0.9668</pose></include>
-    <include><name>warm_debris_71</name><uri>model://warm_debris</uri><pose>28.031 21.925 0.150 0 0 -0.4321</pose></include>
-    <include><name>warm_debris_72</name><uri>model://warm_debris</uri><pose>133.734 70.765 0.150 0 0 2.3079</pose></include>
-    <include><name>warm_debris_73</name><uri>model://warm_debris</uri><pose>134.315 69.621 0.150 0 0 0.8302</pose></include>
-    <include><name>warm_debris_74</name><uri>model://warm_debris</uri><pose>122.153 186.422 0.150 0 0 1.9495</pose></include>
-    <include><name>warm_debris_75</name><uri>model://warm_debris</uri><pose>123.683 185.669 0.150 0 0 -0.9940</pose></include>
-    <include><name>warm_debris_76</name><uri>model://warm_debris</uri><pose>43.608 123.444 0.150 0 0 0.2744</pose></include>
-    <include><name>warm_debris_77</name><uri>model://warm_debris</uri><pose>43.086 121.885 0.150 0 0 -1.9082</pose></include>
-    <include><name>warm_debris_78</name><uri>model://warm_debris</uri><pose>133.865 150.709 0.150 0 0 3.1173</pose></include>
-    <include><name>warm_debris_79</name><uri>model://warm_debris</uri><pose>134.253 151.728 0.150 0 0 -1.6134</pose></include>
-    <include><name>warm_debris_80</name><uri>model://warm_debris</uri><pose>184.131 176.970 0.150 0 0 -1.5276</pose></include>
-    <include><name>warm_debris_81</name><uri>model://warm_debris</uri><pose>186.789 178.943 0.150 0 0 -2.6817</pose></include>
-    <include><name>warm_debris_82</name><uri>model://warm_debris</uri><pose>128.193 109.045 0.150 0 0 -1.5218</pose></include>
-    <include><name>warm_debris_83</name><uri>model://warm_debris</uri><pose>128.114 111.951 0.150 0 0 1.6533</pose></include>
-    <include><name>warm_debris_84</name><uri>model://warm_debris</uri><pose>185.441 133.923 0.150 0 0 1.2434</pose></include>
-    <include><name>warm_debris_85</name><uri>model://warm_debris</uri><pose>186.923 136.622 0.150 0 0 -2.3331</pose></include>
-    <include><name>warm_debris_86</name><uri>model://warm_debris</uri><pose>18.807 57.970 0.150 0 0 -0.7776</pose></include>
-    <include><name>warm_debris_87</name><uri>model://warm_debris</uri><pose>17.406 56.661 0.150 0 0 -0.4969</pose></include>
-    <include><name>warm_debris_88</name><uri>model://warm_debris</uri><pose>183.371 174.050 0.150 0 0 1.0366</pose></include>
-    <include><name>warm_debris_89</name><uri>model://warm_debris</uri><pose>183.219 174.682 0.150 0 0 -0.2769</pose></include>
-    <include><name>warm_debris_90</name><uri>model://warm_debris</uri><pose>151.976 110.604 0.150 0 0 0.5436</pose></include>
-    <include><name>warm_debris_91</name><uri>model://warm_debris</uri><pose>152.489 111.111 0.150 0 0 2.1343</pose></include>
-    <include><name>warm_debris_92</name><uri>model://warm_debris</uri><pose>172.018 160.532 0.150 0 0 1.4230</pose></include>
-    <include><name>warm_debris_93</name><uri>model://warm_debris</uri><pose>172.153 159.674 0.150 0 0 -0.8482</pose></include>
-    <include><name>warm_debris_94</name><uri>model://warm_debris</uri><pose>85.318 21.224 0.150 0 0 -0.3242</pose></include>
-    <include><name>warm_debris_95</name><uri>model://warm_debris</uri><pose>88.101 22.811 0.150 0 0 -0.8313</pose></include>
-    <include><name>warm_debris_96</name><uri>model://warm_debris</uri><pose>20.466 116.142 0.150 0 0 -2.4521</pose></include>
-    <include><name>warm_debris_97</name><uri>model://warm_debris</uri><pose>22.812 117.091 0.150 0 0 -1.8646</pose></include>
-    <include><name>warm_debris_98</name><uri>model://warm_debris</uri><pose>13.910 107.256 0.150 0 0 -1.3584</pose></include>
-    <include><name>warm_debris_99</name><uri>model://warm_debris</uri><pose>13.169 107.761 0.150 0 0 -1.1678</pose></include>
-    <include><name>warm_debris_100</name><uri>model://warm_debris</uri><pose>69.802 19.588 0.150 0 0 -1.1747</pose></include>
-    <include><name>warm_debris_101</name><uri>model://warm_debris</uri><pose>71.233 20.786 0.150 0 0 0.4819</pose></include>
-    <include><name>warm_debris_102</name><uri>model://warm_debris</uri><pose>50.612 57.418 0.150 0 0 2.9637</pose></include>
-    <include><name>warm_debris_103</name><uri>model://warm_debris</uri><pose>46.781 56.634 0.150 0 0 1.7258</pose></include>
-    <include><name>warm_debris_104</name><uri>model://warm_debris</uri><pose>133.829 150.083 0.150 0 0 1.8292</pose></include>
-    <include><name>warm_debris_105</name><uri>model://warm_debris</uri><pose>133.462 150.953 0.150 0 0 1.6290</pose></include>
-    <include><name>warm_debris_106</name><uri>model://warm_debris</uri><pose>71.561 94.778 0.150 0 0 0.6094</pose></include>
-    <include><name>warm_debris_107</name><uri>model://warm_debris</uri><pose>69.848 94.579 0.150 0 0 2.6244</pose></include>
-    <include><name>warm_debris_108</name><uri>model://warm_debris</uri><pose>29.939 166.450 0.150 0 0 1.1915</pose></include>
-    <include><name>warm_debris_109</name><uri>model://warm_debris</uri><pose>29.400 165.663 0.150 0 0 0.0022</pose></include>
-    <include><name>warm_debris_110</name><uri>model://warm_debris</uri><pose>150.138 81.423 0.150 0 0 -2.6573</pose></include>
-    <include><name>warm_debris_111</name><uri>model://warm_debris</uri><pose>151.779 81.665 0.150 0 0 -0.0726</pose></include>
-    <include><name>warm_debris_112</name><uri>model://warm_debris</uri><pose>61.267 77.909 0.150 0 0 -1.8043</pose></include>
-    <include><name>warm_debris_113</name><uri>model://warm_debris</uri><pose>60.187 79.304 0.150 0 0 -2.3078</pose></include>
-    <include><name>warm_debris_114</name><uri>model://warm_debris</uri><pose>135.050 83.351 0.150 0 0 0.0381</pose></include>
-    <include><name>warm_debris_115</name><uri>model://warm_debris</uri><pose>133.514 84.478 0.150 0 0 1.7912</pose></include>
-    <include><name>warm_debris_116</name><uri>model://warm_debris</uri><pose>14.172 47.882 0.150 0 0 -1.2880</pose></include>
-    <include><name>warm_debris_117</name><uri>model://warm_debris</uri><pose>17.065 47.939 0.150 0 0 1.6887</pose></include>
-    <include><name>warm_debris_118</name><uri>model://warm_debris</uri><pose>91.348 30.152 0.150 0 0 0.1610</pose></include>
-    <include><name>warm_debris_119</name><uri>model://warm_debris</uri><pose>90.143 31.165 0.150 0 0 -2.2051</pose></include>
+    <model name="slab_28_post0">
+      <static>true</static>
+      <pose>15.568 82.045 0.225 0 0 2.3887</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_28_post1">
+      <static>true</static>
+      <pose>16.867 83.431 0.225 0 0 2.3887</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_28_post3">
+      <static>true</static>
+      <pose>18.253 82.132 0.225 0 0 2.3887</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_29</name><uri>model://rescue_randy_thermal</uri><pose>10.182 65.110 0.180 1.5708 0 2.9526</pose></include>
+    <include><name>warm_debris_0</name><uri>model://warm_debris</uri><pose>146.428 152.320 0.150 0.0000 0 0.1010</pose></include>
+    <include><name>warm_debris_1</name><uri>model://warm_debris</uri><pose>147.157 151.075 0.150 0.0000 0 -2.4136</pose></include>
+    <include><name>warm_debris_2</name><uri>model://warm_debris</uri><pose>129.763 91.981 0.150 0.0000 0 0.7759</pose></include>
+    <include><name>warm_debris_3</name><uri>model://warm_debris</uri><pose>130.031 93.192 0.150 0.0000 0 1.7385</pose></include>
+    <include><name>warm_debris_4</name><uri>model://warm_debris</uri><pose>109.601 185.780 0.150 0.0000 0 0.7100</pose></include>
+    <include><name>warm_debris_5</name><uri>model://warm_debris</uri><pose>109.753 182.761 0.150 0.0000 0 2.6220</pose></include>
+    <include><name>warm_debris_6</name><uri>model://warm_debris</uri><pose>122.461 78.680 0.150 0.0000 0 -2.8928</pose></include>
+    <include><name>warm_debris_7</name><uri>model://warm_debris</uri><pose>119.671 79.707 0.150 0.0000 0 0.1796</pose></include>
+    <include><name>warm_debris_8</name><uri>model://warm_debris</uri><pose>131.552 12.807 0.150 0.0000 0 -0.2555</pose></include>
+    <include><name>warm_debris_9</name><uri>model://warm_debris</uri><pose>130.846 14.182 0.150 0.0000 0 -2.7498</pose></include>
+    <include><name>warm_debris_10</name><uri>model://warm_debris</uri><pose>182.247 136.557 0.150 0.0000 0 0.8880</pose></include>
+    <include><name>warm_debris_11</name><uri>model://warm_debris</uri><pose>182.918 134.412 0.150 0.0000 0 2.2157</pose></include>
+    <include><name>warm_debris_12</name><uri>model://warm_debris</uri><pose>106.541 16.458 0.150 0.0000 0 0.5840</pose></include>
+    <include><name>warm_debris_13</name><uri>model://warm_debris</uri><pose>106.571 18.298 0.150 0.0000 0 -1.5074</pose></include>
+    <include><name>warm_debris_14</name><uri>model://warm_debris</uri><pose>22.687 65.698 0.150 0.0000 0 2.1355</pose></include>
+    <include><name>warm_debris_15</name><uri>model://warm_debris</uri><pose>24.659 65.445 0.150 0.0000 0 0.0597</pose></include>
+    <include><name>warm_debris_16</name><uri>model://warm_debris</uri><pose>107.561 82.480 0.150 0.0000 0 0.0684</pose></include>
+    <include><name>warm_debris_17</name><uri>model://warm_debris</uri><pose>107.170 82.570 0.150 0.0000 0 1.5898</pose></include>
+    <include><name>warm_debris_18</name><uri>model://warm_debris</uri><pose>179.363 71.923 0.150 0.0000 0 -2.2122</pose></include>
+    <include><name>warm_debris_19</name><uri>model://warm_debris</uri><pose>179.113 74.258 0.150 0.0000 0 2.0083</pose></include>
+    <include><name>warm_debris_20</name><uri>model://warm_debris</uri><pose>93.859 49.507 0.150 0.0000 0 1.1516</pose></include>
+    <include><name>warm_debris_21</name><uri>model://warm_debris</uri><pose>93.142 49.241 0.150 0.0000 0 1.8039</pose></include>
+    <include><name>warm_debris_22</name><uri>model://warm_debris</uri><pose>122.911 58.007 0.150 0.0000 0 -1.9376</pose></include>
+    <include><name>warm_debris_23</name><uri>model://warm_debris</uri><pose>123.255 58.374 0.150 0.0000 0 1.8998</pose></include>
+    <include><name>warm_debris_24</name><uri>model://warm_debris</uri><pose>105.871 145.560 0.150 0.0000 0 -1.9395</pose></include>
+    <include><name>warm_debris_25</name><uri>model://warm_debris</uri><pose>108.538 143.928 0.150 0.0000 0 -2.6292</pose></include>
+    <include><name>warm_debris_26</name><uri>model://warm_debris</uri><pose>120.462 103.321 0.150 0.0000 0 2.2320</pose></include>
+    <include><name>warm_debris_27</name><uri>model://warm_debris</uri><pose>121.184 101.612 0.150 0.0000 0 2.2700</pose></include>
+    <include><name>warm_debris_28</name><uri>model://warm_debris</uri><pose>14.861 151.532 0.150 0.0000 0 2.3659</pose></include>
+    <include><name>warm_debris_29</name><uri>model://warm_debris</uri><pose>16.309 151.268 0.150 0.0000 0 -0.1765</pose></include>
+    <include><name>warm_debris_30</name><uri>model://warm_debris</uri><pose>140.869 21.324 0.150 0.0000 0 -1.4197</pose></include>
+    <include><name>warm_debris_31</name><uri>model://warm_debris</uri><pose>139.834 19.025 0.150 0.0000 0 -3.0970</pose></include>
+    <include><name>warm_debris_32</name><uri>model://warm_debris</uri><pose>28.827 98.406 0.150 0.0000 0 0.9156</pose></include>
+    <include><name>warm_debris_33</name><uri>model://warm_debris</uri><pose>31.354 100.304 0.150 0.0000 0 1.3817</pose></include>
+    <include><name>warm_debris_34</name><uri>model://warm_debris</uri><pose>120.230 79.944 0.150 0.0000 0 2.1084</pose></include>
+    <include><name>warm_debris_35</name><uri>model://warm_debris</uri><pose>120.439 79.921 0.150 0.0000 0 -1.3705</pose></include>
+    <include><name>warm_debris_36</name><uri>model://warm_debris</uri><pose>49.059 110.917 0.150 0.0000 0 -1.7893</pose></include>
+    <include><name>warm_debris_37</name><uri>model://warm_debris</uri><pose>47.201 109.216 0.150 0.0000 0 0.8754</pose></include>
+    <include><name>warm_debris_38</name><uri>model://warm_debris</uri><pose>161.032 92.351 0.150 0.0000 0 1.9167</pose></include>
+    <include><name>warm_debris_39</name><uri>model://warm_debris</uri><pose>159.541 88.756 0.150 0.0000 0 2.9133</pose></include>
+    <include><name>warm_debris_40</name><uri>model://warm_debris</uri><pose>131.476 163.957 0.150 0.0000 0 -2.1958</pose></include>
+    <include><name>warm_debris_41</name><uri>model://warm_debris</uri><pose>130.829 164.579 0.150 0.0000 0 -0.1118</pose></include>
+    <include><name>warm_debris_42</name><uri>model://warm_debris</uri><pose>27.674 24.849 0.150 0.0000 0 2.4801</pose></include>
+    <include><name>warm_debris_43</name><uri>model://warm_debris</uri><pose>29.806 26.896 0.150 0.0000 0 -0.4856</pose></include>
+    <include><name>warm_debris_44</name><uri>model://warm_debris</uri><pose>54.995 88.706 0.150 0.0000 0 0.5624</pose></include>
+    <include><name>warm_debris_45</name><uri>model://warm_debris</uri><pose>54.542 90.749 0.150 0.0000 0 -2.9877</pose></include>
+    <include><name>warm_debris_46</name><uri>model://warm_debris</uri><pose>20.242 49.299 0.150 0.0000 0 1.0899</pose></include>
+    <include><name>warm_debris_47</name><uri>model://warm_debris</uri><pose>18.592 50.102 0.150 0.0000 0 2.6332</pose></include>
+    <include><name>warm_debris_48</name><uri>model://warm_debris</uri><pose>130.363 29.689 0.150 0.0000 0 2.0535</pose></include>
+    <include><name>warm_debris_49</name><uri>model://warm_debris</uri><pose>131.846 29.317 0.150 0.0000 0 2.4223</pose></include>
+    <include><name>warm_debris_50</name><uri>model://warm_debris</uri><pose>96.753 58.223 0.150 0.0000 0 1.0075</pose></include>
+    <include><name>warm_debris_51</name><uri>model://warm_debris</uri><pose>94.896 58.164 0.150 0.0000 0 -1.5987</pose></include>
+    <include><name>warm_debris_52</name><uri>model://warm_debris</uri><pose>150.953 120.894 0.150 0.0000 0 1.6871</pose></include>
+    <include><name>warm_debris_53</name><uri>model://warm_debris</uri><pose>150.604 119.421 0.150 0.0000 0 -1.8116</pose></include>
+    <include><name>warm_debris_54</name><uri>model://warm_debris</uri><pose>156.291 14.442 0.150 0.0000 0 2.0815</pose></include>
+    <include><name>warm_debris_55</name><uri>model://warm_debris</uri><pose>155.885 14.256 0.150 0.0000 0 -2.7475</pose></include>
+    <include><name>warm_debris_56</name><uri>model://warm_debris</uri><pose>145.808 78.666 0.150 0.0000 0 2.0451</pose></include>
+    <include><name>warm_debris_57</name><uri>model://warm_debris</uri><pose>146.104 79.351 0.150 0.0000 0 -2.1080</pose></include>
+    <include><name>warm_debris_58</name><uri>model://warm_debris</uri><pose>80.923 121.370 0.150 0.0000 0 -0.7845</pose></include>
+    <include><name>warm_debris_59</name><uri>model://warm_debris</uri><pose>83.031 120.528 0.150 0.0000 0 -1.1515</pose></include>
+    <include><name>warm_debris_60</name><uri>model://warm_debris</uri><pose>144.251 103.829 0.150 0.0000 0 1.2022</pose></include>
+    <include><name>warm_debris_61</name><uri>model://warm_debris</uri><pose>143.394 104.838 0.150 0.0000 0 -2.0196</pose></include>
+    <include><name>warm_debris_62</name><uri>model://warm_debris</uri><pose>71.477 16.325 0.150 0.0000 0 -0.6518</pose></include>
+    <include><name>warm_debris_63</name><uri>model://warm_debris</uri><pose>70.179 15.089 0.150 0.0000 0 -3.1050</pose></include>
+    <include><name>warm_debris_64</name><uri>model://warm_debris</uri><pose>167.259 179.617 0.150 0.0000 0 -1.4923</pose></include>
+    <include><name>warm_debris_65</name><uri>model://warm_debris</uri><pose>167.734 179.561 0.150 0.0000 0 -0.4952</pose></include>
+    <include><name>warm_debris_66</name><uri>model://warm_debris</uri><pose>29.898 167.537 0.150 0.0000 0 -2.4761</pose></include>
+    <include><name>warm_debris_67</name><uri>model://warm_debris</uri><pose>30.740 166.538 0.150 0.0000 0 0.8367</pose></include>
+    <include><name>warm_debris_68</name><uri>model://warm_debris</uri><pose>92.271 14.212 0.150 0.0000 0 -0.7513</pose></include>
+    <include><name>warm_debris_69</name><uri>model://warm_debris</uri><pose>92.375 12.066 0.150 0.0000 0 1.4156</pose></include>
+    <include><name>warm_debris_70</name><uri>model://warm_debris</uri><pose>30.609 21.209 0.150 0.0000 0 0.9668</pose></include>
+    <include><name>warm_debris_71</name><uri>model://warm_debris</uri><pose>28.031 21.925 0.150 0.0000 0 -0.4321</pose></include>
+    <include><name>warm_debris_72</name><uri>model://warm_debris</uri><pose>133.734 70.765 0.150 0.0000 0 2.3079</pose></include>
+    <include><name>warm_debris_73</name><uri>model://warm_debris</uri><pose>134.315 69.621 0.150 0.0000 0 0.8302</pose></include>
+    <include><name>warm_debris_74</name><uri>model://warm_debris</uri><pose>122.153 186.422 0.150 0.0000 0 1.9495</pose></include>
+    <include><name>warm_debris_75</name><uri>model://warm_debris</uri><pose>123.683 185.669 0.150 0.0000 0 -0.9940</pose></include>
+    <include><name>warm_debris_76</name><uri>model://warm_debris</uri><pose>43.608 123.444 0.150 0.0000 0 0.2744</pose></include>
+    <include><name>warm_debris_77</name><uri>model://warm_debris</uri><pose>43.086 121.885 0.150 0.0000 0 -1.9082</pose></include>
+    <include><name>warm_debris_78</name><uri>model://warm_debris</uri><pose>133.865 150.709 0.150 0.0000 0 3.1173</pose></include>
+    <include><name>warm_debris_79</name><uri>model://warm_debris</uri><pose>134.253 151.728 0.150 0.0000 0 -1.6134</pose></include>
+    <include><name>warm_debris_80</name><uri>model://warm_debris</uri><pose>184.131 176.970 0.150 0.0000 0 -1.5276</pose></include>
+    <include><name>warm_debris_81</name><uri>model://warm_debris</uri><pose>186.789 178.943 0.150 0.0000 0 -2.6817</pose></include>
+    <include><name>warm_debris_82</name><uri>model://warm_debris</uri><pose>128.193 109.045 0.150 0.0000 0 -1.5218</pose></include>
+    <include><name>warm_debris_83</name><uri>model://warm_debris</uri><pose>128.114 111.951 0.150 0.0000 0 1.6533</pose></include>
+    <include><name>warm_debris_84</name><uri>model://warm_debris</uri><pose>185.441 133.923 0.150 0.0000 0 1.2434</pose></include>
+    <include><name>warm_debris_85</name><uri>model://warm_debris</uri><pose>186.923 136.622 0.150 0.0000 0 -2.3331</pose></include>
+    <include><name>warm_debris_86</name><uri>model://warm_debris</uri><pose>18.807 57.970 0.150 0.0000 0 -0.7776</pose></include>
+    <include><name>warm_debris_87</name><uri>model://warm_debris</uri><pose>17.406 56.661 0.150 0.0000 0 -0.4969</pose></include>
+    <include><name>warm_debris_88</name><uri>model://warm_debris</uri><pose>183.371 174.050 0.150 0.0000 0 1.0366</pose></include>
+    <include><name>warm_debris_89</name><uri>model://warm_debris</uri><pose>183.219 174.682 0.150 0.0000 0 -0.2769</pose></include>
+    <include><name>warm_debris_90</name><uri>model://warm_debris</uri><pose>151.976 110.604 0.150 0.0000 0 0.5436</pose></include>
+    <include><name>warm_debris_91</name><uri>model://warm_debris</uri><pose>152.489 111.111 0.150 0.0000 0 2.1343</pose></include>
+    <include><name>warm_debris_92</name><uri>model://warm_debris</uri><pose>172.018 160.532 0.150 0.0000 0 1.4230</pose></include>
+    <include><name>warm_debris_93</name><uri>model://warm_debris</uri><pose>172.153 159.674 0.150 0.0000 0 -0.8482</pose></include>
+    <include><name>warm_debris_94</name><uri>model://warm_debris</uri><pose>85.318 21.224 0.150 0.0000 0 -0.3242</pose></include>
+    <include><name>warm_debris_95</name><uri>model://warm_debris</uri><pose>88.101 22.811 0.150 0.0000 0 -0.8313</pose></include>
+    <include><name>warm_debris_96</name><uri>model://warm_debris</uri><pose>20.466 116.142 0.150 0.0000 0 -2.4521</pose></include>
+    <include><name>warm_debris_97</name><uri>model://warm_debris</uri><pose>22.812 117.091 0.150 0.0000 0 -1.8646</pose></include>
+    <include><name>warm_debris_98</name><uri>model://warm_debris</uri><pose>13.910 107.256 0.150 0.0000 0 -1.3584</pose></include>
+    <include><name>warm_debris_99</name><uri>model://warm_debris</uri><pose>13.169 107.761 0.150 0.0000 0 -1.1678</pose></include>
+    <include><name>warm_debris_100</name><uri>model://warm_debris</uri><pose>69.802 19.588 0.150 0.0000 0 -1.1747</pose></include>
+    <include><name>warm_debris_101</name><uri>model://warm_debris</uri><pose>71.233 20.786 0.150 0.0000 0 0.4819</pose></include>
+    <include><name>warm_debris_102</name><uri>model://warm_debris</uri><pose>50.612 57.418 0.150 0.0000 0 2.9637</pose></include>
+    <include><name>warm_debris_103</name><uri>model://warm_debris</uri><pose>46.781 56.634 0.150 0.0000 0 1.7258</pose></include>
+    <include><name>warm_debris_104</name><uri>model://warm_debris</uri><pose>133.829 150.083 0.150 0.0000 0 1.8292</pose></include>
+    <include><name>warm_debris_105</name><uri>model://warm_debris</uri><pose>133.462 150.953 0.150 0.0000 0 1.6290</pose></include>
+    <include><name>warm_debris_106</name><uri>model://warm_debris</uri><pose>71.561 94.778 0.150 0.0000 0 0.6094</pose></include>
+    <include><name>warm_debris_107</name><uri>model://warm_debris</uri><pose>69.848 94.579 0.150 0.0000 0 2.6244</pose></include>
+    <include><name>warm_debris_108</name><uri>model://warm_debris</uri><pose>29.939 166.450 0.150 0.0000 0 1.1915</pose></include>
+    <include><name>warm_debris_109</name><uri>model://warm_debris</uri><pose>29.400 165.663 0.150 0.0000 0 0.0022</pose></include>
+    <include><name>warm_debris_110</name><uri>model://warm_debris</uri><pose>150.138 81.423 0.150 0.0000 0 -2.6573</pose></include>
+    <include><name>warm_debris_111</name><uri>model://warm_debris</uri><pose>151.779 81.665 0.150 0.0000 0 -0.0726</pose></include>
+    <include><name>warm_debris_112</name><uri>model://warm_debris</uri><pose>61.267 77.909 0.150 0.0000 0 -1.8043</pose></include>
+    <include><name>warm_debris_113</name><uri>model://warm_debris</uri><pose>60.187 79.304 0.150 0.0000 0 -2.3078</pose></include>
+    <include><name>warm_debris_114</name><uri>model://warm_debris</uri><pose>135.050 83.351 0.150 0.0000 0 0.0381</pose></include>
+    <include><name>warm_debris_115</name><uri>model://warm_debris</uri><pose>133.514 84.478 0.150 0.0000 0 1.7912</pose></include>
+    <include><name>warm_debris_116</name><uri>model://warm_debris</uri><pose>14.172 47.882 0.150 0.0000 0 -1.2880</pose></include>
+    <include><name>warm_debris_117</name><uri>model://warm_debris</uri><pose>17.065 47.939 0.150 0.0000 0 1.6887</pose></include>
+    <include><name>warm_debris_118</name><uri>model://warm_debris</uri><pose>91.348 30.152 0.150 0.0000 0 0.1610</pose></include>
+    <include><name>warm_debris_119</name><uri>model://warm_debris</uri><pose>90.143 31.165 0.150 0.0000 0 -2.2051</pose></include>
   </world>
 </sdf>

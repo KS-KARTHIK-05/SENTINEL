@@ -35,10 +35,10 @@ with exactly the file name given below (the LaTeX source refers to these names).
 | # | File name | What to show | When / how | Figure in the paper |
 |---|---|---|---|---|
 | **S1** | `S1_world_overview.png` | Whole 100 m disaster world from above: grey buildings, brown rubble, victims, warm debris | Right after launch, before take-off. View Angle → **Top**, grid hidden, zoom out until the whole map fits | Fig. 1 (Section V, Implementation) |
-| **S2** | `S2_victims_occlusion.png` | Close-up: one victim partly under a concrete slab and one fully covered (buried) | Entity Tree → `victim_0` (buried) and a `slab_*` near another victim → *Move to*, then orbit for an oblique view | Fig. 2 left (Section V) |
+| **S2** | `S2_victims_occlusion.png` | Close-up, oblique: a victim lying partly under a slab on posts (and, if possible, one fully covered — e.g. `victim_0`, look under the slab edge) | Entity Tree → `victim_0` (buried) and a `slab_*` near another victim → *Move to*, then orbit for an oblique view | Fig. 2 left (Section V) |
 | **S3** | `S3_swarm_in_flight.png` | The 6 drones flying over the map | Default launch (6 drones); ~60–90 s after launch. Isometric view, zoomed so drones and buildings are both visible | Fig. 4 right (Section V) |
-| **S4** | `S4_thermal_frame.png` | Raw thermal camera image (white-hot) of the ground with a victim visible | Run with `-p model` (no boxes). In the rqt_image_view window choose topic `/world/sentinel_g100_s0/model/x500_thermal_0/link/thermal_link/sensor/thermal_camera/image`, wait until a victim is in view, click *Save as image* | Fig. 2 right (Section V) |
-| **S5** | `S5_yolo26n_pipeline.png` | YOLO26n boxes on the thermal feed (green ≥0.70 confirmed, orange SA band) | Default launch; the rqt_image_view window shows `/px4_0/sentinel/thermal_annotated`; save a frame that shows a box on a victim. 145 ready-made frames are in `~/sentinel_ws/handover/demo_yolo26n/frames/` — pick one | Fig. 4 left (Section V), **as a pipeline illustration only** (see note) |
+| **S4** | `S4_thermal_frame.png` | Raw thermal camera image (white-hot) of the ground with a victim visible | Default run (`run_sentinel_demo.sh --no-crash`). Once the drones are at 30 m, in a second terminal run `~/sentinel_ws/save_thermal_frames.sh`; it saves 60 box-free white-hot frames (one every 2 s) to `~/sentinel_ws/results/thermal_frames/uav0/`. Pick one with a victim in view. (`-p model` has no camera, so it can't be used for this.) | Fig. 2 right (Section V) |
+| **S5** | `S5_yolo26n_pipeline.png` | YOLO26n boxes on the thermal feed (green ≥0.70 confirmed, orange SA band) | Default launch; the rqt_image_view window shows `/px4_0/sentinel/thermal_annotated`; save a frame that shows a box on a victim. Take it from a fresh run (the 145 old frames in `handover/demo_yolo26n/` predate the 2026-10-21 scene fix) | Fig. 4 left (Section V), **as a pipeline illustration only** (see note) |
 | **S6** | `S6_ros_graph.png` | ROS 2 node graph: per-drone nodes (`flight_commander`, `thermal_vision`, `emps_agent`), `comm_emulator`, `metrics_logger` — no central coordinator | rqt_graph window → *Nodes only*, refresh, *Fit in view*; screenshot the window | Fig. 3 (Section V) |
 | S7 *(optional)* | `S7_v1_scene.png` | The rebuilt v1 25 m scene (for the E9 discussion) | `run_sentinel_demo.sh -w sentinel_d25_s0`, top view | not placed yet (could go in Section VI-J, E9) |
 
@@ -49,12 +49,12 @@ not as evidence of detection accuracy — the paper's accuracy numbers come from
 Pick a frame where a box is on a victim, but do not crop out false boxes to make it look better.
 
 ## 4. Checklist
-- [ ] S1_world_overview.png
-- [ ] S2_victims_occlusion.png
-- [ ] S3_swarm_in_flight.png
-- [ ] S4_thermal_frame.png
-- [ ] S5_yolo26n_pipeline.png
-- [ ] S6_ros_graph.png
+- [x] S1_world_overview.png
+- [x] S2_victims_occlusion.png
+- [x] S3_swarm_in_flight.png
+- [x] S4_thermal_frame.png
+- [x] S5_yolo26n_pipeline.png
+- [x] S6_ros_graph.png
 - [ ] S7_v1_scene.png (optional)
 
 Plots and tables are generated automatically (`scripts/make_results.py`) — no screenshots needed for those.

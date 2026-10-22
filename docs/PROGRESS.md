@@ -559,3 +559,68 @@ All code is in `src/SENTINEL/sentinel_ws/src/` on git branch **`revision-v2`**. 
 - `implementation.tex`: the Fig. 3 and Fig. 4 captions now say "six UAVs" (was "three"), to match the 6-drone demo default.
 - `docs/SCREENSHOTS.md`: the screenshot table now gives the actual figure numbers (Figs. 1–4, all in Section V) instead of the wrong §III/§IV references.
 - `karthik_handover.md` updated to match. The paper recompiles: 11 pages, 0 overfull boxes.
+
+### 2026-10-16 — Commit
+- Committed all v2 work on branch `revision-v2` as commit `09bcc55` (550 files).
+- The commit adds:
+  - the code and the paper;
+  - the docs: plan, progress, results and guides;
+  - `karthik_handover.md`.
+- `.gitignore` now excludes the LaTeX build files.
+- The rejection-email PDF and the old draft PDF are not committed.
+- The push to `origin` failed because this machine has no GitHub credentials. The user has to push manually.
+
+### 2026-10-21 — Screenshot S1 placed
+- Placed the user's oblique Gazebo view as `paper/figures/S1_world_overview.png`.
+  - I cropped the sky band (y 0–190) off the top; the uncropped original is kept as `S1_world_overview_uncropped.png`.
+  - The user also took three near-top-down attempts. They were rejected: the toolbar was visible, building shadows and perspective covered the map, and the victims were too small to see.
+- The Fig. 1 caption is changed from "top view" to "oblique view" and now lists what is visible, including the six UAVs at the launch point.
+- The paper rebuilds at 11 pages with 0 overfull boxes.
+- S1 replaced by the user's top-down retake, which has the whole map with all buildings in frame. At print width it shows the layout better than the oblique shot. The oblique shot is kept as `figures/S1_alt_oblique.png`.
+- The Fig. 1 caption is back to "top view". It now says victims and UAVs are too small at this scale and points to Figs. 2 and 4.
+- The paper is still 11 pages, with 0 overfull boxes and 0 undefined references.
+
+### 2026-10-21 — Gazebo scene fix: standing victims poked through slabs
+- **Found from the user's S2 screenshot.** The Rescue Randy mesh is 1.82 m tall and standing, but the slabs sat at 1.0–1.3 m. The head and shoulders of every covered victim, including the "fully buried" ones, stuck out through the slab and were visible from above. This contradicted the occlusion described in the paper.
+- **Fix in `sentinel_gazebo/scripts/make_world.py`:**
+  - Victims now lie flat (roll 90°, 0.36 m high), with the torso centred on the ground-truth position (checked: 0.00 m error).
+  - Slabs rest on corner posts with the underside at 0.45 m. Any post that would touch a victim is left out. Result: 58 slabs, 161 posts, 0 posts touching a body, every slab on at least 2 posts.
+- **Regenerated all 5 worlds** (`d25_s0`, `g100_s0/1/2`, `g200_s0`). All SDFs pass `gz sdf -k`. The ground-truth JSONs are **byte-identical** to before, so the positions, occlusion values and obstacles are unchanged.
+- **Results unaffected.** The fast-simulator experiments and the E8 cross-check use occlusion from the ground truth, not from the rendered meshes.
+- **Demo frames now outdated.** The 145 YOLO frames in `handover/demo_yolo26n/` show the old standing victims. Take S5 from a fresh run.
+- **Backup.** The old worlds are in the scratchpad (`worlds_before/`).
+
+### 2026-10-22 — Screenshot S2 placed
+- The user took six ground-level shots of `victim_5` and `victim_14` in the fixed scene (victims lying, slabs on posts).
+- Chose the `victim_14` close-up: the torso is under the slab and the legs are exposed. Cropped it to the subject and checked it is readable at print size. It is saved as `paper/figures/S2_victims_occlusion.png`.
+- The wide shot showing a covered victim, an open victim and distant slabs is kept as a spare, `S2_alt_wide.png`.
+- The Fig. 2 caption now describes what is shown: one partly covered victim, torso hidden from above, legs exposed.
+- The paper is still 11 pages with 0 overfull boxes.
+- 2026-10-22: two overhead views around victim_14 (open, partly and nearly fully covered victims as a UAV sees them) are kept as spares, `S2_alt_above_oblique.png` and `S2_alt_above_top.png`. They are not used in the paper.
+
+### 2026-10-22 — Screenshot S3 placed
+- **S3:** a crop of the bright overhead shot with two UAVs over victims, slabs and rubble, saved as `paper/figures/S3_swarm_in_flight.png`. It was checked for readability at print size.
+- **Spares:** `S3_alt_closeup_shadow.png` (detailed drones, but too dark when shrunk) and `S3_alt_cluster.png` (five UAVs, tiny).
+- **Fig. 4 caption:** "two of the six UAVs searching at 30 m above victims, slabs and rubble".
+- **Checked:** the user could not see `x500_thermal_0/1` in the Entity Tree. `gz model --list` shows all six models, and the PX4 logs show all six took off. They were only further up in the list.
+
+### 2026-10-22 — Screenshots S5 and S6
+- **S5.** I chose the user's saved frame where YOLO26n puts an orange box (0.40, SA band) on the rendered mannequin and a false box (0.52) on a building edge. It is cropped to the top-left region and saved as `paper/figures/S5_yolo26n_pipeline.png`. The spare with red and orange boxes is `S5_alt_red_orange.png`. Box colours, from `thermal_vision.py`: green ≥0.70, orange 0.40–0.70, red <0.40. The Fig. 4 caption now describes exactly that: an SA-band detection, a false box, and the rendering gap.
+- **S6.** The user's rqt_graph capture is correct, but with 6 UAVs it is unreadable at column width (about 100 labelled edges). It is kept as `S6_ros_graph.png`, with the window version as `S6_alt_window.png`.
+  - Fig. 3 is now a vector diagram, `figures/ros_graph.dot` → `ros_graph.pdf`, transcribed from `ros2 node info` on the running 6-UAV demo. It shows one UAV namespace (thermal_bridge, thermal_vision, emps_agent, flight_commander) and the shared comm_emulator, chaos_monkey and metrics_logger.
+  - The caption says the graph was transcribed from the running system.
+- **Drone check.** The user again thought only 4 drones were up. All 6 PX4 logs show takeoff with no landing or failsafe, and the sim was still running.
+- **Status.** The paper is 11 pages with 0 overfull boxes and 0 undefined references. Only S4 (needs a `-p model` run) and optional S7 remain.
+
+### 2026-10-22 — S4 instructions corrected, helper added
+- **Bug in my instructions.** `SCREENSHOTS.md` and the handover said to take S4 with `-p model`. In that mode the demo spawns `x500_plain` (no camera) and starts no image bridge, so the thermal topic would be empty.
+- **New `sentinel_ws/scripts/save_thermal_frames.py`,** with the wrapper `~/sentinel_ws/save_thermal_frames.sh`. During a normal (YOLO) run it subscribes to the raw L16 thermal topic of UAV i. It applies the same 270–330 K white-hot conversion as `thermal_vision` and saves box-free PNGs every 2 s of sim time to `results/thermal_frames/uav<i>/`.
+- Syntax-checked and the startup tested (it exits cleanly with no simulation running). It is not yet tested against a live camera.
+- Both copies of `SCREENSHOTS.md` and of the handover have the corrected S4 instructions.
+
+### 2026-10-22 — Screenshot S4 placed; all required screenshots done
+- First live run of `save_thermal_frames.sh` (UAV 0): 40 box-free white-hot frames saved, all 640×512, grey levels 64–195.
+- **S4:** `frame_000127.9.png`, saved as `paper/figures/S4_thermal_frame.png`. It shows two victims in the open, two under slabs with only the legs visible, warm debris (316 K, the brightest object) beside a rubble block, and a building wall. Spare: `S4_alt_frame_129.png`.
+- The Fig. 2 caption now describes exactly that content.
+- The user's second rqt_graph capture showed only part of the system, because ROS 2 discovery was incomplete while the sim was paused (several nodes missing). It is kept as `S6_alt_partial_discovery.png` and not used.
+- **Paper:** 11 pages, no screenshot placeholders left, 0 overfull boxes, 0 undefined references. Only S7 (optional) remains.

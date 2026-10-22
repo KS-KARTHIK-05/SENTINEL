@@ -93,9 +93,44 @@ def box(name, x, y, z, sx, sy, sz, temp, rgb, yaw=0.0) -> str:
 """
 
 
-def include(name, uri, x, y, z=0.0, yaw=0.0) -> str:
+def include(name, uri, x, y, z=0.0, yaw=0.0, roll=0.0) -> str:
     return (f'    <include><name>{name}</name><uri>model://{uri}</uri>'
-            f'<pose>{x:.3f} {y:.3f} {z:.3f} 0 0 {yaw:.4f}</pose></include>\n')
+            f'<pose>{x:.3f} {y:.3f} {z:.3f} {roll:.4f} 0 {yaw:.4f}</pose></include>\n')
+
+
+# Rescue Randy mesh: 1.82 m tall, 0.36 m deep, feet at the model origin. Victims are laid flat
+# (roll 90 deg) and centred on the target position, so a casualty is 0.36 m high and any slab
+# above SLAB_Z0 covers it.
+RANDY_H, RANDY_D = 1.82, 0.36
+SLAB_Z0 = 0.45                      # underside of a covering slab
+
+
+def victim(name, x, y, yaw) -> str:
+    # lying along the local -y axis after the roll; shift so the torso centre is at (x, y)
+    ox, oy = -0.5 * RANDY_H * math.sin(yaw), 0.5 * RANDY_H * math.cos(yaw)
+    return include(name, 'rescue_randy_thermal', x + ox, y + oy, RANDY_D / 2, yaw, math.pi / 2)
+
+
+def _in_body(px, py, body, margin=0.2) -> bool:
+    bx, by, byaw = body
+    dx, dy = px - bx, py - by
+    along = -dx * math.sin(byaw) + dy * math.cos(byaw)     # body length axis (local y)
+    across = dx * math.cos(byaw) + dy * math.sin(byaw)     # arm span axis (local x)
+    return abs(along) < RANDY_H / 2 + margin and abs(across) < 0.68 + margin
+
+
+def slab(name, x, y, side, thick, yaw, body) -> str:
+    """Concrete slab on corner posts, underside at SLAB_Z0; posts that would touch the victim
+    lying at ``body`` = (x, y, yaw) are left out."""
+    out = [box(name, x, y, SLAB_Z0 + thick / 2, side, side, thick, T_SLAB, '0.6 0.6 0.6', yaw)]
+    c, s, d = math.cos(yaw), math.sin(yaw), side / 2 - 0.15
+    for j, (u, v) in enumerate(((d, d), (d, -d), (-d, d), (-d, -d))):
+        px, py = x + c * u - s * v, y + s * u + c * v
+        if _in_body(px, py, body):
+            continue
+        out.append(box(f'{name}_post{j}', px, py, SLAB_Z0 / 2,
+                       0.2, 0.2, SLAB_Z0, T_RUBBLE, '0.45 0.4 0.35', yaw))
+    return ''.join(out)
 
 
 def build(w: W.World, name: str, rng: np.random.Generator) -> tuple[str, dict]:
@@ -115,16 +150,16 @@ def build(w: W.World, name: str, rng: np.random.Generator) -> tuple[str, dict]:
     for k, t in enumerate(w.targets):
         x, y = map(float, t.pos)
         yaw = float(rng.uniform(-math.pi, math.pi))
-        parts.append(include(f'victim_{k}', 'rescue_randy_thermal', x, y, 0.0, yaw))
+        parts.append(victim(f'victim_{k}', x, y, yaw))
         if t.buried:
             # full concrete slab on four low supports: no line of sight from above
-            parts.append(box(f'slab_{k}', x, y, 1.15, 3.0, 3.0, 0.3, T_SLAB, '0.6 0.6 0.6'))
+            parts.append(slab(f'slab_{k}', x, y, 3.0, 0.3, yaw, (x, y, yaw)))
         elif t.occ0 > 0:
             # overhanging slab displaced toward block_dir, covering ~occ0 of the body
             off = (1.0 - t.occ0) * 1.6
-            parts.append(box(f'slab_{k}', x + off * math.cos(t.block_dir),
-                             y + off * math.sin(t.block_dir), 1.2, 2.2, 2.2, 0.25, T_SLAB,
-                             '0.6 0.6 0.6', t.block_dir))
+            parts.append(slab(f'slab_{k}', x + off * math.cos(t.block_dir),
+                              y + off * math.sin(t.block_dir), 2.2, 0.25, t.block_dir,
+                              (x, y, yaw)))
         targets.append({'id': k, 'pos': [x, y], 'occ0': t.occ0, 'block_dir': t.block_dir,
                         'buried': t.buried})
     for k, c in enumerate(w.clutter_xy):

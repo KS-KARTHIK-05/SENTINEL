@@ -179,12 +179,12 @@ Save each screenshot to `~/sentinel_ws/src/SENTINEL/paper/figures/` with **exact
 
 | # | File name | What to show | How | Figure in the paper |
 |---|---|---|---|---|
-| S1 | `S1_world_overview.png` | Whole 100 m world from above: buildings, rubble, victims, warm debris | Right after launch, before take-off. View Angle → Top, grid hidden, zoom to fit | Fig. 1 (§V) |
-| S2 | `S2_victims_occlusion.png` | One victim partly under a concrete slab, one fully covered | Entity Tree → `victim_0` / a `slab_*` → *Move to*, oblique view | Fig. 2 left |
-| S4 | `S4_thermal_frame.png` | Raw white-hot thermal frame with a victim visible | Run with `-p model`; in rqt_image_view choose `/world/sentinel_g100_s0/model/x500_thermal_0/link/thermal_link/sensor/thermal_camera/image`, then *Save as image* | Fig. 2 right |
-| S6 | `S6_ros_graph.png` | ROS 2 node graph: per-drone nodes plus `comm_emulator` and `metrics_logger`, no central coordinator | rqt_graph → *Nodes only*, refresh, *Fit in view* | Fig. 3 |
-| S5 | `S5_yolo26n_pipeline.png` | YOLO26n boxes on the thermal feed (green ≥ 0.70 confirmed, orange SA band) | Default launch; rqt_image_view on `/px4_0/sentinel/thermal_annotated`. You can also pick one of the 145 ready frames in `~/sentinel_ws/handover/demo_yolo26n/frames/` | Fig. 4 left |
-| S3 | `S3_swarm_in_flight.png` | The drones flying over the map | Default launch, 60–90 s in, isometric view | Fig. 4 right |
+| S1 | `S1_world_overview.png` | Whole 100 m world from above, all buildings in frame | DONE (2026-10-21, top view; oblique spare kept as S1_alt_oblique.png) | Fig. 1 (§V) |
+| S2 | `S2_victims_occlusion.png` | Victim partly under a slab | DONE (2026-10-22, victim_14 close-up) | Fig. 2 left |
+| S4 | `S4_thermal_frame.png` | Raw white-hot thermal frame with victims | DONE (2026-10-22, via `~/sentinel_ws/save_thermal_frames.sh`; the `-p model` mode has no camera) | Fig. 2 right |
+| S6 | `S6_ros_graph.png` | ROS 2 node graph | DONE (2026-10-22): rqt_graph capture kept as evidence; Fig. 3 uses the readable diagram `figures/ros_graph.dot` → `ros_graph.pdf`, transcribed from the live graph | Fig. 3 |
+| S5 | `S5_yolo26n_pipeline.png` | YOLO26n boxes on the thermal feed | DONE (2026-10-22) | Fig. 4 left |
+| S3 | `S3_swarm_in_flight.png` | Drones flying over the map | DONE (2026-10-22) | Fig. 4 right |
 | S7 (optional) | `S7_v1_scene.png` | The rebuilt old 25 m scene | `run_sentinel_demo.sh -w sentinel_d25_s0`, top view | not used yet (E9) |
 
 **After the screenshots:**

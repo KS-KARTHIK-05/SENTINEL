@@ -1,0 +1,40 @@
+// ROS 2 graph of the six-UAV Gazebo demonstration, transcribed from `ros2 node info` on the
+// running system (2026-10-22). One UAV namespace is drawn; it is replicated for /px4_0 ... /px4_5.
+// Build: dot -Tpdf ros_graph.dot -o ros_graph.pdf
+digraph G {
+  graph [rankdir=TB, fontname="Helvetica", fontsize=9, nodesep=0.25, ranksep=0.28, margin=0];
+  node  [shape=box, style="rounded,filled", fillcolor="#f2f2f2", fontname="Helvetica", fontsize=9,
+         height=0.28, margin="0.06,0.03"];
+  edge  [fontname="Helvetica", fontsize=7.5, arrowsize=0.5, penwidth=0.8];
+
+  gz  [label="Gazebo thermal camera", style="dashed", fillcolor="#ffffff"];
+  px4 [label="PX4 autopilot (SITL)", style="dashed", fillcolor="#ffffff"];
+
+  subgraph cluster_uav {
+    label="UAV i: namespace /px4_i, one copy per UAV (×6)"; labeljust=l; labelloc=b;
+    style="rounded"; color="#333333"; fontsize=8;
+    bridge [label="thermal_bridge"];
+    fc     [label="flight_commander"];
+    tv     [label="thermal_vision (YOLO26n)"];
+    agent  [label="emps_agent (SENTINEL)", fillcolor="#dde8f5"];
+    { rank=same; bridge; fc; }
+  }
+
+  comm  [label="comm_emulator\n(SINR channel)", fillcolor="#fde9d9"];
+  chaos [label="chaos_monkey"];
+  log   [label="metrics_logger"];
+  { rank=same; chaos; comm; log; }
+
+  gz     -> bridge [label=" image"];
+  px4    -> fc     [label="state "];
+  fc     -> px4    [label="setpoints "];
+  bridge -> tv     [label=" image"];
+  fc     -> tv     [label=" pose"];
+  tv     -> agent  [label=" targets"];
+  fc     -> agent  [label=" pose"];
+  agent  -> fc     [label="setpoint "];
+  agent  -> comm   [label=" beacons", dir=both];
+  chaos  -> comm   [label="fail"];
+  comm   -> log    [label="stats"];
+  agent  -> log    [label=" ledger"];
+}
