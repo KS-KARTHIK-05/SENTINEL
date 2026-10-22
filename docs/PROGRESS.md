@@ -624,3 +624,8 @@ All code is in `src/SENTINEL/sentinel_ws/src/` on git branch **`revision-v2`**. 
 - The Fig. 2 caption now describes exactly that content.
 - The user's second rqt_graph capture showed only part of the system, because ROS 2 discovery was incomplete while the sim was paused (several nodes missing). It is kept as `S6_alt_partial_discovery.png` and not used.
 - **Paper:** 11 pages, no screenshot placeholders left, 0 overfull boxes, 0 undefined references. Only S7 (optional) remains.
+
+### 2026-10-22 — Commit c657c70
+- Committed on `revision-v2`: screenshots S1–S6, the Fig. 3 diagram, the victim/slab scene fix with regenerated worlds, the thermal-frame helper (.py + .sh) and updated docs.
+- The spare screenshots are not committed.
+- The push failed again because this machine has no GitHub credentials. The user has to push from their own terminal. Branch `revision-v2` is 2 commits ahead of `main` (09bcc55, c657c70).
