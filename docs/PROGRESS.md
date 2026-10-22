@@ -689,3 +689,31 @@ Experiment-dependent items 3 and 6 were not resolved, but their wording was made
   - (20) README 0.15–0.73.
 - **Also:** Eq. (5) now includes the travel-cost term w_t and describes the frontier goal with sector bias exactly as implemented. The E6c false-alarm rates are now explicit.
 - **Build:** 12 pages (was 11, because of the parameter table), 0 overfull boxes, 0 undefined references, lint 0. No result or table value changed.
+
+### 2026-10-22 — Review experiments (issues 3 and 6), run in progress
+- **Code changes:**
+  - `agent.tether_window` lets the simulator count preserved-link violations without the projection. Verified identical results for stored runs.
+  - New methods: `sentinel_th_inf`, `abl_no_fusion_no_delivery`, `abl_no_sa_no_fusion_no_delivery`, and `B0…B6 + fusion`, which inherit their tuned values.
+  - All 396 tests pass.
+- **E10 and E9 had been run without `tuned_file`,** i.e. with default rather than tuned parameters. Both are being re-run tuned; the old results are saved as `summary_untuned.parquet`.
+- **E12 done** (1,680 runs, 0 errors, 18:21–18:52). Urban N=8 (reported ≤60 s), SENTINEL 0.575 compared with:
+  - no delivery 0.523\*
+  - no fusion 0.519\*
+  - neither 0.496\*
+  - no SA, no fusion 0.543
+  - all three removed 0.524 (n.s.)
+
+  Baselines with fusion: B3 0.507\*, B0 0.499\*, B2 0.476\*, B1 0.461\*, B6 0.444\*, B5 0.416\*, B4 0.119\*. **SENTINEL stays significantly ahead of every baseline even when the baselines get the fusion rule.** Urban N=4 gives the same picture (all baselines+fusion\*). In severe, only B4 and B5 (+fusion) are significantly lower, at both N.
+- **Issue 6 resolved:**
+  - with projection: 1 violation in 1,663 tethered link-steps (6.0e-4; 1 of 120 runs);
+  - without: 42 in 1,868 (2.2e-2; 21 of 120 runs);
+  - paired Wilcoxon p = 4e-5.
+
+### 2026-10-22 — Review experiments complete and written into the paper
+- **Run:** 2,880 runs, 0 errors, 18:21–22:24, chain `scripts/run_review_experiments.sh`, log `results/review_experiments.log`. Tables were regenerated with `make_results.py`, which now also produces E12 and merges E11b into the E11 table.
+- **E10 (tuned):** with eight UAVs T_h = 15 s is best and significant against never delivering: urban 0.599 vs 0.523 (+15 %), severe 0.501 vs 0.419 (+20 %, p90 74→41 s). The tuned 116 s (≈120) gives 0.577\* in urban. N=4 is not significant. Information loss is highest without delivery in 3 of 4 regimes, max 7.7 %.
+- **E9 (tuned):** SENTINEL 0.71, B1 0.63\*, B0 0.67 (n.s.); association merges 7–10 %.
+- **E12:** in urban, every baseline with fusion stays significantly below SENTINEL at N=4 and N=8. With all three components removed, SENTINEL reaches 0.524\*, still above every baseline with fusion. The flank helps only together with fusion.
+- **E11b (dense, N=50):** baselines with fusion 0.815–0.849 (n.s.); B4+fusion 0.865 is significantly better than SENTINEL (0.809). Reported honestly: in dense swarms fusion alone explains the gain.
+- **Safety:** all-experiment total 93 violations in 1,349,703 link-steps (6.9e-5); strict 2.3e-3; counterfactual 37-fold (E12).
+- **Paper:** abstract, introduction, §VI-H, §VI-I, §VI-J, discussion and conclusion updated. New Table XIII (E12) and Table XIV (E11 + E11b). Missions now about 13,000. 13 pages, 0 overfull boxes, 0 undefined references, lint 0. README and response document updated.

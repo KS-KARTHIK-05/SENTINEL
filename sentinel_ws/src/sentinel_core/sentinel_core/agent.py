@@ -132,6 +132,7 @@ class SentinelAgent:
         self.reconnecting = False
         self.mode = 'explore'            # explore | deliver (intermittent connectivity)
         self.tethered_now = False        # constraints applied in the last step (for metrics)
+        self.tether_window = False       # in a delivery tether, projection on or off (metrics)
         self.tether_until = -np.inf      # hold links while any connected UAV is delivering
         self.goal = None
         self.deliveries = 0
@@ -437,7 +438,11 @@ class SentinelAgent:
         if n > self.cfg.v_max * dt:
             step = step / n * self.cfg.v_max * dt
         step = self._avoid(step)
-        self.tethered_now = bool(self.cfg.projection and self.spring_set and self._tethered(t))
+        # tether_window: the agent is in a delivery tether with a preserved set, whether or
+        # not the projection is enabled (lets the simulator count link violations for the
+        # no-projection ablation as well); tethered_now: the constraint is actually applied
+        self.tether_window = bool(self.spring_set and self._tethered(t))
+        self.tethered_now = bool(self.cfg.projection and self.tether_window)
         if self.tethered_now:
             # Bounded-staleness margin: neighbour j may have moved v_j * age since
             # its beacon; half of that displacement shifts the common midpoint.

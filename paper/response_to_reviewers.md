@@ -9,7 +9,7 @@ All numbers refer to tables generated from `results/` (see `docs/RESULTS.md`).
 - **Novelty and contributions:** the paper is re-centred on *timely victim reporting*. The contributions are information-triggered delivery, corroborative multi-view fusion, and a link-preservation safety layer with proofs, with the effect of each component measured by ablation, including the part of the margin no single component explains (§I, §IV, §VI-H).
 - **System model:** formal network, channel (SINR with path loss, obstructions, correlated shadowing, Rician/Rayleigh fading, interference), sensing, information and failure models, and an explicit objective (§III).
 - **Experiments:**
-  - 11 experiments, about 11,000 missions, 30 seeds each;
+  - 13 experiment sets, about 13,000 missions, 30 seeds each;
   - seven baselines with equal tuning budgets;
   - paired Wilcoxon tests with Holm correction;
   - a PX4/Gazebo cross-check (§VI).
@@ -17,7 +17,7 @@ All numbers refer to tables generated from `results/` (see `docs/RESULTS.md`).
 ## Reviewer 1
 | # | Point | What changed | Where |
 |---|---|---|---|
-| 1.1 | Components look incremental (existing detector + distance penalty + threshold move) | The detector is no longer claimed. The contributions are the delivery trigger (+28% on-time reports in severe channel, E10), corroborative fusion (0.809 vs 0.656 for naive fusion and 0.720 for B0 in dense swarms, E11), and a proven safety layer. The ablation shows which parts matter, including null results. | §I, §IV, Tab. E7/E11, Fig. T_h |
+| 1.1 | Components look incremental (existing detector + distance penalty + threshold move) | The detector is no longer claimed. The contributions are the delivery trigger (+15 % / +20 % on-time reports with eight UAVs in the urban / severe channel, E10), corroborative fusion (0.809 vs 0.656 for naive fusion in dense swarms, E11), and a safety layer with proofs that cuts link violations 37-fold (E12). Baselines given SENTINEL's fusion rule remain significantly behind in the urban scenarios; in the dense swarm they catch up, which the paper reports (E11/E12). The ablation shows which parts matter, including null results. | §I, §IV, Tab. E7/E11, Fig. T_h |
 | 1.2 | Compare with the closest distributed approaches | Comparison table vs λ2 control, edge potentials, intermittent connectivity, data ferrying/DTN, AoI collection, distributed PSO search, event-driven Bayesian search and MARL. Four of these families are implemented as tuned baselines (B2–B5). | §II, Tab. related; §VI-A |
 | 1.3 | Reads like an experimental report | Method and theory (§III–IV) form the core. Implementation is a short section, with one figure per aspect. Terminal screenshots are removed, and all numbers come from scripts. | §III–V |
 | 1.4 | Fixed 50 m threshold; no path loss/fading/interference/reliability | SINR-based outage model with obstructions, fading, shadowing and interference. Packets are dropped by sampled SINR, in the simulator and in Gazebo (comm_emulator). 50 m reappears as the urban one-obstruction reliable range, not as an assumption. Four channel profiles are evaluated. | §III-B, Tab. channel, Tab. E2 |
@@ -28,7 +28,7 @@ All numbers refer to tables generated from `results/` (see `docs/RESULTS.md`).
 | # | Point | What changed | Where |
 |---|---|---|---|
 | 2.1 | Signal-Spring is just a penalty; distinguish from topology maintenance / comm-aware trajectories | The spring now penalises predicted *outage* (not distance) and applies only during delivery. It is backed by a projection with a proof. Always-on maintenance (B3, B4, SENTINEL-strict) is shown to lower timely reporting (0.03–0.13 for strict). | §IV-B/C, §VI-H |
-| 2.2 | Pairwise distance ≠ global connectivity; graph-theoretic analysis needed | Lemma 1 (nearest-neighbour counter-example), Lemma 2 (LMST ⊇ MST), Proposition 1 (link preservation under staleness and obstruction inflation), Corollary 1 (connected delivery component), Proposition 2 (union bound). Measured: 15 violations in 436,057 preserved link-steps. | §IV-C, §VI-I |
+| 2.2 | Pairwise distance ≠ global connectivity; graph-theoretic analysis needed | Lemma 1 (nearest-neighbour counter-example), Lemma 2 (LMST ⊇ MST), Proposition 1 (link preservation under staleness and obstruction inflation), Corollary 1 (connected delivery component), Proposition 2 (union bound). Measured: 93 violations in 1,349,703 preserved link-steps (6.9×10⁻⁵); with the projection disabled on the same seeds, violations rise 37-fold (p < 10⁻⁴). | §IV-C, §VI-I |
 | 2.3 | "Guarantees total network survival", "zero data loss" from N=3, one failure | Such claims are removed: v1 had 46 flagged phrases, the new paper has 0 (lint script). Information loss is *measured* under six failure models (≤ 8.5% worst case for any method), and no loss advantage is claimed. | whole paper, §VI-D |
 | 2.4 | More swarm sizes, larger areas, dynamic obstacles, channel variation, multiple failures | N = 3–50; 200 and 400 m; 0/5/15 moving obstacles; four channel profiles; six failure models; PX4/Gazebo cross-check. | §VI-C–G, §VI-J |
 | 2.5 | Communication model too simple | As R1.4. The parameter sources are cited, and the lack of measurement calibration is stated as a limitation. | §III-B, §VII |

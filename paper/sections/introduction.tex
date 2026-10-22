@@ -25,7 +25,7 @@ That design has three limitations, which also shaped this work. A fixed distance
 a radio link behind rubble; keeping the nearest neighbour close does not keep the network connected
 (Lemma~\ref{lem:nn}); and the evaluation used a 25\,m area that is far smaller than the radio range,
 in which, as we show in Section~\ref{sec:eval:sitl}, every method stays connected and the methods
-differ by at most five percentage points.
+differ by at most eight percentage points.
 
 This paper studies the \emph{discovery--delivery trade-off} directly. We measure the share of
 victims whose report reaches the responder within a deadline, and we treat connectivity as a means
@@ -59,13 +59,15 @@ released.
 Across the scenarios SENTINEL reports 23--30\,\% more victims within 60\,s than the best baseline in
 urban rubble in all failure settings, and it is significantly better than all baselines on the
 400\,m area at every swarm size from 3 to 50; in the harshest channel it is ahead of or tied with the
-best baseline. The ablation shows which components matter: the fusion rule and, in the severe channel, the
-delivery trigger have significant effects, whereas the link-preservation layer has no significant
-effect on performance and holds when applied, with $3.4\times10^{-5}$ link violations per preserved
-link-step. We
+best baseline. The ablation shows which components matter: the fusion rule and the delivery trigger have
+significant effects; given the same fusion rule, the baselines remain significantly behind in the
+urban 400\,m scenarios. The
+link-preservation layer has no significant effect on the on-time share but reduces preserved-link
+violations 37-fold compared with the same tethers without it. We
 also report what does not work as well: keeping the swarm connected at all times lowers on-time
 reporting to 0.03--0.13; in small, dense swarms a MAPPO policy trained to convergence comes close to
-SENTINEL (differences not significant for $N=10$--20 on the 200\,m area); and the thermal detector,
+SENTINEL (differences not significant for $N=10$--20 on the 200\,m area); in a dense 50-UAV swarm,
+baselines given SENTINEL's fusion rule match it and one exceeds it; and the thermal detector,
 trained on real imagery, transfers poorly to rendered Gazebo scenes.
 
 Section~\ref{sec:related} positions this work against prior approaches,

@@ -15,6 +15,7 @@ from sentinel_core.fitness import SpringConfig
 # Baselines keep their published behaviour: constraints always on (if any), no
 # heartbeat return, no information-triggered delivery.
 _BASE = dict(connectivity='strict', reconnect=False)
+_NEVER = 1e5                      # T_hold that never triggers within a mission
 _NO_COMM = dict(neighbour_set='none', projection=False, sa_enabled=False, fusion=False, **_BASE)
 
 METHODS = {
@@ -47,7 +48,19 @@ METHODS = {
     'abl_no_sa_no_fusion': (SentinelAgent, dict(sa_enabled=False, fusion=False), {}),
     # previous fusion rule (plain naive-Bayes log-odds sum), ablation of Amendment A3
     'abl_naive_fusion': (SentinelAgent, dict(fusion_rule='naive_bayes'), {}),
+    # attribution of the margin (E12): delivery and sensing components removed jointly
+    'sentinel_th_inf': (SentinelAgent, dict(t_hold_s=_NEVER), {}),
+    'abl_no_fusion_no_delivery': (SentinelAgent, dict(fusion=False, t_hold_s=_NEVER), {}),
+    'abl_no_sa_no_fusion_no_delivery': (SentinelAgent, dict(sa_enabled=False, fusion=False,
+                                                            t_hold_s=_NEVER), {}),
 }
+
+# Baselines with SENTINEL's corroborative fusion added to their sensing (E12): same mobility
+# and tuned parameters, only the ledger keeps per-sector views and fuses them.
+for _b in ['B0_pso', 'B1_v1', 'B2_commpso', 'B3_lambda2', 'B4_potential', 'B5_mappo',
+           'B6_lawnmower']:
+    _cls, _a, _s = METHODS[_b]
+    METHODS[_b + '_fusion'] = (_cls, {**_a, 'fusion': True}, _s)
 
 
 def build_config(method: str, base: AgentConfig | None = None, agent_overrides: dict | None = None,

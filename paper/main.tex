@@ -37,13 +37,15 @@ angles cannot veto a clear one, and, while a report is being delivered, constrai
 delivery path with an outage model and a local minimum spanning tree so that preserved links remain
 reliable for every feasible step. We bound the probability that a confirmed detection is lost before
 it is secured and show that nearest-neighbour distance constraints do not preserve connectivity. In
-about 11\,000 simulated missions against seven baselines tuned with the same budget (connectivity
+about 13\,000 simulated missions against seven baselines tuned with the same budget (connectivity
 control, potential fields, communication-aware PSO, MAPPO and sweep search), with 30 seeds per
 setting and paired tests, SENTINEL reports 23--30\,\% more victims within 60\,s than the best
 baseline in urban rubble in six failure settings, is significantly better than all baselines for
-3--50 UAVs on a 400\,m area, and is never significantly worse; PX4 software-in-the-loop flights in
-Gazebo agree with the fast simulator. Ablations show significant effects of the fusion rule and, in
-the severe channel, of the delivery trigger, and none of continuous connectivity. The onboard YOLO26n
+3--50 UAVs on a 400\,m area, and is never significantly worse than any of them; PX4 software-in-the-loop flights in
+Gazebo agree with the fast simulator. Ablations show significant effects of the fusion rule and
+of the delivery trigger. Given the same fusion rule, the baselines remain significantly behind in the
+urban 400\,m scenarios, but match or exceed SENTINEL in a dense 50-UAV swarm, where fusion alone
+explains its advantage. Continuous connectivity does not help. The onboard YOLO26n
 detector matches YOLOv8n in validation accuracy on HIT-UAV with 31\,\% less compute.
 \end{abstract}
 

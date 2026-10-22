@@ -257,10 +257,12 @@ class Simulation:
                     if a.compute_s:
                         compute.append(a.compute_s)
                         a.compute_s = 0.0
-            # --- preserved-link check (Proposition 1): mutually selected, tethered pairs
-            pairs = [(a.id, j) for a in self.agents[:self.N] if a.alive and a.tethered_now
+            # --- preserved-link check (Proposition 1): mutually selected pairs in a delivery
+            # tether. tether_window equals tethered_now when the projection is enabled, and also
+            # counts the same links when it is disabled (counterfactual for the ablation).
+            pairs = [(a.id, j) for a in self.agents[:self.N] if a.alive and a.tether_window
                      for j in a.spring_set if j < len(self.agents) and self.agents[j].alive
-                     and (j == self.base or (self.agents[j].tethered_now
+                     and (j == self.base or (self.agents[j].tether_window
                                              and a.id in self.agents[j].spring_set))
                      and (j == self.base or a.id < j)]
             if pairs:

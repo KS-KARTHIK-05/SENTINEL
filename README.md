@@ -71,7 +71,7 @@ quadrotors in Gazebo, so both environments test identical decision logic.
 
 ## Results
 
-The evaluation spans 11 experiments and about **11,000 simulated missions**, with 30 seeds per configuration.
+The evaluation spans about **13,000 simulated missions**, with 30 seeds per configuration.
 SENTINEL is compared with 7 baselines, each tuned with the same Optuna budget:
 
 | | Baseline |
@@ -95,12 +95,13 @@ The metric is the **share of victims reported to the responder within 60 s**.
 | Scalability, 400 m, N = 3–50 | 0.20–0.79 | 0.15–0.73 | significantly better than all 7 at every N |
 | Scalability, 200 m | 0.48–0.81 | 0.46–0.78 | better at N = 50; tied with MAPPO at N = 10–20 |
 | Moving obstacles | 0.58 | ≤ 0.51 | significantly better than all 7 |
-| Dense swarm (200 m, N = 50) | 0.809 | 0.720 | significantly better; naive fusion gives 0.656 |
-| Delivery trigger (severe, N = 8) | 0.497 (`T_hold` = 0) | 0.388 (never deliver) | +28 % |
+| Dense swarm (200 m, N = 50) | 0.809 | 0.720 | significantly better; naive fusion gives 0.656. With SENTINEL's fusion added, baselines reach 0.815–0.865 (B4 + fusion significantly better): here fusion alone explains the gain |
+| Delivery trigger, N = 8, urban / severe | 0.599 / 0.501 (`T_hold` = 15 s) | 0.523 / 0.419 (never deliver) | +15 % / +20 %, significant |
+| Urban, baselines given SENTINEL's fusion rule (N = 4 / 8) | 0.313 / 0.575 | 0.228 / 0.507 | still significantly better than all 7 |
 
-- **Link safety:** 15 violations in 436,057 preserved link-steps. A Monte-Carlo check of Proposition 1 over 10⁴ trials found 0 failures.
+- **Link safety:** 93 violations in 1,349,703 preserved link-steps (6.9×10⁻⁵). On the same seeds, disabling the projection raises violations 37-fold (1 vs 42; p < 10⁻⁴). A Monte-Carlo check of Proposition 1 over 10⁴ trials found 0 failures.
 - **Scalability:** planning takes 4–11 ms per agent for N = 3–50, against a 1 s planning period.
-- **Ablation:** the gains come from fusion and the delivery trigger. The connectivity layer has no significant effect on reporting; it is reported as a safety property, not a performance gain.
+- **Ablation:** fusion and the delivery trigger have significant effects; with fusion, flank and delivery all removed SENTINEL is still ahead of every baseline given fusion; the remaining differences (tuned exploration aids, heartbeat re-attachment) are not claimed as contributions. The connectivity layer does not change the on-time share; it is reported as a safety property.
 - **Gazebo/PX4 cross-check:** the software-in-the-loop runs agree with the fast simulator within 0.07 on reporting and 0.04 on packet delivery.
 
 **Onboard detector** (identical training protocol, thermal dataset HIT-UAV):

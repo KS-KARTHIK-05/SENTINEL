@@ -1,4 +1,5 @@
 # E10 latency-discovery trade-off of the delivery trigger T_hold (Amendment A1).
+tuned_file: configs/tuned.yaml
 base: {duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, failures: {kind: poisson, rate: 0.01}}
 grid:
   channel.profile: [urban_rubble, severe]

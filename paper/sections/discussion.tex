@@ -7,16 +7,19 @@ is not the bottleneck in the scenarios we studied: keeping the swarm connected a
 that meet during the search already protects most information from failures. What raised timely
 reporting was deciding \emph{when} a UAV should stop searching to deliver what it found, and
 combining views so that occlusion does not hide confirmed victims; these are the components with
-significant effects, although part of SENTINEL's margin in the urban default is not attributable to
-any single component (Section~\ref{sec:eval:ablation}). The link-preservation layer
-(Proposition~\ref{prop:link}) did not change performance measurably; its role is to make deliveries reliable when
-they happen.
+significant effects. Given the same fusion rule, the baselines remain significantly behind in the
+urban 400\,m scenarios, but in a dense 50-UAV swarm they match SENTINEL and one exceeds it, so there
+the fusion rule, not the mobility, is what matters. Part
+of its margin in the urban default is not explained by these components
+(Section~\ref{sec:eval:ablation}). The link-preservation layer (Proposition~\ref{prop:link}) did not
+change the on-time share measurably, but it reduced preserved-link violations 37-fold; its role is to
+make deliveries reliable when they happen.
 
 \paragraph{Choice of $T_h$}
 $T_h$ trades on-time reporting against total discovery. The value tuned on the report value $J$
-(116\,s) is longer than the 60\,s deadline and is not the best for that deadline: in the severe
-channel $T_h=0$ was significantly better, and in the urban channel short hold times (0--15\,s) gave
-the highest means without reaching significance (Fig.~\ref{fig:thold}). In practice $T_h$ should follow the responders' reporting deadline; adapting it online to the
+(116\,s) is longer than the 60\,s deadline. It still improves on-time reporting over never
+delivering (urban, $N=8$: 0.577 at $T_h=120$\,s vs.\ 0.523), but a hold time of 15\,s was better in
+both channels with eight UAVs (0.599 urban, 0.501 severe; Fig.~\ref{fig:thold}). In practice $T_h$ should follow the responders' reporting deadline; adapting it online to the
 observed contact rate is a natural extension.
 
 \paragraph{Tuning sensitivity}

@@ -27,7 +27,13 @@ NAMES = {'sentinel': 'SENTINEL', 'B0_pso': 'B0 PSO', 'B1_v1': 'B1 Earlier design
          'sentinel_strict': 'SENTINEL-strict', 'abl_distance_spring': 'distance spring',
          'abl_nn_set': 'NN set', 'abl_no_info_tension': 'no info. tension',
          'abl_no_projection': 'no projection', 'abl_no_sa': 'no SA', 'abl_no_fusion': 'no fusion',
-         'abl_naive_fusion': 'naive-Bayes fusion', 'abl_no_sa_no_fusion': 'no SA, no fusion'}
+         'abl_naive_fusion': 'naive-Bayes fusion', 'abl_no_sa_no_fusion': 'no SA, no fusion',
+         'sentinel_th_inf': 'no delivery ($T_h{=}\\infty$)',
+         'abl_no_fusion_no_delivery': 'no fusion, no delivery',
+         'abl_no_sa_no_fusion_no_delivery': 'no SA, fusion, delivery',
+         'B0_pso_fusion': 'B0 + fusion', 'B1_v1_fusion': 'B1 + fusion', 'B2_commpso_fusion': 'B2 + fusion',
+         'B3_lambda2_fusion': 'B3 + fusion', 'B4_potential_fusion': 'B4 + fusion',
+         'B5_mappo_fusion': 'B5 + fusion', 'B6_lawnmower_fusion': 'B6 + fusion'}
 ORDER = list(NAMES)
 METRIC_LABEL = {'rep_within_60s': 'Reported $\\le$60\\,s', 'tdr_base': 'Reported (total)',
                 'report_value': 'Report value', 'latency_p90_s': 'p90 latency [s]',
@@ -187,6 +193,11 @@ def main():
                                          'false_entries_max'], 'E9 — faithful re-run of the v1 scenario'),
         ('e8_fastsim', 'cfg_map_size', ['rep_within_60s', 'tdr_base', 'coverage', 'pdr'],
          'E8 — fast-simulator side of the SITL cross-check'),
+        ('e12_attribution', ['cfg_profile', 'cfg_n_uav'], ['rep_within_60s', 'tdr_base', 'latency_p90_s',
+                                                            'link_violation_rate', 'preserved_link_steps'],
+         'E12 — attribution: joint ablations and baselines with fusion (400 m)'),
+        ('e11b_dense_fusion', 'cfg_n_uav', ['rep_within_60s', 'tdr_base', 'false_entries_max'],
+         'E11b — dense swarm, baselines with fusion (200 m, N=50)'),
     ]
     for exp, key, metrics, title in spec:
         df = load(a.results, exp)
@@ -197,9 +208,15 @@ def main():
             key = 'cell'
         md.append(md_table(df, key, [m for m in metrics if m in df], title))
         if exp == 'e11_dense_diag':
+            e11b = load(a.results, 'e11b_dense_fusion')
+            if e11b is not None:      # same cells and seeds; SENTINEL rows are identical
+                df = pd.concat([df, e11b[e11b.cfg_method != REF]], ignore_index=True)
             with open(os.path.join(tdir, f'{exp}_rep60.tex'), 'w') as f:
                 f.write(latex_table(df, key, 'rep_within_60s',
-                                    'Dense swarm (200 m, N=50): victims reported within 60 s.', f'tab:{exp}',
+                                    'Dense swarm (200 m, N=50): victims reported within 60 s; '
+                                    'ablations of SENTINEL and baselines with its fusion rule (same seeds).'
+                                    ' Mean over 30 seeds; best in bold; $^*$: differs from SENTINEL '
+                                    '(paired Wilcoxon, Holm-corrected, $p<0.05$).', f'tab:{exp}',
                                     colnames={'50': 'N=50'}))
     cap = (' Mean over 30 seeds; best per column in bold; $^*$: differs from SENTINEL '
            '(paired Wilcoxon, Holm-corrected, $p<0.05$).')
@@ -227,6 +244,25 @@ def main():
             f.write(latex_table(e7t, 'cell', 'rep_within_60s',
                                 'Ablation: victims reported within 60 s (400 m, Poisson failures).' + cap,
                                 'tab:e7', wide=False))
+    e12 = load(a.results, 'e12_attribution')
+    if e12 is not None:
+        e12['cell'] = [f'{p.replace("_rubble", "")}, N={n}' for p, n in zip(e12.cfg_profile, e12.cfg_n_uav)]
+        with open(os.path.join(tdir, 'e12_attribution_rep60.tex'), 'w') as f:
+            f.write(latex_table(e12[e12.cfg_method != 'abl_no_projection'], 'cell', 'rep_within_60s',
+                                'Attribution: components removed jointly and baselines with SENTINEL\'s '
+                                'fusion rule; victims reported within 60 s (400 m, Poisson failures).' + cap,
+                                'tab:e12', wide=False))
+        lines = ['### E12 — preserved-link violations with and without the projection', '',
+                 '| cell | method | link-steps | violations | rate |', '|---|---|---|---|---|']
+        for (cl, m), g in e12[e12.cfg_method.isin([REF, 'abl_no_projection'])].groupby(['cell', 'cfg_method']):
+            steps = g.preserved_link_steps.sum()
+            bad = (g.link_violation_rate.fillna(0) * g.preserved_link_steps).sum()
+            lines.append(f'| {cl} | {NAMES[m]} | {int(steps)} | {bad:.0f} | {bad / max(steps, 1):.2e} |')
+        g = e12[e12.cfg_method.isin([REF, 'abl_no_projection'])]
+        for m, gg in g.groupby('cfg_method'):
+            steps = gg.preserved_link_steps.sum(); bad = (gg.link_violation_rate.fillna(0) * gg.preserved_link_steps).sum()
+            lines.append(f'| all | {NAMES[m]} | {int(steps)} | {bad:.0f} | {bad / max(steps, 1):.2e} |')
+        md.append('\n'.join(lines) + '\n')
     e2t, e4t, e6ct, e11t = (load(a.results, x) for x in ('e2_channel', 'e4_dynamic', 'e6c_false_alarms', 'e11_dense_diag'))
     if e2t is not None:
         with open(os.path.join(tdir, 'e2_channel_rep60.tex'), 'w') as f:
@@ -277,6 +313,16 @@ def main():
                                                                'latency_p90_s', 'info_loss']]
                 lines.append(f'| {p}, N={n} | {"∞" if th > 1e4 else f"{th:g}"} | '
                              + ' | '.join(f'{c[0]:.3f} [{c[1]:.3f}, {c[2]:.3f}]' for c in cells) + ' |')
+        md.append('\n'.join(lines) + '\n')
+        lines = ['E10 paired Wilcoxon (Holm) of each T_hold against never delivering (∞), reported ≤60 s:', '']
+        for (p, n), g in e10.groupby(['cfg_profile', 'cfg_n_uav']):
+            piv = g.pivot_table(index='cfg_seed', columns='t_hold', values='rep_within_60s')
+            ref = piv.columns.max()
+            others = [c for c in piv.columns if c != ref]
+            res = paired_wilcoxon_holm(piv[ref].values, {f'{c:g}': piv[c].values for c in others})
+            lines.append(f'- {p}, N={n}: ' + ', '.join(
+                f'T={c:g}: Δ={piv[c].mean() - piv[ref].mean():+.3f} p_holm={res[f"{c:g}"]["p_holm"]:.3g}'
+                for c in others))
         md.append('\n'.join(lines) + '\n')
         import matplotlib
         matplotlib.use('Agg')

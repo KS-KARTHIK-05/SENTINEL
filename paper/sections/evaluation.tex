@@ -61,7 +61,7 @@ configuration is evaluated on seeds 0--29; all methods see the same area, victim
 schedule for a given seed (common random numbers). We report means with 95\,\% bootstrap
 confidence intervals and test SENTINEL against every other method with paired Wilcoxon
 signed-rank tests, Holm-corrected within each scenario (marked $^*$ in the tables for $p<0.05$).
-In total the evaluation comprises about 11\,000 simulated missions.
+In total the evaluation comprises about 13\,000 simulated missions.
 
 \begin{figure}[t]\centering
 \includegraphics[width=\columnwidth]{figures/mappo_curve.pdf}
@@ -149,23 +149,38 @@ producing false confirmations.
 \input{tables/e6c_false_alarms_rep60}
 
 \subsection{What produces the gains}\label{sec:eval:ablation}
-Table~\ref{tab:e7} removes one component at a time. Two components have significant effects. First, multi-view fusion:
+Table~\ref{tab:e7} removes one component at a time and Table~\ref{tab:e12} removes them jointly, on
+the same scenarios and seeds. Two components have significant effects. First, multi-view fusion:
 removing it reduces on-time reports significantly (urban, $N=8$: 0.519 vs.\ 0.575), and in the dense
 swarm of Table~\ref{tab:e11_dense_diag} the corroborative rule is decisive (0.809, against 0.656 with
-plain naive-Bayes fusion and 0.720 for B0). Second, the delivery trigger: Fig.~\ref{fig:thold} sweeps
-$T_h$; in the severe channel with eight UAVs, delivering immediately ($T_h=0$) raises the on-time
-share from 0.388 (never delivering) to 0.497 and lowers the 90th-percentile latency from 97\,s to
-34\,s, while the total share of reported victims stays at 0.50. In the urban channel the same trend is
-present but not significant. The remaining components (outage-based instead of distance-based spring,
-LMST instead of nearest-neighbour preserved set, information-dependent tension, projection) do not
-change the outcome significantly, and the SA flank is not significant in the tuned configuration.
-These mechanisms act only during the short delivery tethers; we regard them as the safety layer
-examined next, not as the source of the performance gains. Neither significant component alone
-accounts for SENTINEL's whole margin in the urban default: without fusion it reports 0.519 and
-without delivery ($T_h=\infty$) 0.552, both still above the best baseline (0.475). The rest of the
-margin is not attributable to any single component that we removed. Keeping the swarm connected at all times
-(SENTINEL-strict) lowers on-time reporting to 0.03--0.13.
+plain naive-Bayes fusion and 0.720 for B0). The flank helps only together with fusion: without
+fusion, also removing the flank raises the on-time share (0.543 vs.\ 0.519), because flank requests
+then cost search time without adding evidence. Second, the delivery trigger: never delivering
+($T_h=\infty$) lowers the urban on-time share from 0.575 to 0.523, and Fig.~\ref{fig:thold} sweeps
+$T_h$. With eight UAVs a short hold time is best in both channels: $T_h=15$\,s raises the on-time
+share over never delivering from 0.523 to 0.599 in the urban channel and from 0.419 to 0.501 in the
+severe channel, where it also shortens the 90th-percentile latency from 74\,s to 41\,s at almost the
+same total share (0.53); with four UAVs the differences are not significant. The remaining components
+(outage-based instead of distance-based spring, LMST instead of nearest-neighbour preserved set,
+information-dependent tension, projection) do not change the on-time share significantly; they act
+only during the short delivery tethers, and we examine them as the safety layer below.
+
+Fusion is not part of the baselines' published designs, so Table~\ref{tab:e12} also gives every
+baseline SENTINEL's fusion rule. This raises the best urban baseline from 0.475 to 0.507 (B3), but
+SENTINEL remains significantly better than every baseline with fusion in the urban channel, with four
+and with eight UAVs; in the severe channel it remains ahead of all of them (significantly of B3 and B4 with four UAVs and of B4 and B5 with eight).
+In the dense swarm (Table~\ref{tab:e11_dense_diag}) the picture differs: with fusion, every baseline
+matches SENTINEL (0.815--0.849 vs.\ 0.809, not significant) and the edge-potential baseline B4
+exceeds it (0.865, significant). There, SENTINEL's advantage over the original baselines comes from
+the fusion rule alone, and its mobility gives no advantage when contacts are dense.
+Removing fusion, flank and delivery together leaves 0.524 in the urban channel, significantly below
+SENTINEL but still above every baseline with fusion. The rest of SENTINEL's margin over the original
+baselines is therefore not explained by these three components; the remaining differences
+are the tuned exploration aids and the heartbeat re-attachment, which we do not claim as
+contributions. Keeping the swarm connected at all times (SENTINEL-strict) lowers on-time reporting to
+0.03--0.13.
 \input{tables/e7_ablation_rep60}
+\input{tables/e12_attribution_rep60}
 \input{tables/e11_dense_diag_rep60}
 \begin{figure}[t]\centering
 \includegraphics[width=\columnwidth]{figures/e10_thold_tradeoff.pdf}
@@ -177,16 +192,18 @@ report latency for four regimes (each point: mean of 30 seeds).}
 \subsection{Link preservation during delivery}\label{sec:eval:safety}
 Proposition~\ref{prop:link} is a one-step guarantee for feasible steps. Over all experiments we
 counted the tethered, mutually preserved links that were reliable before a step and unreliable after
-it: 15 violations in 436\,057 link-steps ($3.4\times10^{-5}$); with the swarm tethered at all times
-(SENTINEL-strict) the rate is $2.6\times10^{-3}$. The residual violations come from steps where the
-constraint was infeasible and the UAV hovered (Section~\ref{sec:proj}). Because tethers are short,
-the ablations that change the preserved set or the tension alter few decisions (several cells of
-Table~\ref{tab:e7} are identical to SENTINEL), and without the projection the violation rate is not
-defined; the low rate therefore shows that the constraint holds when it is applied, not how many
-violations it prevents. Information loss did not vary
-consistently with $T_h$ at the failure rates studied (at most 6.2\,\% in any cell), so the exposure
-bound of Proposition~\ref{prop:exposure} could not be confirmed or refuted empirically; it remains a
-design guarantee.
+it: 93 violations in 1\,349\,703 link-steps ($6.9\times10^{-5}$); with the swarm tethered at all times (SENTINEL-strict) the rate is $2.3\times10^{-3}$. To
+measure what the projection prevents, we also counted the same tethered links with the projection
+disabled (Table~\ref{tab:e12} scenarios and seeds): violations rise from 1 in 1\,663 link-steps
+($6.0\times10^{-4}$, one of 120 runs) to 42 in 1\,868 ($2.2\times10^{-2}$, 21 runs; paired Wilcoxon
+$p<10^{-4}$), a 37-fold reduction. The residual violations come from steps where the constraint was
+infeasible and the UAV hovered (Section~\ref{sec:proj}). Because tethers are short (about 14
+tethered link-steps per mission here), this protection does not measurably change the on-time share,
+which is why the layer does not appear among the sources of the gains. Information loss is highest
+without delivery in three of the four regimes of Fig.~\ref{fig:thold}, the direction
+Proposition~\ref{prop:exposure} predicts, but it does not decrease monotonically with $T_h$ (at most
+7.7\,\% in any cell), so the bound itself could not be tested quantitatively; it remains a design
+guarantee.
 
 \subsection{Cross-validation in PX4/Gazebo and the earlier scenario}\label{sec:eval:sitl}
 To check that the fast simulator does not depend on idealised flight, we flew SENTINEL and B0 with
@@ -201,7 +218,7 @@ below, connectivity is rarely limiting there, so this check tests agreement betw
 environments, not the methods. Finally, re-running the scenario of the earlier SENTINEL design
 (25\,m area, three UAVs, one crash) shows that it separates the methods only weakly: the
 area is far smaller than the radio range, every method stays connected throughout, and all of them
-report 64--69\,\% of the victims (SENTINEL 0.69, significantly above B0 with 0.64 but not above
-the earlier design with 0.65). The remaining victims are either buried or so close to
-another victim (4--5\,m) that their reports merge (7.8--11\,\% of confirmations), which is a
+report 63--71\,\% of the victims (SENTINEL 0.71, significantly above the earlier design with 0.63
+but not above B0 with 0.67). The remaining victims are either buried or so close to
+another victim (4--5\,m) that their reports merge (7--10\,\% of confirmations), which is a
 limitation of the association gate rather than of connectivity.

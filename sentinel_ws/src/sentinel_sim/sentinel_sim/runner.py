@@ -50,6 +50,8 @@ def _method_overrides(method: str, overrides: dict) -> dict:
     from .methods import METHODS
     if method in overrides:
         return copy.deepcopy(overrides[method])
+    if method.endswith('_fusion') and method[:-len('_fusion')] in overrides:
+        return copy.deepcopy(overrides[method[:-len('_fusion')]])   # baseline + fusion (E12)
     if not (method.startswith('sentinel') or method.startswith('abl_')) \
             or 'sentinel' not in overrides:
         return {}

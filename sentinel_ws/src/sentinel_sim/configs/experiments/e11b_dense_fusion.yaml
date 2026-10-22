@@ -1,0 +1,6 @@
+# E11b dense swarm (200 m, N=50, same cells and seeds as E11): baselines with SENTINEL's
+# corroborative fusion added (internal review, issue 3), paired with sentinel.
+tuned_file: configs/tuned.yaml
+base: {n_uav: 50, duration_s: 600, map: {kind: generate, size: 200, n_targets: 25, base: true}, channel: {profile: urban_rubble}, failures: {kind: poisson, rate: 0.01}, policy_path: configs/mappo_policy.npz}
+methods: [sentinel, B0_pso_fusion, B1_v1_fusion, B2_commpso_fusion, B3_lambda2_fusion, B4_potential_fusion, B5_mappo_fusion, B6_lawnmower_fusion]
+seeds: 30
