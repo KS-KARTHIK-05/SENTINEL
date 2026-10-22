@@ -635,3 +635,9 @@ All code is in `src/SENTINEL/sentinel_ws/src/` on git branch **`revision-v2`**. 
 - The user pushed `revision-v2` to `KS-KARTHIK-05/SENTINEL` as branch `v2`. `git ls-remote` confirms `v2` = `f97d0db`. The fork's `main` (`3959ab6`, v1 plus one web upload) is untouched.
 - **README.md rewritten for v2.** The v1 README still showed the unreproducible v1 numbers (66→100 %, 1.2 ms) and a C++ package that never existed. The new one covers the problem, the components, an architecture diagram (mermaid), the headline results and detector table (from RESULTS.md), the layout, setup, the one-command demo, reproduction commands, v1→v2 changes, limitations and authors. Every link was checked against tracked files.
 - **requirements.txt** updated to the tested v2 dependencies (numpy<2, scipy, pandas, pyarrow, shapely, optuna, ultralytics, …).
+
+### 2026-10-22 — Commit messages rewritten (no Claude co-author line)
+- At the user's request, the `Co-Authored-By: Claude` trailer was removed from all 5 v2 commits with `git filter-branch --msg-filter`. Files are identical; only the messages and hashes changed.
+- Old → new hashes: 09bcc55→680e05e, c657c70→ff5835e, de143c7→b68c36a, f97d0db→43fb088, 42f6f22→8616269. Earlier log entries that cite the old hashes refer to these.
+- Backup of the old branch: local `backup/revision-v2-before-msg-rewrite`.
+- Remote `karthik/v2` still has the old commits, so the user must force-push. Future commits carry no attribution trailer.
