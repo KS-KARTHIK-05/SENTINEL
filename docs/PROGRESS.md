@@ -630,3 +630,8 @@ All code is in `src/SENTINEL/sentinel_ws/src/` on git branch **`revision-v2`**. 
 - The spare screenshots are not committed.
 - The push failed again because this machine has no GitHub credentials. The user has to push from their own terminal. Branch `revision-v2` is 2 commits ahead of `main` (09bcc55, c657c70).
 - 2026-10-22: removed the forced line break in the title, which had left "Reporting" alone on the second line. The title now wraps naturally over three lines; still 11 pages.
+
+### 2026-10-22 — Pushed to Karthik's fork; new README
+- The user pushed `revision-v2` to `KS-KARTHIK-05/SENTINEL` as branch `v2`. `git ls-remote` confirms `v2` = `f97d0db`. The fork's `main` (`3959ab6`, v1 plus one web upload) is untouched.
+- **README.md rewritten for v2.** The v1 README still showed the unreproducible v1 numbers (66→100 %, 1.2 ms) and a C++ package that never existed. The new one covers the problem, the components, an architecture diagram (mermaid), the headline results and detector table (from RESULTS.md), the layout, setup, the one-command demo, reproduction commands, v1→v2 changes, limitations and authors. Every link was checked against tracked files.
+- **requirements.txt** updated to the tested v2 dependencies (numpy<2, scipy, pandas, pyarrow, shapely, optuna, ultralytics, …).
