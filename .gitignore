@@ -32,3 +32,11 @@ paper/*.fdb_latexmk
 paper/*.blg
 paper/*.out
 paper/*.synctex.gz
+
+# LaTeX build files of the ICIUS revision (main.pdf is kept)
+paper_icius/*.aux
+paper_icius/*.log
+paper_icius/*.fls
+paper_icius/*.fdb_latexmk
+paper_icius/*.blg
+paper_icius/*.out

@@ -717,3 +717,20 @@ Experiment-dependent items 3 and 6 were not resolved, but their wording was made
 - **E11b (dense, N=50):** baselines with fusion 0.815–0.849 (n.s.); B4+fusion 0.865 is significantly better than SENTINEL (0.809). Reported honestly: in dense swarms fusion alone explains the gain.
 - **Safety:** all-experiment total 93 violations in 1,349,703 link-steps (6.9e-5); strict 2.3e-3; counterfactual 37-fold (E12).
 - **Paper:** abstract, introduction, §VI-H, §VI-I, §VI-J, discussion and conclusion updated. New Table XIII (E12) and Table XIV (E11 + E11b). Missions now about 13,000. 13 pages, 0 overfull boxes, 0 undefined references, lint 0. README and response document updated.
+
+### 2026-10-26 — ICIUS 2026 revision (UN006) built, per `icius_revision_prompt.md`
+- **New folder `src/SENTINEL/paper_icius/`:**
+  - `main.tex`: IEEEtran conference, original v1 title, 6 pages, about 5.5 full;
+  - `references.bib`: 19 entries, all web-verified;
+  - `scripts/make_icius.py`: generates all tables (mean ± 95 % CI half-width, Wilcoxon-Holm stars) and 118 number macros from the per-seed results and the code;
+  - `response_to_reviewers.md`, `REPORT.md`.
+
+  The 13-page draft is untouched.
+- **Checks:** 0 overfull boxes, 0 undefined references, abstract 161 words, no banned words or forbidden v1 numbers, page 1 complete.
+- **Found while building:**
+  - The journal draft's link-violation total (93 / 1,349,703) included the stale `*_oldmetric` folders; the correct value is 65 / 1,317,947.
+  - The urban margin is exactly 23–29 %, not 23–30 %.
+  - The draft's Table VI header is broken by double-escaping `30\\%` in `make_results.py`.
+
+  The draft was not edited, per the instructions.
+- **Author details:** e-mails and affiliations taken from the v1 source in `SENTINEL_DRAFT__Copy_/main.tex`.
