@@ -780,3 +780,8 @@ Experiment-dependent items 3 and 6 were not resolved, but their wording was made
 
   The License badge is added, and the old one-line Rescue Randy/x500 credit is replaced by the table.
 - **`sentinel_ai/package.xml`:** the license field now notes "YOLO weights in models/: AGPL-3.0, Ultralytics" (like `sentinel_gazebo`'s Rescue Randy note).
+- **Pushed by the user (2026-10-28).** GitHub shows the MIT license, and the default branch is `v2`. The repo page's Contributors box shows "No contributors", but the GitHub API already lists KS-KARTHIK-05 (17 commits) and nicholaschristo (3), and all 17 of Karthik's commits are linked to his account by e-mail. The box is a cached view that refreshes later, so nothing needs fixing. `v2` is 7 ahead of and 0 behind `nicholaschristo/SENTINEL:main`, so "Sync fork" has nothing to bring in.
+- **Reviewer 3 check (2026-10-28).**
+  - R3.2: the link budget in Section 3 and Table 1 is in the paper.
+  - R3.1: the 25 m rerun gives the 30-seed means (0.71 / 0.67 / 0.63) and the Wilcoxon results. Its spread is not shown anywhere: not in the paper and not in the extended results.
+  - Computed from `e9_v1_rerun`: SENTINEL 0.71 ± 0.04 (per run 0.5–0.9, SD 0.12), B0 0.67 ± 0.04 (0.5–0.9), B1 0.63 ± 0.04 (0.4–0.9). Not yet added; offered to the user.
