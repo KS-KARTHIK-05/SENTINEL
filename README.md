@@ -10,6 +10,7 @@ Paper: Edge-AI Driven Elastic Mesh PSO for Low-Altitude UAV IoT Networks in Zero
 ![Python 3.10](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)
 ![Detector YOLO26n](https://img.shields.io/badge/Detector-YOLO26n-111F68)
 ![Tests 396 passing](https://img.shields.io/badge/tests-396_passing-2EA44F)
+![License MIT](https://img.shields.io/badge/license-MIT-blue)
 
 After an earthquake or a building collapse there is often no cellular network. A swarm of small
 drones with thermal cameras can find survivors quickly, but **a sighting only helps once it reaches
@@ -256,4 +257,18 @@ Karthik K S · Nicholas Christo T · Balaji Ganesh Rajagopal
 
 The manuscript is in preparation (`paper/main.pdf`). Citation details will be added on publication.
 
-The Rescue Randy victim model comes from Gazebo Fuel (Open Robotics), and the x500 airframe from PX4-Autopilot.
+## License
+
+The code in this repository is released under the [MIT License](LICENSE),
+© 2026 Karthik KS and Nicholas Christo T.
+
+Third-party components keep their own licenses:
+
+| Component | Source | License |
+|---|---|---|
+| YOLO weights in `sentinel_ws/src/sentinel_ai/models/` (`yolo26n_thermal_best.pt`, `yolo26n_thermal.onnx`, `yolov8n_v1_best.pt`) | trained with [Ultralytics](https://github.com/ultralytics/ultralytics) | AGPL-3.0 |
+| Ultralytics (runtime dependency of `detector.py` and `bench_detector.py`; not included) | Ultralytics | AGPL-3.0 |
+| Rescue Randy mesh and material in `sentinel_gazebo/models/rescue_randy_thermal/` (heat signature and plugin names modified) | Ian Chen, Cole Biesemeyer (Open Robotics), Gazebo Fuel | CC BY 4.0 |
+| x500 airframe (included from PX4 at run time; not copied here) | PX4-Autopilot | BSD-3-Clause |
+| `IOS-Book-Article.cls` and the IOS Press template files in `paper_icius_ios/` | VTeX for IOS Press | LPPL |
+| `paper_icius_ios/vancouver.bst` | Folkert van der Beek | LPPL 1.3 or later |

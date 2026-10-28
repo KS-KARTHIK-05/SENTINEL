@@ -5,7 +5,7 @@
   <version>2.0.0</version>
   <description>SENTINEL ROS 2 nodes: thermal perception, decentralised EM-PSO agent, PX4 offboard control, channel emulation, failure injection and metrics.</description>
   <maintainer email="karthikzofficialmail@gmail.com">Karthik KS</maintainer>
-  <license>MIT</license>
+  <license>MIT (YOLO weights in models/: AGPL-3.0, Ultralytics)</license>
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>

@@ -767,3 +767,16 @@ Experiment-dependent items 3 and 6 were not resolved, but their wording was made
   - "the on-time share does not change".
 - **Result:** clean and highlighted are both 6 pages, A4, page 6 about 85 % full. 0 overfull boxes, 0 undefined references, 13 fonts all Type 1 and embedded. Banned-word, v1-number and "Fig." checks are clean, and page 1 is complete.
 - **Push rejected (2026-10-28).** GitHub `v2` had received two merge commits from Nicholas's repository (`42c6e80` PR #2 merge and `8408842` "Merge branch 'nicholaschristo:main' into v2", the GitHub "Sync fork"). Both have a file tree identical to `02535ba`, so no files changed. The 3 unpushed local commits were rebased onto `karthik/v2`: the files are identical, and the branch fast-forwards again. Backup: `backup/before-rebase-onto-synced-v2`.
+
+### 2026-10-28 — License added
+- **Decision (user):** MIT; copyright "Karthik KS and Nicholas Christo T". `LICENSE` contains the standard MIT text only, so GitHub detects it.
+- **README.** New "License" section with a third-party table:
+  - YOLO weights trained with Ultralytics: AGPL-3.0;
+  - Ultralytics as a runtime dependency: AGPL-3.0;
+  - Rescue Randy mesh and material (Open Robotics, Gazebo Fuel, modified): CC BY 4.0;
+  - PX4 x500 (included from PX4 at run time, not copied): BSD-3-Clause;
+  - IOS Press class and template files: LPPL;
+  - `vancouver.bst`: LPPL 1.3+.
+
+  The License badge is added, and the old one-line Rescue Randy/x500 credit is replaced by the table.
+- **`sentinel_ai/package.xml`:** the license field now notes "YOLO weights in models/: AGPL-3.0, Ultralytics" (like `sentinel_gazebo`'s Rescue Randy note).
