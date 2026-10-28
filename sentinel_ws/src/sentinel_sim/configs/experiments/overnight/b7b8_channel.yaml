@@ -1,0 +1,7 @@
+# Overnight 2026-10-28 (A4): B7, B8 in the E2 channel profiles.
+tuned_file: configs/tuned_v3.yaml
+base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, failures: {kind: poisson, rate: 0.01}, policy_path: configs/mappo_policy.npz}
+grid:
+  channel.profile: [open, suburban, urban_rubble, severe]
+methods: [B7_wall, B8_relay]
+seeds: 30

@@ -340,7 +340,12 @@ class SentinelAgent:
             f = lambda p, f0=f: f0(p) + cfg.w_goal * (  # noqa: E731
                 d0 - np.linalg.norm(p - goal, axis=1)) / horizon
         self.goal = goal
+        f, seeds = self._search_hook(t, f, seeds, nbrs)
         self.waypoint, _ = optimise(f, self.pos, horizon, self.bounds, self.rng, cfg.pso, seeds)
+
+    def _search_hook(self, t: float, f, seeds, nbrs: Dict[int, NeighbourState]):
+        """Extension point for baselines that constrain the waypoint search (identity here)."""
+        return f, seeds
 
     def _frontier_goal(self, field_: np.ndarray, nbrs: Dict[int, NeighbourState]):
         """Distant cell with the best expected-detections / distance trade-off."""

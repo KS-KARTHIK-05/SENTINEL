@@ -1,4 +1,4 @@
-"""Method registry: SENTINEL, its ablations and baselines B0-B4, B6.
+"""Method registry: SENTINEL, its ablations and baselines B0-B8.
 
 Each entry maps a name to (agent class, AgentConfig overrides, SpringConfig
 overrides). All methods share sensing, gossip, ledger and channel code, so
@@ -9,7 +9,8 @@ from __future__ import annotations
 from dataclasses import replace
 
 from sentinel_core.agent import AgentConfig, SentinelAgent
-from sentinel_core.baselines import Lambda2Agent, LawnmowerAgent, MappoAgent, PotentialAgent
+from sentinel_core.baselines import (HardWallAgent, Lambda2Agent, LawnmowerAgent, MappoAgent,
+                                     PotentialAgent, RelayChainAgent)
 from sentinel_core.fitness import SpringConfig
 
 # Baselines keep their published behaviour: constraints always on (if any), no
@@ -38,6 +39,9 @@ METHODS = {
     'B4_potential': (PotentialAgent, _NO_COMM, dict(mode='none')),
     'B5_mappo': (MappoAgent, _NO_COMM, dict(mode='none')),
     'B6_lawnmower': (LawnmowerAgent, _NO_COMM, dict(mode='none')),
+    # reviewer-requested baselines (overnight 2026-10-28): hard 50 m wall, relay chain
+    'B7_wall': (HardWallAgent, _NO_COMM, dict(mode='none')),
+    'B8_relay': (RelayChainAgent, _NO_COMM, dict(mode='none')),
     # ablations of SENTINEL (E7)
     'abl_distance_spring': (SentinelAgent, {}, dict(mode='distance_nn', lam0=0.5, beta=0.0)),
     'abl_nn_set': (SentinelAgent, dict(neighbour_set='nn'), {}),
@@ -58,9 +62,23 @@ METHODS = {
 # Baselines with SENTINEL's corroborative fusion added to their sensing (E12): same mobility
 # and tuned parameters, only the ledger keeps per-sector views and fuses them.
 for _b in ['B0_pso', 'B1_v1', 'B2_commpso', 'B3_lambda2', 'B4_potential', 'B5_mappo',
-           'B6_lawnmower']:
+           'B6_lawnmower', 'B7_wall', 'B8_relay']:
     _cls, _a, _s = METHODS[_b]
     METHODS[_b + '_fusion'] = (_cls, {**_a, 'fusion': True}, _s)
+
+# Sensitivity of the spring parameters (overnight 2026-10-28, reviewer request on lambda and
+# R_max): one parameter at a time around the tuned SENTINEL configuration. Each variant fixes
+# only its own parameter; everything else inherits SENTINEL's tuned values (runner). epsilon is
+# the outage target of both the spring (eps0) and the preserved-link radius R_eps (r_hard_eps).
+for _v in (0.3, 4.8):
+    METHODS[f'sentinel_lam0_{_v:g}'] = (SentinelAgent, {}, dict(lam0=_v))
+for _v in (0.0, 4.0):
+    METHODS[f'sentinel_beta_{_v:g}'] = (SentinelAgent, {}, dict(beta=_v))
+for _v in (0.01, 0.2):
+    METHODS[f'sentinel_eps_{_v:g}'] = (SentinelAgent, dict(r_hard_eps=_v), dict(eps0=_v))
+for _r in (30, 50, 70):
+    METHODS[f'abl_distance_spring_r{_r}'] = (SentinelAgent, {}, dict(
+        mode='distance_nn', lam0=0.5, beta=0.0, r_max=float(_r)))
 
 
 def build_config(method: str, base: AgentConfig | None = None, agent_overrides: dict | None = None,

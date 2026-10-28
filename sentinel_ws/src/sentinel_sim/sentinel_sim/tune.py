@@ -47,6 +47,10 @@ SPACES = {
     'B4_potential': {**_EXPLORE, 'agent_attrs.gain': ('log', 0.1, 20.0),
                      'agent_attrs.hyst': ('float', 1.0, 15.0)},
     'B6_lawnmower': {'agent_attrs.lane_factor': ('float', 1.0, 2.0)},
+    # overnight 2026-10-28: same budget, objective and tuning seeds as B0-B6
+    'B7_wall': dict(_EXPLORE),
+    'B8_relay': {**_EXPLORE, 'agent_attrs.rho': ('float', 0.0, 0.5),
+                 'agent_attrs.spacing': ('float', 0.5, 1.0)},
 }
 
 

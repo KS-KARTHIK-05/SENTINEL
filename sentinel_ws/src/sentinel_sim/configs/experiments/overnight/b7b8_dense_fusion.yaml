@@ -1,0 +1,5 @@
+# Overnight 2026-10-28 (A6): B7, B8 with SENTINEL's fusion rule in the dense swarm (E11b cell).
+tuned_file: configs/tuned_v3.yaml
+base: {n_uav: 50, duration_s: 600, map: {kind: generate, size: 200, n_targets: 25, base: true}, channel: {profile: urban_rubble}, failures: {kind: poisson, rate: 0.01}, policy_path: configs/mappo_policy.npz}
+methods: [B7_wall_fusion, B8_relay_fusion]
+seeds: 30

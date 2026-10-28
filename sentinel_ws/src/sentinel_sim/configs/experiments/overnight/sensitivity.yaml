@@ -1,0 +1,11 @@
+# Overnight 2026-10-28 (A7, E3): one-at-a-time sensitivity of the spring parameters around the
+# tuned SENTINEL (lambda0, beta, epsilon for spring and preserved-link radius, distance spring
+# R_max). Same base as e7_ablation.yaml; tuned SENTINEL re-run as the reference. Only SENTINEL
+# variants, so the original tuned file is used (independent of the B7/B8 tuning job).
+tuned_file: configs/tuned.yaml
+base: {duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, failures: {kind: poisson, rate: 0.01}}
+grid:
+  channel.profile: [urban_rubble, severe]
+  n_uav: [8]
+methods: [sentinel, sentinel_lam0_0.3, sentinel_lam0_4.8, sentinel_beta_0, sentinel_beta_4, sentinel_eps_0.01, sentinel_eps_0.2, abl_distance_spring_r30, abl_distance_spring_r50, abl_distance_spring_r70]
+seeds: 30

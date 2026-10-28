@@ -1,0 +1,10 @@
+# Overnight 2026-10-28 (A2): B7 hard wall and B8 relay chain in the E3 failure settings
+# (paper Table 2 and the severe-channel table). Same base, grid and seeds as e3_failures.yaml;
+# SENTINEL and B0-B6 come from results/e3_failures (deterministic, identical configs).
+tuned_file: configs/tuned_v3.yaml
+base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, policy_path: configs/mappo_policy.npz}
+grid:
+  channel.profile: [urban_rubble, severe]
+  failures: [{kind: none}, {kind: single, t: 240}, {kind: simultaneous, t: 240, fraction: 0.3}, {kind: cascading, t: 180, k: 3, gap: 60}, {kind: poisson, rate: 0.02}, {kind: brownout, t: 180, duration: 120, drop_db: 20}]
+methods: [B7_wall, B8_relay]
+seeds: 30

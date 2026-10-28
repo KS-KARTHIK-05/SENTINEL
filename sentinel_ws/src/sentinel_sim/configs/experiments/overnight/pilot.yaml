@@ -1,0 +1,8 @@
+# Overnight 2026-10-28 pilot: 2 seeds of every new fast-simulator job type, for wall-time
+# estimates only (untuned B7/B8 defaults; not used in any result).
+base: {duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, channel: {profile: urban_rubble}, failures: {kind: poisson, rate: 0.01}}
+grid:
+  n_uav: [8, 50]
+methods: [B7_wall, B8_relay, B7_wall_fusion, B8_relay_fusion, sentinel_eps_0.2, sentinel_lam0_4.8, abl_distance_spring_r30]
+seeds: 2
+seed0: 900

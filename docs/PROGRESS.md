@@ -785,3 +785,35 @@ Experiment-dependent items 3 and 6 were not resolved, but their wording was made
   - R3.2: the link budget in Section 3 and Table 1 is in the paper.
   - R3.1: the 25 m rerun gives the 30-seed means (0.71 / 0.67 / 0.63) and the Wilcoxon results. Its spread is not shown anywhere: not in the paper and not in the extended results.
   - Computed from `e9_v1_rerun`: SENTINEL 0.71 ± 0.04 (per run 0.5–0.9, SD 0.12), B0 0.67 ± 0.04 (0.5–0.9), B1 0.63 ± 0.04 (0.4–0.9). Not yet added; offered to the user.
+
+### 2026-10-28 (evening) — Overnight experiments for the remaining ICIUS reviewer requests: Part A
+- **Plan fixed before any result:** `docs/overnight_2026-10-28_PLAN.md`, copy of `results/overnight_2026-10-28/PLAN.md`. It covers jobs, order, analysis plan, Holm families and the decision rules for every claim to re-check. Nothing was cut; the estimate is about 6.5 h.
+- **B7 hard distance wall** (`sentinel_core/baselines/hard_wall.py`):
+  - B0 PSO; candidates farther than 50 m from the nearest fresh neighbour are rejected; the UAV holds if all are infeasible;
+  - tuned like B0.
+- **B8 relay chain** (`relay_chain.py`):
+  - round(ρN) relays (≥ 1 for N ≥ 3) on the responder → searcher-centroid ray at s · R₀.₀₅(1);
+  - re-planned every 1 s and re-formed on failure; the true positions it uses are an idealisation in the baseline's favour;
+  - ρ and s are tuned.
+- **Supporting changes:**
+  - B7 and B8 + fusion variants, with Optuna spaces (same 30-trial budget, objective and seeds);
+  - E3 sensitivity variants in `methods.py`: λ₀ {0.3, 4.8}, β {0, 4}, ε {0.01, 0.20} for both spring and R_ε, distance spring R_max {30, 50, 70};
+  - two no-op hooks: `SentinelAgent._search_hook` (identity) and `bind_sim` in `sim.py`.
+- **No regression:** stored runs re-run identically (`scripts/overnight/check_reproduce.py`: sentinel, B0/B3/B4/B5/B6 + fusion, abl_no_projection). 435 tests pass: the 396 existing plus 39 new for B7, B8, the variants and the E4/E5 scripts.
+- **E4 pipeline** (`scripts/overnight/e4_render.py`, `e4_detector.py`):
+  - headless Gazebo rig with the on-board thermal camera and two bounding-box cameras (visible / full);
+  - labelled victims and debris, frames at 25 and 30 m;
+  - YOLO dataset split by world, evaluation (mAP, recall at 0.40 / 0.70 for open and partly occluded victims, false alarms on warm debris), and fine-tuning with the checkpoint's own training arguments.
+- **E5** (`e5_fit.py`):
+  - censored maximum-likelihood fit of the in-loop detector model, false-alarm rate per debris item in view, calibration on the test worlds;
+  - robustness config generated from the fit.
+- **Finding:** the ROS 2 install was stale (built 14 Oct, before Amendment A3).
+  - Its ledger defaulted to naive-Bayes fusion, so the paper's PX4 check (E8, 15 Oct) ran SENTINEL with naive-Bayes fusion in Gazebo, against corroborative fusion in the fast simulator.
+  - The install was rebuilt (`colcon build --packages-select sentinel_core sentinel_ai`) and is now identical to the source.
+  - The E8 check is re-run on the current code (E8r) before E6.
+- **Pilots** (non-evaluation seeds only):
+  - B7/B8: 27–39 s per mission at N = 8 and 360–570 s at N = 50;
+  - rendering: 0.4 s per frame;
+  - fine-tune and fit chain works;
+  - PX4 + YOLO26n in the loop: 60 s simulated in 76 s, about 400 frames per UAV.
+- **Queue:** `scripts/overnight/run_overnight.sh` (resumable; progress in `results/overnight_2026-10-28/progress.log`).

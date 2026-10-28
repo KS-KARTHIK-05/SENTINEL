@@ -1,0 +1,8 @@
+# Overnight 2026-10-28 (A3): B7, B8 in the E1 swarm-size settings (paper Table 3, 200 m table).
+tuned_file: configs/tuned_v3.yaml
+base: {duration_s: 600, map: {kind: generate, n_targets: 25, base: true}, channel: {profile: urban_rubble}, failures: {kind: poisson, rate: 0.01}, policy_path: configs/mappo_policy.npz}
+grid:
+  n_uav: [3, 5, 10, 20, 50]
+  map.size: [200, 400]
+methods: [B7_wall, B8_relay]
+seeds: 30

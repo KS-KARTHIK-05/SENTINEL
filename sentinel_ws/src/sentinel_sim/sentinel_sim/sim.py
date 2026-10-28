@@ -152,6 +152,9 @@ class Simulation:
         self.t_first = {}      # target -> first time confirmed in any alive ledger
         self.carriers = {}     # target -> UAVs that ever held it confirmed
         self.t_base = {}       # target -> first time confirmed at the responder
+        for a in self.agents:  # baselines that use simulator state (B8 relay chain)
+            if hasattr(a, 'bind_sim'):
+                a.bind_sim(self)
 
     @staticmethod
     def _spawn(anchor, n, spacing):
