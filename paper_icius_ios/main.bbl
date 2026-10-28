@@ -28,11 +28,6 @@ Ji M, Egerstedt M.
   Preserving Connectedness.
 \newblock IEEE Transactions on Robotics. 2007;23(4):693-703.
 
-\bibitem{li2003lmst}
-Li N, Hou JC, Sha L.
-\newblock Design and Analysis of an {MST}-Based Topology Control Algorithm.
-\newblock In: Proc. IEEE INFOCOM. vol.~3; 2003. p. 1702-12.
-
 \bibitem{kantaros2017}
 Kantaros Y, Zavlanos MM.
 \newblock Distributed Intermittent Connectivity Control of Mobile Robot
@@ -81,5 +76,10 @@ Clerc M, Kennedy J.
 \newblock The Particle Swarm---Explosion, Stability, and Convergence in a
   Multidimensional Complex Space.
 \newblock IEEE Transactions on Evolutionary Computation. 2002;6(1):58-73.
+
+\bibitem{li2003lmst}
+Li N, Hou JC, Sha L.
+\newblock Design and Analysis of an {MST}-Based Topology Control Algorithm.
+\newblock In: Proc. IEEE INFOCOM. vol.~3; 2003. p. 1702-12.
 
 \end{thebibliography}

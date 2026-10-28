@@ -749,3 +749,21 @@ Experiment-dependent items 3 and 6 were not resolved, but their wording was made
   - README gets the ICIUS line, the broken response link is removed, and the link-violation total is corrected to 65 / 1,317,947;
   - no LICENSE file;
   - upstream `42c6e80` is the PR #2 merge commit (tree identical to `9ababff`); not merged.
+
+### 2026-10-28 — ICIUS IOS version: small fixes (affiliations, setup stack, contribution iii)
+- **Setup (Section 5)** now reads "ROS 2 Humble nodes flying PX4 x500 quadrotors in Gazebo Harmonic through Micro XRCE-DDS, with YOLO26n running on board". The measured SITL runs (E8) used the parameterised detector model, not YOLO, so the next sentence now starts "In the measured runs the detector is a parameterised model …" to avoid a contradiction with the Limitations.
+- **Contribution (iii)** now says EM-PSO plans the waypoints throughout, while the spring and link preservation act only during delivery (consistent with "acts only while tethered" in Section 4).
+- **Affiliations** are written out in full: Department of Computer Science and Engineering (AI & ML) / School of Computing, SRM Institute of Science and Technology, Tiruchirappalli, India. The corresponding-author footnote is updated the same way. All three are blue in the highlighted build. The response PDF header has no affiliations, so it is unchanged.
+- **Response letter:** "we are contacting the editor separately" → "we have informed the editor separately"; PDF re-exported (A4, 5 pages, no Type 3).
+- **Page budget.** The highlighted build went to 7 pages, because the boxed note shifts the floats. Prose was trimmed, with no table changes:
+  - abstract and intro wording;
+  - the LMST clause in Related Work ([6] is still cited in Section 4);
+  - the definition of T_k ("its delivery time");
+  - "enters Deliver … returns to Explore";
+  - "reachable waypoint";
+  - the fusion sentence;
+  - the Setup wording;
+  - the severe-channel p90 latency (still in `docs/icius2026_extended_results.md`);
+  - "the on-time share does not change".
+- **Result:** clean and highlighted are both 6 pages, A4, page 6 about 85 % full. 0 overfull boxes, 0 undefined references, 13 fonts all Type 1 and embedded. Banned-word, v1-number and "Fig." checks are clean, and page 1 is complete.
+- **Push rejected (2026-10-28).** GitHub `v2` had received two merge commits from Nicholas's repository (`42c6e80` PR #2 merge and `8408842` "Merge branch 'nicholaschristo:main' into v2", the GitHub "Sync fork"). Both have a file tree identical to `02535ba`, so no files changed. The 3 unpushed local commits were rebased onto `karthik/v2`: the files are identical, and the branch fast-forwards again. Backup: `backup/before-rebase-onto-synced-v2`.
