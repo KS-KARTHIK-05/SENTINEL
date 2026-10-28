@@ -42,15 +42,16 @@ and Technology, Tiruchirappalli, India}}
 
 \begin{abstract}
 \begin{revised}
-UAV swarms searching a disaster area without infrastructure must carry victim reports to the
-responders over their own radio links. SENTINEL treats the network as an elastic mesh that
+UAV swarms searching a disaster area without infrastructure must relay victim reports to
+responders over their own links. SENTINEL treats the network as an elastic mesh that
 stretches and breaks during search and is re-formed only to deliver a confirmed report: Elastic-Mesh
-PSO (EM-PSO) plans waypoints, confirmed information triggers delivery, weak detections get a
+PSO (EM-PSO) plans waypoints, confirmed victims trigger delivery, weak detections get a
 second view, and an outage-based Signal-Spring keeps delivery links reliable. In about
 \nMissions{} simulated missions with a \nFreq\,GHz outage channel, \nEoneNmin--\nEoneNmax{} UAVs, six
-failure settings and seven tuned baselines, SENTINEL reports \nEthreeGainLo--\nEthreeGainHi\,\% more
-victims within 60\,s than the best baseline in urban rubble; PX4 software-in-the-loop runs agree with the simulator, and an always-connected mesh
-reports far fewer victims in time.
+failure settings and \nBaseWord{} tuned baselines, SENTINEL reports \nEthreeGainLo--\nEthreeGainHi\,\% more
+victims within 60\,s than the best baseline in urban rubble (\nRobGainLo--\nRobGainHi\,\% with a
+detector model fitted to rendered-frame detector outputs), and an always-connected mesh reports far
+fewer in time.
 \end{revised}
 \end{abstract}
 
@@ -62,19 +63,14 @@ reports far fewer victims in time.
 \thispagestyle{empty}
 \pagestyle{empty}
 
-\ifhighlight
-\noindent\fbox{\parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{\small Revised manuscript. Text in
-\textcolor{blue}{blue} is new or changed in response to the reviews; see the response document for a
-point-by-point account.}}\par\medskip
-\fi
 
 \section{\kept{Introduction}}
 \begin{revised}
-After an earthquake, thermal-camera UAVs can sweep rubble and detect people on board
-\cite{hituav,yolo26}. A detection matters only once responders receive it, over the UAVs'
-short-range links, which buildings block, fading weakens and crashes cut. A connected swarm
-delivers at once but searches little, a spread-out one finds more but delivers by chance; we measure
-this discovery--delivery trade-off as the share of victims reported within 60\,s.
+After an earthquake, thermal-camera UAVs can detect people in rubble on board \cite{hituav,yolo26},
+but a detection matters only once responders receive it over short-range links that buildings block,
+fading weakens and crashes cut. A connected swarm delivers at once but searches little, a spread-out
+one finds more but delivers by chance; we measure this trade-off as the share of victims reported
+within 60\,s.
 
 Our first version held each UAV within 50\,m of its nearest neighbour, but a fixed radius ignores
 rubble, a close neighbour does not imply a connected network (Lemma~\ref{lem:nn}), and its 25\,m test
@@ -85,18 +81,17 @@ a blocked angle cannot veto a clear one; and (iii)~\emph{EM-PSO with an outage-b
 link preservation}: EM-PSO plans the waypoints throughout, while its spring and link preservation act
 only during delivery, as a safety property that keeps preserved links reliable
 (Proposition~\ref{prop:link}) and cuts link violations \nViolFold-fold; the reporting gains come from
-(i) and (ii). Code, generated scenarios, per-seed results and extended tables are available
-at \url{https://github.com/KS-KARTHIK-05/SENTINEL} (branch v2).
+(i) and (ii). Code, data and extended tables: \url{https://github.com/KS-KARTHIK-05/SENTINEL} (branch v2).
 \end{revised}
 
 \section{\kept{Related Work}}
 \begin{revised}
-Connectivity controllers keep the communication graph connected at all times, through its algebraic
-connectivity $\lambda_2$ \cite{zavlanos2008,sabattini2013} or edge potentials \cite{ji2007}, and all assume a disk radio model. Intermittent connectivity schedules meetings
-\cite{kantaros2017}, and age-of-information collection serves sources at known positions
+Connectivity controllers keep the graph connected through its algebraic connectivity
+$\lambda_2$ \cite{zavlanos2008,sabattini2013} or edge potentials \cite{ji2007}, assuming a disk radio model. Intermittent connectivity schedules meetings
+\cite{kantaros2017}, and age-of-information collection serves known sources
 \cite{bafarassat2026aoi}, whereas victims are found by the search itself. Distributed PSO and Bayesian
-search \cite{yang2024dapso,niu2026eventbayes} assume communication when needed, and multi-agent
-reinforcement learning such as MAPPO \cite{yu2022mappo} needs a trained policy. None combines
+search \cite{yang2024dapso,niu2026eventbayes} assume communication when needed, and MARL such as
+MAPPO \cite{yu2022mappo} needs a trained policy. None combines
 online-discovered sources, a deadline and an obstruction-aware channel.
 \end{revised}
 
@@ -116,11 +111,11 @@ P_{\mathrm{out}}(d,n)=\mathbb{E}_X\big[F_{|h|^2}\big(\gamma_{\mathrm{th}}/(\bar\
 \end{equation}
 and the reliable range is $R_\varepsilon(n)=\max\{d:P_{\mathrm{out}}(d,n)\le\varepsilon\}$. The link
 budget ($\nFreq$\,GHz, $P_t=\nPtx$\,dBm, $G=\nGant$\,dBi, $B=\nBw$\,MHz, noise figure \nNF\,dB,
-$\gamma_{\mathrm{th}}=\nGth$\,dB) leaves \nBudget\,dB of path loss before fading margins, and profile
-parameters follow published ranges \cite{tr36777,itup1411}. In urban rubble a link is reliable to
+$\gamma_{\mathrm{th}}=\nGth$\,dB) leaves \nBudget\,dB of path loss before fading margins, and profiles
+follow published ranges \cite{tr36777,itup1411}. In urban rubble a link is reliable to
 \nRurbanZero\,m in the open and \nRurbanOne\,m behind one obstruction (Table~\ref{tab:channel}), so the
 old 50\,m radius describes one obstructed link. With $\tau_k$ victim $k$'s first confirmation and
-$T_k$ its delivery time at the responder ($\infty$ if never), the team maximises from local information
+$T_k$ its delivery time ($\infty$ if never), the team maximises from local information
 \begin{equation}
 J=\frac{1}{|\mathcal{V}|}\sum_{k\in\mathcal{V}}e^{-T_k/\theta},\qquad\theta=\nTheta\,\mathrm{s}.\label{eq:J}
 \end{equation}
@@ -131,10 +126,7 @@ J=\frac{1}{|\mathcal{V}|}\sum_{k\in\mathcal{V}}e^{-T_k/\theta},\qquad\theta=\nTh
 \begin{revised}
 \paragraph{Mode Switching.} With $\mathcal{E}_i(t)$ the confirmed, undelivered entries UAV $i$ owns
 (its own, and any older than $3T_h$, so a crashed UAV's copies still arrive), it enters \textsc{Deliver} when
-\begin{equation}
-\max_{e\in\mathcal{E}_i(t)}(t-\tau_e)\ge T_h\label{eq:trigger}
-\end{equation}
-and returns to \textsc{Explore} when $\mathcal{E}_i(t)$ is empty.
+$\max_{e\in\mathcal{E}_i(t)}(t-\tau_e)\ge T_h$ and returns to \textsc{Explore} when $\mathcal{E}_i(t)$ is empty.
 
 \paragraph{EM-PSO.} Each planning period a UAV picks the reachable waypoint that maximises
 \begin{equation}
@@ -156,13 +148,11 @@ tree of reliable links \cite{li2003lmst}.
 Nearest-neighbour distance constraints do not imply connectivity.
 \end{lemma}
 \begin{proof}
-UAVs at $(0,0)$, $(10,0)$, $(200,0)$, $(210,0)$ with $R=50$\,m each have a neighbour at 10\,m, yet no
-link joins the pairs.
+Two UAV pairs 10\,m wide and 190\,m apart satisfy $R=50$\,m, yet no link joins them.
 \end{proof}
-While tethered, UAV $i$ scales its step $u_i$ by the largest $\alpha\in[0,1]$ such that
-$x_i'=x_i+\alpha u_i$ satisfies, for all $j\in\mathcal{S}_i$,
+Tethered UAV $i$ scales its step $u_i$ by the largest $\alpha\in[0,1]$ such that $x_i'=x_i+\alpha u_i$ meets
 \begin{equation}
-\|x_i'-m_{ij}\|\le\tfrac12 r_{ij}-\tfrac12 v\,a_{ij},\qquad r_{ij}=R_\varepsilon\big(n^{\delta_{ij}}(x_i',\hat x_j)\big),\label{eq:proj}
+\|x_i'-m_{ij}\|\le\tfrac12 r_{ij}-\tfrac12 v\,a_{ij},\quad r_{ij}=R_\varepsilon\big(n^{\delta_{ij}}(x_i',\hat x_j)\big)\quad\forall j\in\mathcal{S}_i,\label{eq:proj}
 \end{equation}
 with $\hat x_j$ the last reported position of $j$ (age $a_{ij}$), $m_{ij}=(x_i+\hat x_j)/2$,
 $\delta_{ij}=v(\Delta t+a_{ij})$ and $n^\delta$ counting obstacles inflated by $\delta$.
@@ -172,15 +162,15 @@ positions are at most $a$ old and both steps satisfy Eq.~\eqref{eq:proj}, link $
 $\varepsilon$-reliable at $t+\Delta t$.
 \end{proposition}
 \begin{proof}[Proof sketch]
-Each midpoint estimate is within $va/2$ of the true one, so Eq.~\eqref{eq:proj} and the triangle
-inequality give $\|x_i'-x_j'\|\le\frac12(r_{ij}+r_{ji})$; the inflated count bounds the true one, and
-$R_\varepsilon$ is non-increasing in it.
+Midpoint estimates err by $\le va/2$, so Eq.~\eqref{eq:proj} and the triangle inequality give
+$\|x_i'-x_j'\|\le\frac12(r_{ij}+r_{ji})$; $R_\varepsilon$ is non-increasing in the obstacle count, which
+the inflated count bounds.
 \end{proof}
 
-\paragraph{Corroborative Sensing.} An entry with $\nClo\le c_e<\nChi$ asks the nearest neighbour for a
-view from $\pm\nFlank$\,m perpendicular to the line of sight, which at $h=\nAlt$\,m looks
-\nFlankAngle$^\circ$ off nadir past a slab edge at only \nFlankSlant\,\% more slant range. Keeping the
-best confidence $c_{e,v}$ per viewing sector $v$, SENTINEL fuses
+\paragraph{Corroborative Sensing.} An entry with $\nClo\le c_e<\nChi$ requests the nearest neighbour's
+view $\pm\nFlank$\,m across the line of sight, which at $h=\nAlt$\,m looks \nFlankAngle$^\circ$
+off nadir past a slab edge at \nFlankSlant\,\% more slant range. With $c_{e,v}$ the best confidence
+per sector $v$, SENTINEL fuses
 \begin{equation}
 \mathrm{logit}\,c_e=\max_v\mathrm{logit}\,c_{e,v}+\sum_{v\ne v^\star}[\mathrm{logit}\,c_{e,v}]_+,\label{eq:fusion}
 \end{equation}
@@ -188,67 +178,77 @@ with $v^\star$ the best view; weak blocked views cannot veto it, unlike naive-Ba
 \end{revised}
 
 \section{Evaluation}\label{sec:eval}
+\input{generated/tab_e3.tex}
+\input{generated/tab_e1.tex}
+\input{generated/tab_attr.tex}
 \begin{revised}
 \paragraph{Setup.} One library runs in a fast simulator and in ROS~2 Humble nodes flying PX4 x500
 quadrotors in Gazebo Harmonic through Micro XRCE-DDS, with YOLO26n running on board, both dropping
 packets by sampled SINR. Each run generates an area from its seed
 (\nVictims{} victims, rubble, warm debris) and lasts \nDuration\,s; by default \nArea\,m
 square, $N=\nNuav$, urban rubble, Poisson crashes (\nFailRate\,s$^{-1}$), UAVs at \nAlt\,m and
-\nVmax\,m/s. In the measured runs the detector is a parameterised model of confidence versus range and
-occlusion, with warm-debris false alarms. Baselines: B0 PSO; B1 our first
-version; B2 PSO with an outage penalty; B3 exact-$\lambda_2$ control
-\cite{sabattini2013}; B4 edge potentials \cite{ji2007}; B5 MAPPO \cite{yu2022mappo}; B6 sweep search. All were tuned with one Optuna budget on $J$
-over separate seeds (SENTINEL: $T_h=\nTh$\,s, $\lambda_0=\nLamZero$, $\beta=\nBeta$), and MAPPO was trained to a plateau; all methods share seeds 0--\nSeedMax.
+\nVmax\,m/s, and a hand-set detector model (confidence vs.\ range and occlusion; warm-debris false
+alarms). Baselines B0--B8: PSO; our first version; PSO with an outage penalty; exact-$\lambda_2$
+control \cite{sabattini2013}; edge potentials \cite{ji2007}; MAPPO \cite{yu2022mappo}; sweep search; a
+hard 50\,m nearest-neighbour wall; a responder relay chain. All were tuned with one Optuna budget on $J$
+over separate seeds (SENTINEL: $T_h=\nTh$\,s, $\lambda_0=\nLamZero$, $\beta=\nBeta$); MAPPO trained to a plateau. All share seeds 0--\nSeedMax.
 
-\paragraph{Results.} SENTINEL leads in all four channel profiles, significantly against every baseline
+\paragraph{Results.} SENTINEL leads in all four channel profiles, significantly against all
 except in the severe one (open \nChOpenS{} vs.\ \nChOpenB, suburban \nChSubS{} vs.\ \nChSubB, urban
 \nChUrbS{} vs.\ \nChUrbB, severe \nChSevS{} vs.\ \nChSevB). In urban rubble it
 reports \nEthreeGainLo--\nEthreeGainHi\,\% more victims than the best baseline in every failure setting
-(Table~\ref{tab:e3}). On the \nArea\,m area it beats every baseline
+(Table~\ref{tab:e3}). At \nArea\,m it beats every baseline
 significantly from \nEoneNmin{} to \nEoneNmax{} UAVs (Table~\ref{tab:e1}); on a denser \nDenseArea\,m
-area it leads at every size but significantly only at $N=\nEoneTwoHundredSigN$ (\nEoneDenseS{} vs.\
-\nEoneDenseMappo{} for MAPPO).
+area its mean is highest except at \nEoneTwoHundredNotTop, but at no size significantly above all
+\nBaseWord{} ($N=\nDenseN$: \nEoneDenseS{} vs.\ \nEoneDenseBest, \nEoneDenseBestName).
 \end{revised}
-\input{generated/tab_e3.tex}
-\input{generated/tab_e1.tex}
-\input{generated/tab_attr.tex}
 \begin{revised}
 \paragraph{Where the Gains Come From.} Removing fusion (\nUrbNofus) or delivery (\nUrbNodel) lowers
 the urban share significantly from \nUrbS{} (Table~\ref{tab:attr}); a mesh kept connected at all times
 falls to \nStrictLo--\nStrictHi. With SENTINEL's fusion rule the best urban baseline rises from
-\nUrbBestOrig{} to \nUrbBestFus{} (\nUrbBestFusName) yet all seven stay significantly behind, while in a
+\nUrbBestOrig{} to \nUrbBestFus{} (\nUrbBestFusName) yet all \nBaseWord{} stay significantly behind; in a
 dense \nDenseN-UAV swarm baselines with fusion reach \nDenseFusLo--\nDenseFusHi{} and \nDenseSigAbove{}
-leads significantly. With eight UAVs, $T_h=\nThUrbBest$\,s raises the share over never delivering from
-\nThUrbInf{} to \nThUrbBestV{} (urban) and \nThSevInf{} to \nThSevBestV{} (severe); with four UAVs the effect is not significant.
+leads significantly.
 \end{revised}
 \begin{revised}
-\paragraph{Link Preservation.} Over all experiments, reliable preserved links failed within a step \nViolAll{} times in \nStepsAll{} link-steps ($\nViolRate$). With the projection off on
-the same \nSafetySettings{} settings and seeds, violations rose from \nViolOn{} in \nStepsOn{} link-steps
-(in \nRunsOn{} of \nRunsTotal{} runs) to \nViolOff{} in \nStepsOff{} (in \nRunsOff{} of \nRunsTotal{}
-runs), a \nViolFold-fold difference ($p<\nViolP$); the on-time share does not change.
+\paragraph{Link Preservation.} Over all runs, reliable preserved links failed within a step \nViolAll{} times in \nStepsAll{} link-steps ($\nViolRate$). Without the projection
+(same \nSafetySettings{} settings, seeds) violations rose from \nViolOn{} in \nStepsOn{} to
+\nViolOff{} in \nStepsOff{} link-steps, a \nViolFold-fold difference ($p<\nViolP$), with the on-time
+share unchanged. Varying $\lambda_0$ (\nSensLamLo--\nSensLamHi), $\beta$ (\nSensBetaLo--\nSensBetaHi)
+or $\varepsilon$ (\nSensEpsLo--\nSensEpsHi), or a distance spring ($R_{\max}=\nSensRmaxLo$--\nSensRmaxHi\,m)
+changes the share by $\le$\,\nSensMaxDelta, never significantly.
 
 \paragraph{PX4/Gazebo and the First Scenario.} \nEightN{} PX4 UAVs flew SENTINEL and B0 on
 \nEightWorlds{} \nEightArea\,m worlds with one crash; reported victims, packet delivery and connected
 time agree with the fast simulator within \nEightMaxDiff; B0 is slightly ahead in both
-(\nEightSitlB{} vs.\ \nEightSitlS{} in Gazebo).
-In the \nNineArea\,m, \nNineN-UAV scenario of the first version all methods stay connected; confirmed
+(\nEightSitlB{} vs.\ \nEightSitlS{} in Gazebo). With the fine-tuned YOLO26n (below) in the loop on \nSixN{} such worlds,
+SENTINEL reports \nSixS{} and B0 \nSixB{} (difference $\nSixDiff$, 95\,\% CI $\nSixDiffLo$ to
+$\nSixDiffHi$, $p=\nSixP$; fast simulator \nSixFastS{} vs.\ \nSixFastB).
+In the first version's \nNineArea\,m, \nNineN-UAV scenario all methods stay connected; confirmed
 victims are \nNineS{} for SENTINEL, \nNineBzero{} for B0 (not significantly fewer) and \nNineBone{} for
-the first version (significantly fewer). Its earlier retention and discovery figures are withdrawn.
+the first version (significantly fewer); its retention and discovery figures are withdrawn.
 
 \paragraph{Detector.} On HIT-UAV \cite{hituav}, YOLO26n \cite{yolo26} matches YOLOv8n in validation
 mAP50 (\nYnMap{} vs.\ \nVeMap) with \nYnParamRed\,\% fewer parameters and \nYnFlopRed\,\% fewer
-operations, at \nYnTrt{} vs.\ \nVeTrt\,ms TensorRT latency on a desktop RTX~3060 (embedded latency
-not measured).
+operations (TensorRT \nYnTrt{} vs.\ \nVeTrt\,ms on a desktop RTX~3060).
+On Gazebo-rendered thermal frames at 25--30\,m (not real footage) it reaches \nRdHMap{} mAP50 on
+\nRdTestWorlds{} unseen worlds, and \nRdFMap{} after fine-tuning on \nRdTrainWorlds{} others, with recall
+\nRdFRecLoOpen{} (open) and \nRdFRecLoOcc{} (partly occluded) at confidence 0.40 and \nRdFFaLo{} false
+alarms per frame on warm debris. With the in-loop model fitted to these outputs (no re-tuning),
+SENTINEL keeps the highest mean in the six urban settings of Table~\ref{tab:e3}, but leads the best
+baseline, \nRobBestName, by only \nRobGainLo--\nRobGainHi\,\%, never significantly.
 \end{revised}
 
 \section{Limitations and \kept{Conclusion}}
 \begin{revised}
-Results are simulated, with published channel ranges and no flights; detector accuracy is a HIT-UAV
-validation result from above our \nAlt\,m, and the loop uses a hand-parameterised detector model. Victims within the \nGate\,m association gate
-can merge, MAPPO used one reward design, and latency was measured on a desktop GPU only. SENTINEL reported more victims within 60\,s
-than seven tuned baselines in most settings and was never significantly worse than any baseline in its
-original form. Fusion and information-triggered delivery produced the gains (in dense swarms fusion
-alone); the outage spring and link preservation are a safety property, cutting link violations
+Results are simulated with published channel ranges and no flights; detector accuracy at 25--30\,m is
+measured on rendered frames only, and the loop uses a detector model hand-set or fitted to detector
+outputs on rendered frames. Victims within the \nGate\,m association gate
+can merge, MAPPO used one reward design, and no embedded latency was measured. SENTINEL reported more victims within 60\,s
+than \nBaseWord{} tuned baselines in most settings (with the fitted detector model by
+\nRobGainLo--\nRobGainHi\,\%, not significantly) and was never significantly worse
+than any baseline in its original form. Fusion and information-triggered delivery produced the gains (in dense swarms fusion
+alone); the outage spring and link preservation are a safety property, cutting violations
 \nViolFold-fold.
 \end{revised}
 

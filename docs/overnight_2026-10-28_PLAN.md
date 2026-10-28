@@ -180,3 +180,62 @@ Pilot wall times per mission with 18 parallel workers:
 - Every outcome is reported, including losses of SENTINEL and wins of B7/B8.
 - No seed, setting or variant is dropped.
 - Failed jobs are re-run once; if they fail again, they are reported as not completed.
+
+## 9. Deviations (dated, added after launch)
+
+**28 Oct, 20:45–21:28 — E4 rendering (lane B), capture method only.**
+- The render job failed twice in the main queue: gz-transport `set_pose` timeouts under CPU load, then an abort in the gz-transport destructor at exit.
+- Lane B was re-run on its own with `lane_b_resume.sh` (same job names and done markers). The renderer gained three changes:
+  - a per-world retry;
+  - a sticky fallback to the `gz service` CLI for `set_pose`;
+  - from 21:24, the capture loop runs in a system-Python subprocess (`e4_capture.py`, native protobuf) after in-process subscriptions stalled.
+- Unchanged: worlds, rig, sensors, viewpoints, the ≥ 0.3 s settle time, the frame-stamp check and the conversion. 19 of 24 worlds were captured before the switch and 5 after.
+- No world or frame was dropped. All 24 worlds are complete.
+
+**29 Oct, 00:47 — main queue stopped and resumed (`resume_queue.sh`).**
+- **b3 (HIT-UAV evaluation):**
+  - It deadlocked from 21:28 in Ultralytics' forked dataloader workers, with no progress for 3 h 15 min.
+  - Fix: `val` now runs with `workers=0`, which does not change the metrics. The fine-tune's dataloader workers use the `spawn` start method; the training arguments are unchanged.
+- **D1 (E8r):**
+  - Every launch failed immediately: `model_path:=` with an empty value is not a valid launch argument. `run_sitl.sh` now passes `model_path` only when it is set and stops waiting when the launch exits.
+  - Both PX4 paths were piloted for 30 s on world 0 into a scratch folder, not evaluation data.
+  - No PX4 evaluation run had completed before the fix, so nothing was discarded.
+- **C1 and C2 did not run** (skipped by the dependency check because lane B had not finished). They now run as soon as lane B writes the fitted configs.
+- **Order change:**
+  - C1 and C2 now run at nice 19 in parallel with the PX4 runs, instead of before them. Fast-simulator results do not depend on load or worker count.
+  - D1 runs in parallel with lane B's fine-tuning (GPU).
+
+**29 Oct, 01:09 — stale rendered frames found; seven worlds re-rendered, E4/E5 re-run.**
+- **What was found.** The fitted slant range reached 114 m, which is impossible at 25–30 m altitude with a 50° camera.
+  - A reprojection audit compared each frame's boxes with the victims and debris projected from its recorded pose. A matching frame has a median residual of 1.5 px.
+  - 91 frames failed, all in worlds 107 and 110–115, which were rendered before the 21:24 capture switch. Each one shows an earlier viewpoint, because the pose change had not been rendered yet. The 0.3 s settle time was measured from the newest image received, and under load the image stream lagged the simulation.
+  - The 17 other worlds, including all five test worlds, have no mismatched frame.
+- **Effect on the first pass:**
+  - Images and labels in the stale frames are consistent with each other, so they are valid training and evaluation frames, only duplicated.
+  - Their recorded pose is wrong, which corrupts the E5 covariates (val world 115).
+  - E4 test metrics come from clean worlds, but the model was trained on the duplicated frames.
+- **Fix:**
+  - The capture now checks every frame against its pose: every box clear of the border must lie within 15 px of its object's projection. A failing frame is retaken, at most 6 times, with the pose re-sent halfway.
+  - The render job then audits all frames of all 24 worlds (`e4_posecheck.py`) and fails on any mismatch.
+  - The check flags exactly these 91 frames and none in the clean worlds.
+- **Re-run:**
+  - worlds 107 and 110–115 re-rendered with the same viewpoints;
+  - dataset rebuilt (test frames unchanged);
+  - both models evaluated, fine-tune, E5 fit and configs re-run;
+  - C1 and C2 run on the new fit (C1 had started on the first-pass fit at 01:07 and was stopped with no finished mission);
+  - E6 waits for the new fine-tuned model.
+- **First pass archived** in `firstpass_stale_frames/` (outputs, configs and done markers) and reported as superseded:
+  - fine-tuned test mAP50 0.992, recall at 0.40 of 0.97 open and 0.94 partly occluded;
+  - fit with r_ref and r_s at their bounds, σ 0.17, fp_rate 6.1.
+- **E8r:** the three PX4 runs finished before the stop are kept, since they do not use E4 or E5. Unfinished runs are redone from the start.
+
+**29 Oct, 02:23 — E6 (D2) stopped and restarted (`resume_d2.sh`).**
+- **Cause:** the ROS nodes read each world's truth file from the colcon install, which held only worlds 0–2 from 14 Oct; Gazebo loads worlds from the source folder.
+  - On world 3, generated tonight, the agent, comm-emulator and metrics nodes exited at start-up while Gazebo and the cameras kept running.
+  - The launch process stayed alive, so the run would have waited out its 40 min timeout.
+- **Fix:**
+  - `run_sitl.sh` passes `world_dir` (the source folder Gazebo uses) to the launch, checks that the truth file exists, and stops a run when a node dies.
+  - World 3 was piloted for 30 s in a scratch folder.
+  - Worlds 4–9 were generated with the same generator. The victim positions of all ten worlds equal those of the fast simulator's world generator for the same seeds, which C2 uses.
+- **Kept:** worlds 0–2 of E6 and all of E8r. Their truth files in the install and source folders are byte-identical, and Gazebo used the source worlds throughout. The aborted world-3 run is redone from the start.
+- **Order change:** C1 and C2 continue in `resume_queue.sh`, and D2 runs in `resume_d2.sh`.

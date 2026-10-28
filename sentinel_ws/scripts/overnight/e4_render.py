@@ -26,16 +26,16 @@ import json
 import math
 import os
 import re
-import signal
 import subprocess
 import sys
 import time
 
-import cv2
 import numpy as np
 
-# gz.msgs10 is generated for protobuf 3.x; the venv's newer protobuf needs the pure-Python parser
-os.environ.setdefault('PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION', 'python')
+from e4_capture import quat, to_white_hot  # noqa: F401 (re-exported for tests)
+
+
+
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GZ_PKG = os.path.normpath(os.path.join(HERE, '..', '..', 'src', 'sentinel_gazebo'))
@@ -43,6 +43,7 @@ VICTIM_LABEL0, DEBRIS_LABEL = 1, 200
 HFOV, W_IMG, H_IMG, PITCH = 0.8727, 640, 512, 1.5707     # identical to models/x500_thermal
 T_MIN, T_MAX, K_PER_COUNT = 270.0, 330.0, 0.01            # identical to thermal_vision
 SETTLE_S = 0.3
+CAPTURE_PY = '/usr/bin/python3'
 
 
 def _make_world_module():
@@ -132,87 +133,6 @@ def viewpoints(world, seed: int, alts=(25.0, 30.0), per_victim=3, n_random=10, n
     return out
 
 
-def to_white_hot(l16: np.ndarray) -> np.ndarray:
-    temp = l16.astype(np.float32) * K_PER_COUNT
-    return np.clip((temp - T_MIN) / (T_MAX - T_MIN) * 255.0, 0, 255).astype(np.uint8)
-
-
-def quat(roll: float, pitch: float, yaw: float):
-    cr, sr = math.cos(roll / 2), math.sin(roll / 2)
-    cp, sp = math.cos(pitch / 2), math.sin(pitch / 2)
-    cy, sy = math.cos(yaw / 2), math.sin(yaw / 2)
-    return (cr * cp * cy + sr * sp * sy, sr * cp * cy - cr * sp * sy,
-            cr * sp * cy + sr * cp * sy, cr * cp * sy - sr * sp * cy)   # w, x, y, z
-
-
-def boxes(msg) -> list:
-    return [[int(b.label), float(b.box.min_corner.x), float(b.box.min_corner.y),
-             float(b.box.max_corner.x), float(b.box.max_corner.y)] for b in msg.annotated_box]
-
-
-class Capture:
-    def __init__(self, world_name: str):
-        from gz.msgs10.annotated_axis_aligned_2d_box_v_pb2 import AnnotatedAxisAligned2DBox_V
-        from gz.msgs10.image_pb2 import Image
-        from gz.transport13 import Node
-        self.node, self.world = Node(), world_name
-        self.img, self.vis, self.full = {}, {}, {}
-        self.latest = -1.0
-
-        def stamp(m):
-            return m.header.stamp.sec + 1e-9 * m.header.stamp.nsec
-
-        def on_img(m):
-            s = stamp(m)
-            self.img[s] = m
-            self.latest = max(self.latest, s)
-        self.node.subscribe(Image, '/rig/thermal', on_img)
-        self.node.subscribe(AnnotatedAxisAligned2DBox_V, '/rig/bbox_vis',
-                            lambda m: self.vis.__setitem__(stamp(m), m))
-        self.node.subscribe(AnnotatedAxisAligned2DBox_V, '/rig/bbox_full',
-                            lambda m: self.full.__setitem__(stamp(m), m))
-
-    def wait_ready(self, timeout=90.0) -> bool:
-        t0 = time.time()
-        while time.time() - t0 < timeout:
-            if self.latest > 0 and self.vis and self.full:
-                return True
-            time.sleep(0.2)
-        return False
-
-    def set_pose(self, x, y, z, yaw) -> bool:
-        from gz.msgs10.boolean_pb2 import Boolean
-        from gz.msgs10.pose_pb2 import Pose
-        p = Pose()
-        p.name = 'rig'
-        p.position.x, p.position.y, p.position.z = x, y, z
-        w, qx, qy, qz = quat(0.0, PITCH, yaw)
-        p.orientation.w, p.orientation.x, p.orientation.y, p.orientation.z = w, qx, qy, qz
-        for _ in range(20):          # the service may not be discovered yet on the first call
-            ok, rep = self.node.request(f'/world/{self.world}/set_pose', p, Pose, Boolean, 3000)
-            if ok and rep.data:
-                return True
-            time.sleep(0.5)
-        return False
-
-    def grab(self, timeout=10.0):
-        s0 = self.latest
-        t0 = time.time()
-        while time.time() - t0 < timeout:
-            ready = sorted(s for s in self.img if s >= s0 + SETTLE_S and s in self.vis
-                           and s in self.full)
-            if ready:
-                s = ready[0]
-                m = self.img[s]
-                out = (s, m, self.vis[s], self.full[s])
-                for d in (self.img, self.vis, self.full):      # drop old messages
-                    for k in [k for k in d if k <= s]:
-                        d.pop(k, None)
-                return out
-            time.sleep(0.02)
-        return None
-
-
 def render_world(mw, seed: int, out: str, size: float, n_targets: int, env: dict) -> int:
     from sentinel_sim import world as W
     name = f'e4_g{int(size)}_s{seed}'
@@ -230,38 +150,20 @@ def render_world(mw, seed: int, out: str, size: float, n_targets: int, env: dict
         f.write(rig_world(sdf, name))
     with open(os.path.join(out, 'truth', name + '.json'), 'w') as f:
         json.dump(truth, f, indent=1)
-    log = open(os.path.join(out, 'worlds', name + '.gz.log'), 'w')
-    gz = subprocess.Popen(['gz', 'sim', '-s', '-r', '--headless-rendering', wpath], env=env,
-                          stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
-    n = 0
-    try:
-        cap = Capture(name)
-        if not cap.wait_ready():
-            raise RuntimeError(f'{name}: sensors not publishing (see {log.name})')
-        vps = viewpoints(w, seed)
-        with open(meta_path, 'w') as fm:
-            for k, (x, y, z, yaw) in enumerate(vps):
-                if not cap.set_pose(x, y, z, yaw):
-                    raise RuntimeError(f'{name}: set_pose failed')
-                g = cap.grab()
-                if g is None:
-                    raise RuntimeError(f'{name}: no synchronised frame for viewpoint {k}')
-                s, img, vis, full = g
-                arr = np.frombuffer(img.data, dtype=np.uint16).reshape(img.height, img.width)
-                cv2.imwrite(os.path.join(out, 'frames', name, f'{k:04d}.png'), to_white_hot(arr))
-                fm.write(json.dumps({'world': name, 'seed': seed, 'k': k, 'x': x, 'y': y, 'z': z,
-                                     'yaw': yaw, 'stamp': s, 'vis': boxes(vis),
-                                     'full': boxes(full)}) + '\n')
-                n += 1
-        open(done_flag, 'w').close()
-    finally:
-        try:
-            os.killpg(gz.pid, signal.SIGTERM)
-            gz.wait(timeout=20)
-        except Exception:  # noqa: BLE001
-            os.killpg(gz.pid, signal.SIGKILL)
-        log.close()
-    return n
+    vps_path = os.path.join(out, 'worlds', name + '.vps.json')
+    with open(vps_path, 'w') as f:
+        json.dump(viewpoints(w, seed), f)
+    # capture loop in the system Python (native protobuf matching gz.msgs10), see e4_capture.py
+    r = subprocess.run([CAPTURE_PY, '-s', os.path.join(HERE, 'e4_capture.py'), '--name', name,
+                        '--sdf', wpath, '--vps', vps_path, '--out', out,
+                        '--partition', env['GZ_PARTITION'],
+                        '--truth', os.path.join(out, 'truth', name + '.json')], env=env,
+                       capture_output=True, text=True,
+                       timeout=3600)
+    print(r.stdout.strip(), flush=True)
+    if r.returncode != 0 or not os.path.exists(done_flag):
+        raise RuntimeError(f'{name}: capture failed ({r.stdout.strip()[-200:]} {r.stderr.strip()[-200:]})')
+    return sum(1 for _ in open(meta_path))
 
 
 def main():
@@ -280,10 +182,26 @@ def main():
     mw = _make_world_module()
     for s in a.seeds:
         t0 = time.time()
-        n = render_world(mw, s, a.out, a.size, a.targets, env)
+        for attempt in range(1, 4):     # transient transport timeouts: restart Gazebo, redo the world
+            try:
+                n = render_world(mw, s, a.out, a.size, a.targets, env)
+                break
+            except RuntimeError as e:
+                print(f'world seed {s}: attempt {attempt} failed ({e})', flush=True)
+                if attempt == 3:
+                    raise
+                time.sleep(5)
         msg = 'skipped (done)' if n < 0 else f'{n} frames in {time.time() - t0:.0f} s'
         print(f'world seed {s}: {msg}', flush=True)
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    try:
+        main()
+        code = 0
+    except Exception:  # noqa: BLE001
+        import traceback
+        traceback.print_exc()
+        code = 1
+    sys.stdout.flush(); sys.stderr.flush()
+    os._exit(code)          # skip gz-transport destructors (they can abort at interpreter exit)

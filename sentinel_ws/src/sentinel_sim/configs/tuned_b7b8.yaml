@@ -1,0 +1,11 @@
+B7_wall:
+  agent:
+    sector_bias: 2.0356295271829814
+    w_goal: 1.944891295540984
+B8_relay:
+  agent:
+    sector_bias: 1.7038438550305401
+    w_goal: 0.40643906954911596
+  agent_attrs:
+    rho: 0.004157602860416318
+    spacing: 0.605983808285428

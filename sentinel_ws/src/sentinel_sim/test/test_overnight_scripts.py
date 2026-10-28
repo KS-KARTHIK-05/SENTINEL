@@ -12,6 +12,7 @@ SCRIPTS = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..', '
                                         'scripts', 'overnight'))
 sys.path.insert(0, SCRIPTS)
 
+import e4_capture as C  # noqa: E402
 import e4_detector as D  # noqa: E402
 import e4_render as R  # noqa: E402
 import e5_fit as F  # noqa: E402
@@ -58,6 +59,43 @@ def test_white_hot_matches_thermal_vision():
 def test_quaternion_nadir_pitch():
     w, x, y, z = R.quat(0.0, math.pi / 2, 0.0)
     assert np.allclose([w, x, y, z], [math.cos(math.pi / 4), 0, math.sin(math.pi / 4), 0])
+
+
+def test_projection_nadir_camera():
+    assert np.allclose(C.project(10.0, 20.0, 30.0, 0.7, 10.0, 20.0), (320.0, 256.0))
+    u, v = C.project(0.0, 0.0, 30.0, 0.0, 3.0, 0.0)      # ahead (heading +x): image up
+    assert u == pytest.approx(320.0) and v < 256.0
+    u, v = C.project(0.0, 0.0, 30.0, 0.0, 0.0, 3.0)      # left of heading: image left
+    assert u < 320.0 and v == pytest.approx(256.0)
+
+
+def _boxes_at(pose, targets, clutter, half=10.0, jitter=3.0):
+    out = []
+    for k, t in enumerate(targets):
+        u, v = C.project(*pose, *t['pos'])
+        if 0 <= u < 640 and 0 <= v < 512:
+            out.append([k + 1, u - half + jitter, v - half, u + half + jitter, v + half])
+    for c in clutter:
+        u, v = C.project(*pose, *c)
+        if 0 <= u < 640 and 0 <= v < 512:
+            out.append([200, u - half, v - half - jitter, u + half, v + half - jitter])
+    return [[b[0], max(0.0, b[1]), max(0.0, b[2]), min(639.0, b[3]), min(511.0, b[4])] for b in out]
+
+
+def test_pose_check_accepts_matching_and_rejects_stale_frames():
+    targets = [{'pos': [50.0, 50.0]}, {'pos': [55.0, 47.0]}, {'pos': [80.0, 80.0]}]
+    clutter = [[47.0, 53.0], [60.0, 60.0]]
+    pose = (52.0, 50.0, 30.0, 0.4)
+    full = _boxes_at(pose, targets, clutter)
+    assert len(full) == 3 and C.pose_consistent(full, pose, targets, clutter)
+    stale = _boxes_at((48.0, 52.0, 30.0, 0.4), targets, clutter)          # previous viewpoint
+    assert not C.pose_consistent(stale, pose, targets, clutter)
+    assert not C.pose_consistent(full, (52.0, 50.0, 30.0, 1.4), targets, clutter)
+    assert C.pose_consistent([], pose, targets, clutter)                   # nothing to check
+    assert not C.pose_consistent([[9, 0, 0, 10, 10]], pose, targets, clutter)
+    # debris boxes alone also reveal a stale frame
+    only_debris = [b for b in stale if b[0] == 200]
+    assert only_debris and not C.pose_consistent(only_debris, pose, targets, clutter)
 
 
 # ------------------------------------------------------------------ dataset and evaluation

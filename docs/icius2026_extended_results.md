@@ -37,6 +37,8 @@ Link budget: f = 2.4 GHz, P_t = 20 dBm, G = 2 dBi per side, B = 20 MHz, noise fi
 | B4 edge potentials | 0.50 ± 0.05* | 0.10 ± 0.03* | 0.13 ± 0.04* | 0.30 ± 0.06* |
 | B5 MAPPO | 0.41 ± 0.05* | 0.42 ± 0.04* | 0.40 ± 0.05* | 0.33 ± 0.05* |
 | B6 sweep | 0.42 ± 0.05* | 0.42 ± 0.05* | 0.42 ± 0.05* | 0.37 ± 0.05 |
+| B7 hard wall | 0.25 ± 0.04* | 0.28 ± 0.05* | 0.24 ± 0.05* | 0.22 ± 0.04* |
+| B8 relay chain | 0.50 ± 0.05* | 0.44 ± 0.06* | 0.44 ± 0.05* | 0.34 ± 0.04* |
 
 Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best in bold; * = differs from SENTINEL (paired Wilcoxon signed-rank test, Holm-corrected, p < 0.05).
 
@@ -52,6 +54,8 @@ Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best
 | B4 edge potentials | 0.19 ± 0.04* | 0.16 ± 0.03* | 0.14 ± 0.04* | 0.16 ± 0.04* | 0.09 ± 0.03* | 0.18 ± 0.04* |
 | B5 MAPPO | 0.50 ± 0.04* | 0.47 ± 0.04* | 0.45 ± 0.04* | 0.46 ± 0.04* | 0.33 ± 0.05* | 0.49 ± 0.04* |
 | B6 sweep | 0.52 ± 0.04* | 0.51 ± 0.04* | 0.49 ± 0.04* | 0.49 ± 0.04* | 0.35 ± 0.05* | 0.52 ± 0.04* |
+| B7 hard wall | 0.28 ± 0.05* | 0.28 ± 0.05* | 0.28 ± 0.05* | 0.27 ± 0.04* | 0.23 ± 0.04* | 0.29 ± 0.05* |
+| B8 relay chain | 0.53 ± 0.05* | 0.52 ± 0.05* | 0.51 ± 0.05* | 0.48 ± 0.05* | 0.36 ± 0.05* | 0.53 ± 0.05* |
 
 Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best in bold; * = differs from SENTINEL (paired Wilcoxon signed-rank test, Holm-corrected, p < 0.05).
 
@@ -65,8 +69,10 @@ Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best
 | B2 comm.-aware PSO | 0.44 ± 0.05* | 0.43 ± 0.06 | 0.40 ± 0.05* | 0.39 ± 0.05 | 0.26 ± 0.05* | 0.43 ± 0.05* |
 | B3 λ₂ control | 0.41 ± 0.07* | 0.41 ± 0.06* | 0.39 ± 0.06* | 0.36 ± 0.06* | 0.25 ± 0.05* | 0.38 ± 0.07* |
 | B4 edge potentials | 0.40 ± 0.06* | 0.36 ± 0.06* | 0.36 ± 0.05* | 0.31 ± 0.05* | 0.20 ± 0.05* | 0.36 ± 0.06* |
-| B5 MAPPO | 0.45 ± 0.04* | 0.44 ± 0.04* | 0.41 ± 0.04* | 0.38 ± 0.04 | 0.27 ± 0.05* | 0.43 ± 0.05* |
+| B5 MAPPO | 0.45 ± 0.04* | 0.44 ± 0.04* | 0.41 ± 0.04* | 0.38 ± 0.04 | 0.27 ± 0.05 | 0.43 ± 0.05* |
 | B6 sweep | 0.51 ± 0.04 | 0.49 ± 0.04 | 0.47 ± 0.04 | **0.45 ± 0.04** | 0.29 ± 0.05 | 0.50 ± 0.04 |
+| B7 hard wall | 0.27 ± 0.04* | 0.27 ± 0.04* | 0.27 ± 0.04* | 0.26 ± 0.04* | 0.21 ± 0.05* | 0.28 ± 0.04* |
+| B8 relay chain | 0.46 ± 0.04* | 0.45 ± 0.04* | 0.43 ± 0.04* | 0.41 ± 0.05 | 0.28 ± 0.05 | 0.45 ± 0.05* |
 
 Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best in bold; * = differs from SENTINEL (paired Wilcoxon signed-rank test, Holm-corrected, p < 0.05).
 
@@ -82,6 +88,8 @@ Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best
 | B4 edge potentials | 0.02 ± 0.01* | 0.03 ± 0.02* | 0.24 ± 0.05* | 0.49 ± 0.05* | 0.71 ± 0.04* |
 | B5 MAPPO | 0.15 ± 0.04* | 0.27 ± 0.04* | 0.50 ± 0.05* | 0.63 ± 0.03* | 0.73 ± 0.03* |
 | B6 sweep | 0.15 ± 0.04* | 0.27 ± 0.05* | 0.44 ± 0.04* | 0.49 ± 0.04* | 0.62 ± 0.03* |
+| B7 hard wall | 0.09 ± 0.03* | 0.15 ± 0.04* | 0.36 ± 0.04* | 0.62 ± 0.05* | 0.72 ± 0.03* |
+| B8 relay chain | 0.10 ± 0.03* | 0.27 ± 0.05* | 0.52 ± 0.04* | 0.66 ± 0.04* | 0.75 ± 0.02* |
 
 Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best in bold; * = differs from SENTINEL (paired Wilcoxon signed-rank test, Holm-corrected, p < 0.05).
 
@@ -89,7 +97,7 @@ Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best
 
 | Method | N=3 | N=5 | N=10 | N=20 | N=50 |
 |---|---|---|---|---|---|
-| SENTINEL | **0.47 ± 0.06** | **0.62 ± 0.05** | **0.72 ± 0.04** | **0.74 ± 0.03** | **0.81 ± 0.03** |
+| SENTINEL | **0.47 ± 0.06** | **0.62 ± 0.05** | **0.72 ± 0.04** | 0.74 ± 0.03 | **0.81 ± 0.03** |
 | B0 PSO | 0.46 ± 0.05 | 0.60 ± 0.03 | 0.66 ± 0.03* | 0.70 ± 0.03* | 0.72 ± 0.03* |
 | B1 first version | 0.36 ± 0.05* | 0.57 ± 0.04 | 0.65 ± 0.03* | 0.69 ± 0.04* | 0.72 ± 0.03* |
 | B2 comm.-aware PSO | 0.46 ± 0.06 | 0.58 ± 0.04 | 0.65 ± 0.03* | 0.73 ± 0.03 | 0.73 ± 0.03* |
@@ -97,6 +105,8 @@ Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best
 | B4 edge potentials | 0.04 ± 0.01* | 0.11 ± 0.05* | 0.47 ± 0.07* | 0.66 ± 0.06* | 0.73 ± 0.03* |
 | B5 MAPPO | 0.38 ± 0.07 | 0.56 ± 0.03 | 0.69 ± 0.03 | 0.73 ± 0.03 | 0.78 ± 0.04* |
 | B6 sweep | 0.42 ± 0.05 | 0.54 ± 0.04* | 0.54 ± 0.04* | 0.64 ± 0.04* | 0.70 ± 0.04* |
+| B7 hard wall | 0.30 ± 0.06* | 0.51 ± 0.05* | 0.65 ± 0.05 | **0.76 ± 0.03** | 0.79 ± 0.03 |
+| B8 relay chain | 0.39 ± 0.06 | 0.56 ± 0.04 | 0.69 ± 0.03* | 0.72 ± 0.03 | 0.77 ± 0.03* |
 
 Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best in bold; * = differs from SENTINEL (paired Wilcoxon signed-rank test, Holm-corrected, p < 0.05).
 
@@ -109,7 +119,7 @@ Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best
 | without delivery (T_h = ∞) | 0.52 ± 0.05* | 0.42 ± 0.05 | – |
 | without fusion, flank, delivery | 0.52 ± 0.05* | 0.40 ± 0.06 | – |
 | always connected | 0.13 ± 0.03* | 0.06 ± 0.02* | – |
-| best baseline | 0.47 ± 0.04* (B3) | 0.38 ± 0.05 (B0) | 0.78 ± 0.04* (B5) |
+| best baseline | 0.47 ± 0.04* (B3) | 0.38 ± 0.05 (B0) | 0.79 ± 0.03 (B7) |
 | best baseline + fusion | 0.51 ± 0.04* (B3) | 0.42 ± 0.06 (B1) | **0.87 ± 0.03*** (B4) |
 
 Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best in bold; * = differs from SENTINEL (paired Wilcoxon signed-rank test, Holm-corrected, p < 0.05).
@@ -163,9 +173,174 @@ Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best
 | urban rubble, N = 8 | 240 | 0.545 ± 0.047 | 0.552 ± 0.046 | 15.600 ± 7.248 | 0.007 ± 0.010 |
 | urban rubble, N = 8 | ∞ | 0.523 ± 0.050 | 0.529 ± 0.051 | 15.790 ± 7.280 | 0.009 ± 0.013 |
 
+### Sensitivity of the spring parameters (400 m, N = 8, Poisson failures)
+
+One parameter at a time around the tuned SENTINEL; all other tuned values unchanged. ε is the outage target of both the spring and the preserved-link radius; link violations are counted against the variant's own ε. * = on-time share differs from tuned SENTINEL (paired Wilcoxon, Holm within each parameter over its variants and both channels).
+
+| variant | channel | reported ≤ 60 s | link violations / link-steps | p90 latency [s] |
+|---|---|---|---|---|
+| tuned (λ0 = 1.20, β = 1.09, ε = 0.05) | urban rubble | 0.575 ± 0.055 | 1 / 1,567 | 16 |
+| tuned (λ0 = 1.20, β = 1.09, ε = 0.05) | severe | 0.433 ± 0.049 | 0 / 36 | 99 |
+| λ0 = 0.3 | urban rubble | 0.571 ± 0.058 | 0 / 955 | 15 |
+| λ0 = 0.3 | severe | 0.428 ± 0.051 | 0 / 29 | 98 |
+| λ0 = 4.8 | urban rubble | 0.565 ± 0.051 | 0 / 1,674 | 13 |
+| λ0 = 4.8 | severe | 0.428 ± 0.049 | 0 / 105 | 96 |
+| β = 0 | urban rubble | 0.572 ± 0.054 | 2 / 1,573 | 17 |
+| β = 0 | severe | 0.433 ± 0.049 | 0 / 36 | 99 |
+| β = 4 | urban rubble | 0.564 ± 0.055 | 1 / 1,561 | 17 |
+| β = 4 | severe | 0.432 ± 0.049 | 0 / 37 | 101 |
+| ε = 0.01 | urban rubble | 0.565 ± 0.053 | 0 / 832 | 16 |
+| ε = 0.01 | severe | 0.420 ± 0.045 | 0 / 27 | 91 |
+| ε = 0.20 | urban rubble | 0.563 ± 0.056 | 0 / 1,669 | 16 |
+| ε = 0.20 | severe | 0.448 ± 0.053 | 0 / 210 | 96 |
+| distance spring, R_max = 30 m | urban rubble | 0.568 ± 0.053 | 0 / 1,276 | 14 |
+| distance spring, R_max = 30 m | severe | 0.441 ± 0.052 | 0 / 36 | 97 |
+| distance spring, R_max = 50 m | urban rubble | 0.561 ± 0.056 | 0 / 1,041 | 19 |
+| distance spring, R_max = 50 m | severe | 0.433 ± 0.055 | 0 / 35 | 97 |
+| distance spring, R_max = 70 m | urban rubble | 0.568 ± 0.051 | 1 / 1,504 | 17 |
+| distance spring, R_max = 70 m | severe | 0.433 ± 0.050 | 0 / 134 | 100 |
+
+### Detector at the operating altitude (rendered thermal frames, 25 and 30 m)
+
+Rendered imagery from the Gazebo thermal camera, not real 25–30 m footage. Worlds are split by seed: train 14 worlds / 1550 frames / 2959 boxes, val 5 / 546 / 998, test 5 / 545 / 899. Recall at IoU ≥ 0.5; false alarms per frame on warm debris. Fine-tuning: the HIT-UAV checkpoint with its own training arguments (AdamW, lr0 = 0.002, batch 16, 640 px, seed 0, 100 epochs, best by val fitness).
+
+| model (test worlds) | mAP50 | mAP50-95 | recall ≥ 0.40 open / partly occluded | recall ≥ 0.70 open / partly occluded | false alarms per frame ≥ 0.40 / ≥ 0.70 |
+|---|---|---|---|---|---|
+| YOLO26n, HIT-UAV only | 0.047 | 0.013 | 0.04 / 0.08 | 0.00 / 0.00 | 0.14 / 0.01 |
+| YOLO26n, fine-tuned on rendered 25–30 m frames | 0.994 | 0.921 | 0.98 / 0.96 | 0.95 / 0.87 | 0.00 / 0.00 |
+
+Ground-truth victims in the test frames: 391 open, 508 partly occluded.
+
+### In-loop detector model fitted to detector outputs (E5)
+
+Fitted by censored maximum likelihood to the fine-tuned detector on the val worlds (1066 victim views in 546 frames, slant range 25–35 m). Parameters at a bound (not identifiable in that range): r_scale. False alarms: 0.021 per warm-debris item in view.
+
+| parameter | hand-set | fitted |
+|---|---|---|
+| c_max | 0.92 | 0.928 |
+| gamma | 1.5 | 0.425 |
+| r_ref | 35 | 32.5 |
+| r_scale | 60 | 5.31 |
+| sigma | 0.08 | 0.161 |
+| kappa | 0.8 | 0.415 |
+| fp_rate | 0.02 | 10.3 |
+| fp_mu | 0.22 | 0.172 |
+| fp_sigma | 0.08 | 0.16 |
+
+Test log-likelihood: fitted 322.6, hand-set -4672.9 (957 victim views).
+
+| class | slant range [m] | n | observed / fitted / hand-set P(c ≥ 0.25) | P(c ≥ 0.40) | P(c ≥ 0.70) |
+|---|---|---|---|---|---|
+| open | 20-27 | 146 | 0.99 / 1.00 / 1.00 | 0.99 / 1.00 / 1.00 | 0.97 / 0.91 / 0.84 |
+| open | 27-30 | 30 | 0.93 / 1.00 / 1.00 | 0.87 / 1.00 / 0.99 | 0.73 / 0.90 / 0.74 |
+| open | 30-32 | 172 | 1.00 / 1.00 / 1.00 | 1.00 / 1.00 / 1.00 | 0.98 / 0.91 / 0.86 |
+| open | 32-35 | 49 | 0.90 / 1.00 / 1.00 | 0.88 / 0.98 / 0.98 | 0.76 / 0.71 / 0.68 |
+| partly occluded | 20-27 | 215 | 0.92 / 1.00 / 0.83 | 0.90 / 0.97 / 0.61 | 0.84 / 0.62 / 0.24 |
+| partly occluded | 27-30 | 36 | 0.92 / 1.00 / 0.93 | 0.83 / 0.98 / 0.74 | 0.67 / 0.68 / 0.26 |
+| partly occluded | 30-32 | 242 | 0.91 / 1.00 / 0.80 | 0.89 / 0.97 / 0.59 | 0.82 / 0.61 / 0.19 |
+| partly occluded | 32-35 | 67 | 0.90 / 0.99 / 0.84 | 0.84 / 0.93 / 0.67 | 0.64 / 0.48 / 0.28 |
+
+First pass, superseded: 91 frames of worlds 107 and 110–115 showed an earlier viewpoint than their recorded pose (frames rendered before the pose change took effect); those worlds were re-rendered with a per-frame pose check and E4/E5 re-run. First-pass values: fine-tuned test mAP50 0.992, recall ≥ 0.40 0.97 / 0.94; fit c_max 0.93, gamma 0.39, sigma 0.17, kappa 0.27, fp_rate 6.14 (at a bound: r_ref, r_scale). Archived in results/overnight_2026-10-28/firstpass_stale_frames/.
+
+### Robustness: failure settings with the detector model fitted to detector outputs (urban rubble, 400 m, N = 8, tuned values unchanged)
+
+| Method | none | single crash | 30 % simultaneous | cascading | Poisson ×2 | brownout |
+|---|---|---|---|---|---|---|
+| SENTINEL | **0.88 ± 0.02** | **0.85 ± 0.03** | **0.84 ± 0.03** | **0.83 ± 0.03** | **0.65 ± 0.07** | **0.87 ± 0.02** |
+| B0 PSO | 0.84 ± 0.03 | 0.81 ± 0.04 | 0.78 ± 0.03* | 0.75 ± 0.04* | 0.55 ± 0.07* | 0.84 ± 0.04 |
+| B1 first version | 0.76 ± 0.06* | 0.70 ± 0.07* | 0.72 ± 0.06* | 0.68 ± 0.06* | 0.52 ± 0.06* | 0.76 ± 0.06* |
+| B2 comm.-aware PSO | 0.85 ± 0.04 | 0.83 ± 0.04 | 0.81 ± 0.05 | 0.80 ± 0.04 | 0.61 ± 0.07 | 0.85 ± 0.03 |
+| B3 λ₂ control | 0.83 ± 0.04* | 0.81 ± 0.04 | 0.79 ± 0.05 | 0.76 ± 0.05* | 0.53 ± 0.07* | 0.80 ± 0.05* |
+| B4 edge potentials | 0.25 ± 0.06* | 0.20 ± 0.06* | 0.20 ± 0.04* | 0.21 ± 0.06* | 0.12 ± 0.05* | 0.21 ± 0.06* |
+| B5 MAPPO | 0.76 ± 0.04* | 0.75 ± 0.04* | 0.71 ± 0.05* | 0.68 ± 0.06* | 0.49 ± 0.07* | 0.74 ± 0.05* |
+| B6 sweep | 0.80 ± 0.03* | 0.78 ± 0.04* | 0.76 ± 0.03* | 0.74 ± 0.04* | 0.54 ± 0.06* | 0.80 ± 0.03* |
+| B7 hard wall | 0.46 ± 0.07* | 0.47 ± 0.07* | 0.46 ± 0.07* | 0.44 ± 0.06* | 0.37 ± 0.05* | 0.49 ± 0.07* |
+| B8 relay chain | 0.81 ± 0.04* | 0.81 ± 0.03 | 0.80 ± 0.04 | 0.75 ± 0.05* | 0.57 ± 0.07* | 0.80 ± 0.04* |
+
+Mean ± half-width of the 95 % bootstrap confidence interval over 30 seeds; best in bold; * = differs from SENTINEL (paired Wilcoxon signed-rank test, Holm-corrected, p < 0.05).
+
+### PX4/Gazebo check re-run on the current code (E8r; parameterised detector model)
+
+| method | SITL / fast reported | SITL / fast connected | SITL / fast packet delivery |
+|---|---|---|---|
+| SENTINEL | 0.62 / 0.60 | 0.71 / 0.71 | 0.84 / 0.83 |
+| B0 PSO | 0.65 / 0.62 | 0.64 / 0.70 | 0.81 / 0.80 |
+
+### PX4/Gazebo check on 10 worlds with YOLO26n in the loop (E6)
+
+3 PX4 x500 UAVs, 100 m worlds (seeds 0–9), crash of one UAV at 150 s, 300 s; the fine-tuned YOLO26n runs on each UAV's thermal stream. Reported victims per world:
+
+| world | SENTINEL | B0 |
+|---|---|---|
+| 0 | 1.00 | 0.90 |
+| 1 | 0.95 | 1.00 |
+| 2 | 0.90 | 0.90 |
+| 3 | 0.75 | 0.90 |
+| 4 | 0.85 | 0.90 |
+| 5 | 0.90 | 0.75 |
+| 6 | 0.90 | 0.90 |
+| 7 | 0.85 | 0.95 |
+| 8 | 0.90 | 0.95 |
+| 9 | 0.90 | 0.95 |
+
+Mean SENTINEL − B0: -0.020 (95 % CI -0.070 to +0.035), paired Wilcoxon p = 0.482. Fast simulator on the same worlds with the fitted detector model: SENTINEL 0.90, B0 0.93.
+
+### Re-checked claims (overnight 2026-10-28, rules fixed in docs/overnight_2026-10-28_PLAN.md)
+
+- Original-form baselines significantly ahead of SENTINEL in any cell of the main tables: none.
+- channel open: SENTINEL significantly above every baseline: True
+- channel open: best baseline: B8
+- channel open: not significant vs: []
+- channel suburban: SENTINEL significantly above every baseline: True
+- channel suburban: best baseline: B0
+- channel suburban: not significant vs: []
+- channel urban_rubble: SENTINEL significantly above every baseline: True
+- channel urban_rubble: best baseline: B3
+- channel urban_rubble: not significant vs: []
+- channel severe: SENTINEL significantly above every baseline: False
+- channel severe: best baseline: B0
+- channel severe: not significant vs: ['B0', 'B1', 'B3', 'B6']
+- failures urban_rubble none: not significant vs: []
+- failures urban_rubble single: not significant vs: []
+- failures urban_rubble simultaneous: not significant vs: []
+- failures urban_rubble cascading: not significant vs: []
+- failures urban_rubble poisson: not significant vs: []
+- failures urban_rubble brownout: not significant vs: []
+- failures urban_rubble: gain over best baseline [%]: [23.3, 26.4, 29.4, 22.6, 27.9, 23.8]
+- failures severe none: not significant vs: ['B0', 'B1', 'B6']
+- failures severe single: not significant vs: ['B0', 'B1', 'B2', 'B6']
+- failures severe simultaneous: not significant vs: ['B0', 'B1', 'B6']
+- failures severe cascading: not significant vs: ['B0', 'B1', 'B2', 'B5', 'B6', 'B8']
+- failures severe poisson: not significant vs: ['B0', 'B1', 'B5', 'B6', 'B8']
+- failures severe brownout: not significant vs: ['B0', 'B1', 'B6']
+- failures severe: gain over best baseline [%]: [4.2, 3.5, 6.0, -0.3, 15.4, 3.7]
+- swarm 400 m N=3: not significant vs: []
+- swarm 400 m N=5: not significant vs: []
+- swarm 400 m N=10: not significant vs: []
+- swarm 400 m N=20: not significant vs: []
+- swarm 400 m N=50: not significant vs: []
+- swarm 200 m N=3: highest mean: sentinel
+- swarm 200 m N=5: highest mean: sentinel
+- swarm 200 m N=10: highest mean: sentinel
+- swarm 200 m N=20: highest mean: B7
+- swarm 200 m N=50: highest mean: sentinel
+- urban N=4: baselines + fusion not significantly behind: []
+- urban N=8: baselines + fusion not significantly behind: []
+- sensitivity: largest change of the share vs tuned SENTINEL: 0.015
+- sensitivity: significant variants: []
+- sensitivity: share range: (0.42, 0.572)
+- sensitivity: max violation rate: 0.0012714558169103624
+- robustness: best baseline per setting: ['B2', 'B2', 'B2', 'B2', 'B2', 'B2']
+- robustness: settings in which each baseline is significantly behind: {'B0': 3, 'B1': 6, 'B2': 0, 'B3': 4, 'B4': 6, 'B5': 6, 'B6': 6, 'B7': 6, 'B8': 4}
+- robustness: gain range [%]: [3.4, 2.9, 3.8, 4.2, 7.5, 2.2]
+- robustness: settings with SENTINEL significantly above all: 0
+- robustness: significant losses of SENTINEL: []
+- E8r: SITL S/B0, fast S/B0, max diff: (0.6166666666666667, 0.65, 0.6, 0.6166666666666667, 0.06092923578072096)
+- E6: SITL S, B0, diff [CI], p; fast S, B0: (0.89, 0.9099999999999999, -0.019999999999999997, -0.06999999999999999, 0.03500000000000001, 0.48168344083007475, 0.9, 0.9349999999999999)
+
 ### Other results omitted from the paper
 
-- Information loss (confirmed victims whose every holder crashed before delivery), failure settings: at most 0.9 % averaged over the six settings for any method; worst cell 8.5 % (twice the Poisson rate, severe channel), SENTINEL 3.2 % there. No advantage in information loss is claimed.
+- Information loss (confirmed victims whose every holder crashed before delivery), failure settings: at most 0.9 % averaged over the six settings for any method; worst cell 9.4 % (twice the Poisson rate, severe channel), SENTINEL 3.2 % there. No advantage in information loss is claimed.
 - Per-agent planning time of SENTINEL: 4–11 ms for N = 3–50 (planning period 1 s).
 - Severe channel, best hold time: p90 report latency 74 s without delivery vs 41 s at T_h = 15 s.
 - Detector (desktop RTX 3060, TensorRT FP16): YOLO26n 1.81 ms vs YOLOv8n 1.73 ms; validation mAP50-95 0.533 vs 0.520. No embedded latency was measured.

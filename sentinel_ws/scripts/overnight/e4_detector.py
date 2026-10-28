@@ -174,8 +174,9 @@ def evaluate(root: str, model: str, split: str, splits: dict, tag: str, device: 
     from ultralytics import YOLO
     ds = os.path.join(root, 'dataset')
     yolo = YOLO(model, task='detect')
+    # workers=0: forked dataloader workers deadlocked once (2026-10-28); results are unchanged
     v = yolo.val(data=os.path.join(ds, 'data.yaml'), split=split, imgsz=640, batch=16,
-                 device=device, verbose=False, plots=False,
+                 device=device, verbose=False, plots=False, workers=0,
                  project=os.path.join(root, 'val_runs'), name=f'{tag}_{split}', exist_ok=True)
     res = {'model': model, 'tag': tag, 'split': split,
            'map50': float(v.box.map50), 'map50_95': float(v.box.map)}
@@ -216,6 +217,7 @@ def evaluate(root: str, model: str, split: str, splits: dict, tag: str, device: 
 def finetune(root: str, base_model: str, device: str = '0', epochs: int | None = None) -> str:
     import torch
     from ultralytics import YOLO
+    torch.multiprocessing.set_start_method('spawn', force=True)   # no fork-after-threads deadlock
     ck = torch.load(base_model, map_location='cpu', weights_only=False)
     args = dict(ck['train_args'])
     keep = ['optimizer', 'lr0', 'lrf', 'momentum', 'weight_decay', 'batch', 'imgsz', 'seed',

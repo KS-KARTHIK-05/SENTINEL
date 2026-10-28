@@ -1,0 +1,937 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <world name="sentinel_g100_s9">
+    <physics type="ode">
+      <max_step_size>0.004</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>250</real_time_update_rate>
+    </physics>
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type="adiabatic"><temperature>288.15</temperature></atmosphere>
+    <scene>
+      <grid>false</grid>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>true</shadows>
+    </scene>
+    <light name="sunUTC" type="directional">
+      <pose>0 0 500 0 0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>1</intensity>
+      <direction>0.001 0.625 -0.78</direction>
+      <diffuse>0.904 0.904 0.904 1</diffuse>
+      <specular>0.271 0.271 0.271 1</specular>
+    </light>
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <world_frame_orientation>ENU</world_frame_orientation>
+      <latitude_deg>47.397971057728974</latitude_deg>
+      <longitude_deg>8.546163739800146</longitude_deg>
+      <elevation>488</elevation>
+    </spherical_coordinates>
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal><size>300 300</size></plane></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>300 300</size></plane></geometry>
+          <material><ambient>0.5 0.5 0.45 1</ambient><diffuse>0.5 0.5 0.45 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>293.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="building_0">
+      <static>true</static>
+      <pose>31.287 45.939 23.228 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>23.069 13.874 46.456</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>23.069 13.874 46.456</size></box></geometry>
+          <material><ambient>0.55 0.55 0.55 1</ambient><diffuse>0.55 0.55 0.55 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>291.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="building_1">
+      <static>true</static>
+      <pose>43.917 26.722 19.080 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>18.908 10.669 38.160</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>18.908 10.669 38.160</size></box></geometry>
+          <material><ambient>0.55 0.55 0.55 1</ambient><diffuse>0.55 0.55 0.55 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>291.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="building_2">
+      <static>true</static>
+      <pose>23.683 39.774 24.381 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>11.931 24.512 48.763</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>11.931 24.512 48.763</size></box></geometry>
+          <material><ambient>0.55 0.55 0.55 1</ambient><diffuse>0.55 0.55 0.55 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>291.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="building_3">
+      <static>true</static>
+      <pose>58.112 53.525 19.225 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>23.008 18.346 38.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>23.008 18.346 38.450</size></box></geometry>
+          <material><ambient>0.55 0.55 0.55 1</ambient><diffuse>0.55 0.55 0.55 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>291.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_4">
+      <static>true</static>
+      <pose>80.617 12.265 1.513 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.169 4.725 3.027</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.169 4.725 3.027</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_5">
+      <static>true</static>
+      <pose>42.969 81.764 2.006 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>4.716 3.777 4.012</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>4.716 3.777 4.012</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_6">
+      <static>true</static>
+      <pose>68.937 37.441 0.882 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>3.938 2.143 1.765</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>3.938 2.143 1.765</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_7">
+      <static>true</static>
+      <pose>86.763 33.568 2.336 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.499 4.845 4.671</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.499 4.845 4.671</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_8">
+      <static>true</static>
+      <pose>12.357 41.766 1.261 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.863 3.834 2.522</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.863 3.834 2.522</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_9">
+      <static>true</static>
+      <pose>32.666 56.313 1.701 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.609 2.658 3.402</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.609 2.658 3.402</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_10">
+      <static>true</static>
+      <pose>13.256 8.634 0.821 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>4.967 2.371 1.641</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>4.967 2.371 1.641</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_11">
+      <static>true</static>
+      <pose>17.868 65.882 2.109 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>3.717 2.930 4.218</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>3.717 2.930 4.218</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_12">
+      <static>true</static>
+      <pose>83.627 51.098 0.648 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>3.839 4.761 1.296</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>3.839 4.761 1.296</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_13">
+      <static>true</static>
+      <pose>42.323 47.705 2.448 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>4.259 2.430 4.896</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>4.259 2.430 4.896</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_14">
+      <static>true</static>
+      <pose>8.271 46.947 1.963 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.908 3.627 3.927</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.908 3.627 3.927</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_15">
+      <static>true</static>
+      <pose>58.290 49.353 0.913 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.653 2.842 1.827</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.653 2.842 1.827</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_16">
+      <static>true</static>
+      <pose>36.369 91.019 1.630 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.092 2.431 3.260</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.092 2.431 3.260</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_17">
+      <static>true</static>
+      <pose>93.072 28.979 1.774 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.036 2.408 3.548</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.036 2.408 3.548</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_18">
+      <static>true</static>
+      <pose>18.777 28.805 1.135 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>3.039 3.553 2.269</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>3.039 3.553 2.269</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_0</name><uri>model://rescue_randy_thermal</uri><pose>88.500 72.440 0.180 1.5708 0 2.8651</pose></include>
+    <model name="slab_0">
+      <static>true</static>
+      <pose>88.748 73.316 0.600 0 0 2.8651</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>3.000 3.000 0.300</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>3.000 3.000 0.300</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_0_post0">
+      <static>true</static>
+      <pose>87.081 72.385 0.225 0 0 2.8651</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_0_post1">
+      <static>true</static>
+      <pose>87.818 74.983 0.225 0 0 2.8651</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_0_post2">
+      <static>true</static>
+      <pose>89.679 71.648 0.225 0 0 2.8651</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_0_post3">
+      <static>true</static>
+      <pose>90.415 74.246 0.225 0 0 2.8651</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_1</name><uri>model://rescue_randy_thermal</uri><pose>49.618 87.038 0.180 1.5708 0 -1.8367</pose></include>
+    <model name="slab_1">
+      <static>true</static>
+      <pose>49.441 86.746 0.575 0 0 5.6349</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_1_post0">
+      <static>true</static>
+      <pose>50.772 86.929 0.225 0 0 5.6349</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_1_post1">
+      <static>true</static>
+      <pose>49.625 85.415 0.225 0 0 5.6349</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_1_post2">
+      <static>true</static>
+      <pose>49.258 88.076 0.225 0 0 5.6349</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_2</name><uri>model://rescue_randy_thermal</uri><pose>52.718 7.805 0.180 1.5708 0 2.0637</pose></include>
+    <include><name>victim_3</name><uri>model://rescue_randy_thermal</uri><pose>78.253 21.705 0.180 1.5708 0 -2.2036</pose></include>
+    <model name="slab_3">
+      <static>true</static>
+      <pose>77.325 23.509 0.575 0 0 1.7231</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_3_post0">
+      <static>true</static>
+      <pose>76.242 24.304 0.225 0 0 1.7231</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_3_post1">
+      <static>true</static>
+      <pose>78.120 24.592 0.225 0 0 1.7231</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_3_post3">
+      <static>true</static>
+      <pose>78.408 22.714 0.225 0 0 1.7231</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_4</name><uri>model://rescue_randy_thermal</uri><pose>82.145 36.305 0.180 1.5708 0 0.0805</pose></include>
+    <model name="slab_4">
+      <static>true</static>
+      <pose>82.482 35.982 0.575 0 0 1.1461</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_4_post0">
+      <static>true</static>
+      <pose>82.008 37.239 0.225 0 0 1.1461</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_4_post1">
+      <static>true</static>
+      <pose>83.739 36.456 0.225 0 0 1.1461</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_4_post2">
+      <static>true</static>
+      <pose>81.225 35.507 0.225 0 0 1.1461</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_5</name><uri>model://rescue_randy_thermal</uri><pose>89.303 31.928 0.180 1.5708 0 -2.2876</pose></include>
+    <model name="slab_5">
+      <static>true</static>
+      <pose>89.251 32.610 0.575 0 0 0.1321</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_5_post0">
+      <static>true</static>
+      <pose>90.068 33.677 0.225 0 0 0.1321</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_5_post1">
+      <static>true</static>
+      <pose>90.318 31.793 0.225 0 0 0.1321</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_6</name><uri>model://rescue_randy_thermal</uri><pose>37.939 77.821 0.180 1.5708 0 1.1878</pose></include>
+    <model name="slab_6">
+      <static>true</static>
+      <pose>38.521 78.065 0.575 0 0 1.9922</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_6_post0">
+      <static>true</static>
+      <pose>37.265 78.544 0.225 0 0 1.9922</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_6_post1">
+      <static>true</static>
+      <pose>38.999 79.321 0.225 0 0 1.9922</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_6_post2">
+      <static>true</static>
+      <pose>38.042 76.810 0.225 0 0 1.9922</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_7</name><uri>model://rescue_randy_thermal</uri><pose>14.682 74.811 0.180 1.5708 0 2.1473</pose></include>
+    <include><name>victim_8</name><uri>model://rescue_randy_thermal</uri><pose>46.936 60.565 0.180 1.5708 0 -0.4680</pose></include>
+    <model name="slab_8">
+      <static>true</static>
+      <pose>46.724 59.144 0.575 0 0 5.0275</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_8_post0">
+      <static>true</static>
+      <pose>47.921 58.535 0.225 0 0 5.0275</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_8_post1">
+      <static>true</static>
+      <pose>46.115 57.947 0.225 0 0 5.0275</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_8_post3">
+      <static>true</static>
+      <pose>45.526 59.753 0.225 0 0 5.0275</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_9</name><uri>model://rescue_randy_thermal</uri><pose>79.576 93.143 0.180 1.5708 0 2.8710</pose></include>
+    <model name="slab_9">
+      <static>true</static>
+      <pose>80.322 94.742 0.575 0 0 0.9623</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_9_post0">
+      <static>true</static>
+      <pose>80.086 96.064 0.225 0 0 0.9623</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_9_post1">
+      <static>true</static>
+      <pose>81.645 94.978 0.225 0 0 0.9623</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_9_post2">
+      <static>true</static>
+      <pose>79.000 94.505 0.225 0 0 0.9623</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_10</name><uri>model://rescue_randy_thermal</uri><pose>42.317 91.983 0.180 1.5708 0 2.0441</pose></include>
+    <include><name>victim_11</name><uri>model://rescue_randy_thermal</uri><pose>14.428 15.254 0.180 1.5708 0 -1.0165</pose></include>
+    <model name="slab_11">
+      <static>true</static>
+      <pose>14.096 14.312 0.575 0 0 5.4752</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_11_post0">
+      <static>true</static>
+      <pose>15.439 14.282 0.225 0 0 5.4752</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_11_post1">
+      <static>true</static>
+      <pose>14.066 12.969 0.225 0 0 5.4752</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_12</name><uri>model://rescue_randy_thermal</uri><pose>65.364 84.467 0.180 1.5708 0 0.4760</pose></include>
+    <model name="slab_12">
+      <static>true</static>
+      <pose>66.635 83.871 0.575 0 0 0.2433</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_12_post0">
+      <static>true</static>
+      <pose>67.328 85.021 0.225 0 0 0.2433</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_12_post1">
+      <static>true</static>
+      <pose>67.786 83.177 0.225 0 0 0.2433</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_13</name><uri>model://rescue_randy_thermal</uri><pose>30.924 56.597 0.180 1.5708 0 1.5915</pose></include>
+    <model name="slab_13">
+      <static>true</static>
+      <pose>31.967 57.889 0.575 0 0 1.4664</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_13_post0">
+      <static>true</static>
+      <pose>31.121 58.933 0.225 0 0 1.4664</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_13_post1">
+      <static>true</static>
+      <pose>33.011 58.735 0.225 0 0 1.4664</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_14</name><uri>model://rescue_randy_thermal</uri><pose>86.953 47.294 0.180 1.5708 0 2.0553</pose></include>
+    <model name="slab_14">
+      <static>true</static>
+      <pose>87.261 48.444 0.575 0 0 2.1719</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_14_post0">
+      <static>true</static>
+      <pose>85.940 48.690 0.225 0 0 2.1719</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_14_post1">
+      <static>true</static>
+      <pose>87.507 49.765 0.225 0 0 2.1719</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_15</name><uri>model://rescue_randy_thermal</uri><pose>39.961 16.318 0.180 1.5708 0 2.7234</pose></include>
+    <include><name>victim_16</name><uri>model://rescue_randy_thermal</uri><pose>76.233 55.221 0.180 1.5708 0 -2.2306</pose></include>
+    <include><name>victim_17</name><uri>model://rescue_randy_thermal</uri><pose>80.470 13.144 0.180 1.5708 0 1.5430</pose></include>
+    <model name="slab_17">
+      <static>true</static>
+      <pose>80.862 13.495 0.575 0 0 2.5126</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_17_post0">
+      <static>true</static>
+      <pose>79.535 13.285 0.225 0 0 2.5126</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_17_post1">
+      <static>true</static>
+      <pose>80.653 14.822 0.225 0 0 2.5126</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_17_post2">
+      <static>true</static>
+      <pose>81.072 12.168 0.225 0 0 2.5126</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_18</name><uri>model://rescue_randy_thermal</uri><pose>27.126 92.552 0.180 1.5708 0 -2.2660</pose></include>
+    <model name="slab_18">
+      <static>true</static>
+      <pose>27.305 93.066 0.575 0 0 6.2051</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.200 2.200 0.250</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.200 2.200 0.250</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>289.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_18_post0">
+      <static>true</static>
+      <pose>28.326 93.939 0.225 0 0 6.2051</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_18_post1">
+      <static>true</static>
+      <pose>28.178 92.045 0.225 0 0 6.2051</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.200 0.200 0.450</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.200 0.200 0.450</size></box></geometry>
+          <material><ambient>0.45 0.4 0.35 1</ambient><diffuse>0.45 0.4 0.35 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>285.0</temperature></plugin>
+        </visual>
+      </link>
+    </model>
+    <include><name>victim_19</name><uri>model://rescue_randy_thermal</uri><pose>84.556 63.733 0.180 1.5708 0 2.5543</pose></include>
+    <include><name>warm_debris_0</name><uri>model://warm_debris</uri><pose>80.656 12.538 0.150 0.0000 0 -1.7209</pose></include>
+    <include><name>warm_debris_1</name><uri>model://warm_debris</uri><pose>79.997 11.729 0.150 0.0000 0 2.2195</pose></include>
+    <include><name>warm_debris_2</name><uri>model://warm_debris</uri><pose>41.505 81.707 0.150 0.0000 0 -1.2169</pose></include>
+    <include><name>warm_debris_3</name><uri>model://warm_debris</uri><pose>42.835 81.260 0.150 0.0000 0 2.9520</pose></include>
+    <include><name>warm_debris_4</name><uri>model://warm_debris</uri><pose>69.374 36.557 0.150 0.0000 0 0.1121</pose></include>
+    <include><name>warm_debris_5</name><uri>model://warm_debris</uri><pose>69.534 39.389 0.150 0.0000 0 -1.1154</pose></include>
+    <include><name>warm_debris_6</name><uri>model://warm_debris</uri><pose>86.312 32.868 0.150 0.0000 0 -1.3670</pose></include>
+    <include><name>warm_debris_7</name><uri>model://warm_debris</uri><pose>85.565 32.896 0.150 0.0000 0 0.6652</pose></include>
+    <include><name>warm_debris_8</name><uri>model://warm_debris</uri><pose>12.812 42.257 0.150 0.0000 0 -1.0445</pose></include>
+    <include><name>warm_debris_9</name><uri>model://warm_debris</uri><pose>12.698 41.678 0.150 0.0000 0 1.1225</pose></include>
+    <include><name>warm_debris_10</name><uri>model://warm_debris</uri><pose>32.309 55.878 0.150 0.0000 0 -2.1713</pose></include>
+    <include><name>warm_debris_11</name><uri>model://warm_debris</uri><pose>32.978 55.717 0.150 0.0000 0 -1.5722</pose></include>
+    <include><name>warm_debris_12</name><uri>model://warm_debris</uri><pose>12.467 8.226 0.150 0.0000 0 2.3241</pose></include>
+    <include><name>warm_debris_13</name><uri>model://warm_debris</uri><pose>14.096 7.535 0.150 0.0000 0 0.6306</pose></include>
+    <include><name>warm_debris_14</name><uri>model://warm_debris</uri><pose>17.642 65.185 0.150 0.0000 0 -1.4955</pose></include>
+    <include><name>warm_debris_15</name><uri>model://warm_debris</uri><pose>16.940 66.751 0.150 0.0000 0 -2.2028</pose></include>
+    <include><name>warm_debris_16</name><uri>model://warm_debris</uri><pose>83.767 51.666 0.150 0.0000 0 -2.2821</pose></include>
+    <include><name>warm_debris_17</name><uri>model://warm_debris</uri><pose>81.277 50.403 0.150 0.0000 0 -1.5776</pose></include>
+    <include><name>warm_debris_18</name><uri>model://warm_debris</uri><pose>42.507 49.752 0.150 0.0000 0 -0.7362</pose></include>
+    <include><name>warm_debris_19</name><uri>model://warm_debris</uri><pose>42.352 47.559 0.150 0.0000 0 0.9367</pose></include>
+    <include><name>warm_debris_20</name><uri>model://warm_debris</uri><pose>7.397 46.611 0.150 0.0000 0 2.1210</pose></include>
+    <include><name>warm_debris_21</name><uri>model://warm_debris</uri><pose>7.179 47.551 0.150 0.0000 0 1.7344</pose></include>
+    <include><name>warm_debris_22</name><uri>model://warm_debris</uri><pose>57.185 47.526 0.150 0.0000 0 -1.0084</pose></include>
+    <include><name>warm_debris_23</name><uri>model://warm_debris</uri><pose>58.113 47.778 0.150 0.0000 0 -2.2081</pose></include>
+    <include><name>warm_debris_24</name><uri>model://warm_debris</uri><pose>36.747 90.396 0.150 0.0000 0 -0.2701</pose></include>
+    <include><name>warm_debris_25</name><uri>model://warm_debris</uri><pose>37.349 91.007 0.150 0.0000 0 -0.3904</pose></include>
+    <include><name>warm_debris_26</name><uri>model://warm_debris</uri><pose>94.037 27.647 0.150 0.0000 0 0.4663</pose></include>
+    <include><name>warm_debris_27</name><uri>model://warm_debris</uri><pose>92.705 29.516 0.150 0.0000 0 -0.7963</pose></include>
+    <include><name>warm_debris_28</name><uri>model://warm_debris</uri><pose>19.069 30.290 0.150 0.0000 0 0.8408</pose></include>
+    <include><name>warm_debris_29</name><uri>model://warm_debris</uri><pose>16.917 29.464 0.150 0.0000 0 -2.4213</pose></include>
+  </world>
+</sdf>

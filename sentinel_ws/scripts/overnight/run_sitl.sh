@@ -24,6 +24,7 @@ for s in "$@"; do
     (cd "$GZS" && python3 make_world.py --kind generate --size 100 --targets 20 --seed "$s" --base \
        --out "$GZS/../worlds") || { echo "$(date +%T) WORLD FAILED $W"; continue; }
   fi
+  [ -f "$GZS/../worlds/$W.json" ] || { echo "$(date +%T) WORLD TRUTH MISSING $W"; continue; }
   for m in sentinel B0_pso; do
     R=$OUT/${W}_${m}
     [ -f "$R/summary.json" ] && python3 -c "import json,sys;sys.exit(0 if json.load(open('$R/summary.json')).get('duration_s',0)>=$T-5 else 1)" && { echo "skip $W $m"; continue; }
@@ -33,13 +34,16 @@ for s in "$@"; do
     SG=$!
     for i in $(seq 120); do grep -q "SITL running" "$R/sitl.log" && break; sleep 2; done
     setsid ros2 launch sentinel_ai swarm_launch.py n_uav:=$N world:=$W method:=$m seed:=$s \
-       perception:=$PERC model_path:=$MODEL tuned_yaml:=$TUNED out_dir:=$R \
+       perception:=$PERC ${MODEL:+model_path:=$MODEL} tuned_yaml:=$TUNED out_dir:=$R world_dir:="$GZS/../worlds" \
        failures:='[{"t":150,"uav":1,"kind":"crash"}]' run_dir:=$SENTINEL_RUN_DIR > "$R/launch.log" 2>&1 &
     LG=$!
     echo "$(date +%T) running $W $m ($PERC, sim ${T}s)"
     d=0
     for i in $(seq 480); do
       sleep 5
+      kill -0 "$LG" 2>/dev/null || { echo "$(date +%T) launch exited early (see launch.log)"; break; }
+      grep -q "process has died" "$R/launch.log" && { echo "$(date +%T) a node died (see launch.log)"; break; }
+      grep -q "Aborted\|Segmentation" "$R/sitl.log" && { echo "$(date +%T) Gazebo or PX4 crashed (see sitl.log)"; break; }
       d=$(python3 -c "import json;print(json.load(open('$R/summary.json')).get('duration_s',0))" 2>/dev/null || echo 0)
       python3 -c "import sys;sys.exit(0 if float('$d')>=$T else 1)" && break
     done

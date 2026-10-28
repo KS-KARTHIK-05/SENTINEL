@@ -817,3 +817,119 @@ Experiment-dependent items 3 and 6 were not resolved, but their wording was made
   - fine-tune and fit chain works;
   - PX4 + YOLO26n in the loop: 60 s simulated in 76 s, about 400 frames per UAV.
 - **Queue:** `scripts/overnight/run_overnight.sh` (resumable; progress in `results/overnight_2026-10-28/progress.log`).
+
+### 2026-10-28/29 (night) — Overnight queue: events and fixes
+- **Lane A** (fast simulator) finished 20:47–00:03 with no failures: A1 tuning, A2 failures, A3 scalability, A4 channels, A5 attribution, A6 dense + fusion, A7 sensitivity.
+- **B7/B8 tuning** (same 30-trial budget). The best objective was 0.2307 for B7 and 0.2720 for B8.
+  - B7: w_goal 1.94, sector_bias 2.04.
+  - B8: w_goal 0.41, sector_bias 1.70, ρ 0.004, s 0.61. The tuner pushed ρ to its lower end, so B8 runs with the minimum of one relay at every swarm size (m = max(1, round(ρN))).
+  - Merged into `configs/tuned_v3.yaml`. `configs/tuned.yaml` is unchanged.
+- **E4 rendering:**
+  - It failed twice in the main queue: gz-transport `set_pose` timeouts under load, then an abort in the gz-transport destructor at exit.
+  - Fixes:
+    - a per-world retry and a sticky `gz service` CLI fallback;
+    - the capture loop moved into a system-Python subprocess (`scripts/overnight/e4_capture.py`, native protobuf);
+    - `os._exit` at the end.
+  - Re-run through `lane_b_resume.sh` (same job names and done markers). All 24 worlds were rendered; nothing was dropped.
+- **E4 dataset** (split by world seed):
+
+  | Split | Worlds | Frames | Boxes |
+  |---|---|---|---|
+  | train | 14 | 1550 | 2948 |
+  | val | 5 | 546 | 995 |
+  | test | 5 | 545 | 899 |
+
+- **Main queue stopped at 00:47 (29 Oct):**
+  - The HIT-UAV evaluation had deadlocked since 21:28 in Ultralytics' forked dataloader workers. Fix: `val` with `workers=0` (same metrics); the fine-tune uses `spawn` workers (same training arguments).
+  - D1 (E8r PX4) failed at every launch because `model_path:=` was empty. Fix: `run_sitl.sh` passes it only when set and stops waiting when the launch exits.
+  - Both PX4 paths were piloted for 30 s on world 0 (scratch folder).
+  - Resumed with `scripts/overnight/resume_queue.sh`: D1 now and D2 after the fine-tune; C1 and C2 at nice 19 once the fitted configs exist.
+  - Deviations are recorded in PLAN.md §9.
+  - The watcher's lane-B liveness check used `pgrep -f`, which matched the watcher's own command line, so the deadlock went unreported for 3 h. Liveness is now checked by PID.
+- **E4, HIT-UAV-only model on the rendered test worlds:**
+  - mAP50 0.047, mAP50-95 0.013;
+  - recall at 0.40: 0.04 (open) and 0.08 (partly occluded); at 0.70: 0 for both;
+  - false alarms on warm debris: 0.14 per frame at 0.40.
+  - This is a large domain gap between HIT-UAV and the rendered thermal frames.
+- **Stale rendered frames (found 01:09, 29 Oct).**
+  - The first E5 fit reported a slant range up to 114 m, impossible at 25–30 m altitude.
+  - A reprojection audit (boxes vs. victims and debris projected from the recorded pose; median residual 1.5 px on good frames) found 91 frames that show an earlier viewpoint. All were in worlds 107 and 110–115, rendered before the 21:24 capture switch.
+  - Cause: the 0.3 s settle time was measured from the newest image received, and the image stream lagged the simulation under load.
+  - Fix in `e4_capture.py`: every frame is checked against its pose and retaken if stale; `e4_posecheck.py` audits all worlds after rendering; tests were added.
+  - The seven worlds were re-rendered, and the dataset, evaluations, fine-tune, E5 fit and C1/C2 were re-run. The first pass is archived in `results/overnight_2026-10-28/firstpass_stale_frames/`.
+  - During the fix, an edit removed two functions from `e4_capture.py`, and the render job failed at import twice (01:12). They were restored and a one-world pilot ran clean.
+- **Second pass (01:19–01:39).**
+  - The seven worlds were re-rendered with 0 stale frames, and the audit passes on all 2,641 frames.
+  - The dataset has the same frames per split. Boxes: train 2,959 (was 2,948), val 998 (was 995), test 899 (unchanged).
+  - **HIT-UAV-only model, test worlds:** identical to the first pass (mAP50 0.047; recall at 0.40 is 0.04 open and 0.08 partly occluded; 0.14 false alarms per frame on warm debris at 0.40).
+  - **Fine-tuned model (100 epochs, checkpoint's own arguments), test worlds:**
+    - mAP50 0.994, mAP50-95 0.921;
+    - recall at 0.40: 0.98 open, 0.96 partly occluded;
+    - recall at 0.70: 0.95 open, 0.87 partly occluded;
+    - false alarms on debris: 0.002 per frame at 0.40.
+  - **E5 fit** (val, 1,066 victim views, slant range 25–35 m):
+    - c_max 0.93, γ 0.43, σ 0.16, κ 0.41;
+    - r_ref 32.5 m, with r_s at its 5 m lower bound (range decay not identifiable in 25–35 m);
+    - false alarms 0.021 per debris item in view, giving fp_rate 10.3 (hand-set 0.02); fp_mu 0.17, fp_sigma 0.16;
+    - test log-likelihood 323 fitted vs. −4,673 hand-set.
+  - **Calibration:** the fit over-predicts P(c ≥ 0.25) (1.00 vs. 0.90–1.00 observed) and under-predicts P(c ≥ 0.70) for partly occluded victims (0.48–0.68 vs. 0.64–0.84). The hand-set model is further off for occluded victims (0.19–0.28).
+- **E8r (PX4, current code; 3 worlds × SENTINEL/B0, 300 s):**
+  - reported victims: SENTINEL 0.60 / 0.50 / 0.75, B0 0.60 / 0.65 / 0.70, so B0 is slightly ahead on average (0.65 vs. 0.62);
+  - the old E8 runs (stale install) gave 0.53 vs. 0.60;
+  - B0 uses max-view sensing (`fusion=False`) in both environments, so its changes are SITL run-to-run variation.
+- **Then running:** C1 robustness with the fitted model (nice 19) and D2 E6 (10 worlds, fine-tuned YOLO26n in the loop).
+- **E6 restart (02:23).**
+  - Worlds 0–2 finished: SENTINEL 1.00 / 0.95 / 0.90, B0 0.90 / 1.00 / 0.90.
+  - On world 3, the first world generated tonight, the ROS nodes exited at start-up: they read truth files from the colcon install, which held only worlds 0–2, while Gazebo loads worlds from the source folder.
+  - Fix: `run_sitl.sh` passes `world_dir`, checks the truth file and stops a run when a node dies. World 3 piloted (30 s); worlds 4–9 generated; victim positions of all ten worlds match the fast simulator's generator.
+  - Restarted with `scripts/overnight/resume_d2.sh`. My earlier pilot used world 0, which was already installed, so it missed this.
+- **C1 (robustness, fitted model)** runs at nice 19 in parallel: 400 of 1,800 missions at 02:22.
+- **Queue complete (03:57, 29 Oct).**
+  - All 18 jobs are done and nothing was cut. E6 has 20/20 PX4 runs and E8r 6/6.
+  - Gazebo aborted once, at 61 s simulated in world 7 B0 (an ODE collision assertion inside dartsim). The job's second attempt redid that run. The first attempt ended with a syntax error because `run_sitl.sh` was edited while running; finished runs were kept.
+- **Final new results:**
+  - **E5 robustness** (fitted detector model, urban rubble, six failure settings, no re-tuning):
+    - SENTINEL 0.65–0.88 keeps the highest mean in every setting, but leads the best baseline (B2 in all six) by only 2.2–7.5 %;
+    - the lead over B2 is significant in no setting, so it is significant against all nine baselines in none; there are no significant losses;
+    - with the hand-set model the lead is 23–29 %.
+  - **E6** (10 PX4 worlds, fine-tuned YOLO26n in the loop):
+    - SENTINEL 0.89 vs. B0 0.91, difference −0.02 (95 % CI −0.07 to +0.04, p = 0.48);
+    - fast simulator with the fitted model: 0.90 vs. 0.93.
+  - **E8r:** Gazebo 0.62 vs. 0.65 and fast simulator 0.60 vs. 0.62, agreeing within 0.06.
+
+### 2026-10-29 — Overnight experiments, Part B (paper, letter, extended results)
+- **Generator** (`paper_icius_ios/scripts/make_ios.py`):
+  - merges the overnight results (B0–B8 in Tables 2–4, 9 Holm tests per column);
+  - adds the sensitivity, E4/E5, robustness, E8r and E6 sections;
+  - records every pre-registered claim check;
+  - asserts the structure of the robustness sentence.
+  - 215 macros; `docs/icius2026_extended_results.md` regenerated.
+- **Claim checks (rules in the plan):**
+  - "23–29 %" unchanged (22.6–29.4 over B0–B8);
+  - never significantly worse than an original-form baseline: holds;
+  - significantly better at every swarm size on 400 m: holds;
+  - channel sentence unchanged;
+  - Table 4: "all nine" stay behind in the urban cells; dense swarm unchanged (B4 + fusion ahead).
+  - **Changed:** at 200 m, B7 has a higher mean at N = 20 (0.76 vs. 0.74) and is not significantly behind at N = 50 (0.792 vs. 0.809). So "significantly only at N = 50" became "at no size significantly above all nine".
+- **Paper (`main.tex`):**
+  - B7/B8 in Setup and in Tables 2 and 3;
+  - the 200 m sentence;
+  - "all nine";
+  - the spring-sensitivity sentence;
+  - the Detector paragraph (E4 with the "not real footage" caveat, plus the E5 robustness sentence);
+  - E8r numbers and the E6 sentence;
+  - Limitations: "hand-set or fitted to detector outputs on rendered frames";
+  - abstract and conclusion now also give the 2–7 % lead under the fitted model.
+- **Page budget (6 pages):**
+  - prose trimmed (hold-time sentence moved to the extended results, run counts dropped from Link Preservation, shorter Lemma 1 proof);
+  - trigger condition made inline, so Eqs. (5)–(8) became (4)–(7) and the letter's equation references were updated;
+  - Tables 3/4 captions now refer to Table 2 for the statistics legend;
+  - tables moved to the start of Section 5;
+  - the notice box in the highlighted build removed, so both builds have the same layout; the colour convention is now stated in the letter.
+- **Checks:** both builds 6 pages, A4, all fonts Type 1, 0 overfull boxes, 0 undefined references, lint 0 issues, no first-version numbers, no "Fig.", tables at 8 pt, abstract about 135 words.
+- **Response letter** (git-ignored):
+  - R1.1 ideal cameras (E4/E5, with the robustness result and caveat);
+  - R1.2: nine baselines, B7 and B8 implemented, 200 m caveat, λ/R_max sensitivity, detector at 25–30 m (rendered), information-loss worst cell now 9.4 %;
+  - R2: E8r re-run, with a disclosure of the outdated earlier build, and E6;
+  - equation references updated; PDF re-exported (6 pages, Type 1).
+- **Tests:** `sentinel_core` 396 pass and `sentinel_sim` 41 pass (39 overnight + 2 pose-check). `sentinel_ai`'s ament flake8 (7 long lines) and pep257 lints fail; they predate this work (files unchanged since 22 Oct).
