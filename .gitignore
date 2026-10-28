@@ -40,3 +40,16 @@ paper_icius/*.fls
 paper_icius/*.fdb_latexmk
 paper_icius/*.blg
 paper_icius/*.out
+
+# Reviews and response letters are confidential: never commit them
+paper/response_to_reviewers.*
+paper_icius*/response_to_reviewers.*
+# LaTeX build files of the IOS revision (main.pdf and main_highlighted.pdf are kept)
+paper_icius_ios/*.aux
+paper_icius_ios/*.log
+paper_icius_ios/*.fls
+paper_icius_ios/*.fdb_latexmk
+paper_icius_ios/*.blg
+paper_icius_ios/*.out
+# template documentation shipped with the IOS zip (not needed to build)
+paper_icius_ios/ios-book-article_LaTeX_Instructions.pdf

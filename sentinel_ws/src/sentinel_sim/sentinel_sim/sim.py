@@ -27,6 +27,9 @@ from . import world as W
 from .linkfield import LinkField
 from .methods import build_config
 
+# Value discount theta of the report value J = mean_k exp(-T_k / theta) (paper Eq. 3).
+REPORT_VALUE_THETA_S = 300.0
+
 DEFAULTS: Dict[str, Any] = {
     'method': 'sentinel',
     'seed': 0,
@@ -394,7 +397,7 @@ class Simulation:
         ``rep_within_D``: share of *all* true targets reported to the responder
         within D seconds of their first confirmation (denominator = all targets,
         so detecting little cannot score well). ``report_value``: time-discounted
-        reports, mean over targets of exp(-t_report / 300 s) (0 if never reported).
+        reports, mean over targets of exp(-t_report / REPORT_VALUE_THETA_S) (0 if never reported).
         ``on_time_30s`` is kept for reference (denominator = detected targets).
         """
         nan = float('nan')
@@ -408,7 +411,8 @@ class Simulation:
                 'on_time_30s': sum(1 for x in lat if x <= 30.0) / max(1, len(self.t_first)),
                 'rep_within_60s': sum(1 for x in lat if x <= 60.0) / n_t,
                 'rep_within_120s': sum(1 for x in lat if x <= 120.0) / n_t,
-                'report_value': float(sum(np.exp(-t / 300.0) for t in self.t_base.values()) / n_t)}
+                'report_value': float(sum(np.exp(-t / REPORT_VALUE_THETA_S)
+                                          for t in self.t_base.values()) / n_t)}
 
     def _flat_cfg(self):
         c = self.cfg

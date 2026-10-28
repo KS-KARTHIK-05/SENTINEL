@@ -2,6 +2,8 @@
 
 **Information-triggered delivery for timely victim reporting in infrastructure-free UAV search and rescue**
 
+Paper: Edge-AI Driven Elastic Mesh PSO for Low-Altitude UAV IoT Networks in Zero-Infrastructure Environments, ICIUS 2026 (submission UN006).
+
 ![ROS 2 Humble](https://img.shields.io/badge/ROS_2-Humble-22314E?logo=ros)
 ![Gazebo Harmonic](https://img.shields.io/badge/Gazebo-Harmonic-F58113)
 ![PX4 SITL](https://img.shields.io/badge/PX4-SITL-1E90FF)
@@ -99,7 +101,7 @@ The metric is the **share of victims reported to the responder within 60 s**.
 | Delivery trigger, N = 8, urban / severe | 0.599 / 0.501 (`T_hold` = 15 s) | 0.523 / 0.419 (never deliver) | +15 % / +20 %, significant |
 | Urban, baselines given SENTINEL's fusion rule (N = 4 / 8) | 0.313 / 0.575 | 0.228 / 0.507 | still significantly better than all 7 |
 
-- **Link safety:** 93 violations in 1,349,703 preserved link-steps (6.9×10⁻⁵). On the same seeds, disabling the projection raises violations 37-fold (1 vs 42; p < 10⁻⁴). A Monte-Carlo check of Proposition 1 over 10⁴ trials found 0 failures.
+- **Link safety:** 65 violations in 1,317,947 preserved link-steps (4.9×10⁻⁵). On the same seeds, disabling the projection raises violations 37-fold (1 vs 42; p < 10⁻⁴). A Monte-Carlo check of Proposition 1 over 10⁴ trials found 0 failures.
 - **Scalability:** planning takes 4–11 ms per agent for N = 3–50, against a 1 s planning period.
 - **Ablation:** fusion and the delivery trigger have significant effects; with fusion, flank and delivery all removed SENTINEL is still ahead of every baseline given fusion; the remaining differences (tuned exploration aids, heartbeat re-attachment) are not claimed as contributions. The connectivity layer does not change the on-time share; it is reported as a safety property.
 - **Gazebo/PX4 cross-check:** the software-in-the-loop runs agree with the fast simulator within 0.07 on reporting and 0.04 on packet delivery.
@@ -238,9 +240,8 @@ could be reproduced, so **v2 drops all of them**. v2 is a rebuild:
 - every reviewer comment is addressed;
 - every reported number traces to a script.
 
-The mapping from each review comment to its fix is in
-[`paper/response_to_reviewers.md`](paper/response_to_reviewers.md), and the full log of the rework
-is in [`docs/PROGRESS.md`](docs/PROGRESS.md).
+The full log of the rework is in [`docs/PROGRESS.md`](docs/PROGRESS.md), and the tables the
+6-page ICIUS paper omits are in [`docs/icius2026_extended_results.md`](docs/icius2026_extended_results.md).
 
 ## Limitations
 

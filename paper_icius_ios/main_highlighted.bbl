@@ -1,0 +1,85 @@
+\begin{thebibliography}{10}
+
+\bibitem{hituav}
+Suo J, Wang T, Zhang X, Chen H, Zhou W, Shi W.
+\newblock {HIT-UAV}: A High-Altitude Infrared Thermal Dataset for Unmanned
+  Aerial Vehicle-Based Object Detection.
+\newblock Scientific Data. 2023;10:227.
+
+\bibitem{yolo26}
+{Ultralytics}. Ultralytics {YOLO26}; 2026.
+\newblock Software, ultralytics v8.4.0 (released 14 Jan. 2026),
+  \url{https://docs.ultralytics.com/models/yolo26/}.
+
+\bibitem{zavlanos2008}
+Zavlanos MM, Pappas GJ.
+\newblock Distributed Connectivity Control of Mobile Networks.
+\newblock IEEE Transactions on Robotics. 2008;24(6):1416-28.
+
+\bibitem{sabattini2013}
+Sabattini L, Chopra N, Secchi C.
+\newblock Decentralized Connectivity Maintenance for Cooperative Control of
+  Mobile Robotic Systems.
+\newblock The International Journal of Robotics Research. 2013;32(12):1411-23.
+
+\bibitem{ji2007}
+Ji M, Egerstedt M.
+\newblock Distributed Coordination Control of Multiagent Systems While
+  Preserving Connectedness.
+\newblock IEEE Transactions on Robotics. 2007;23(4):693-703.
+
+\bibitem{li2003lmst}
+Li N, Hou JC, Sha L.
+\newblock Design and Analysis of an {MST}-Based Topology Control Algorithm.
+\newblock In: Proc. IEEE INFOCOM. vol.~3; 2003. p. 1702-12.
+
+\bibitem{kantaros2017}
+Kantaros Y, Zavlanos MM.
+\newblock Distributed Intermittent Connectivity Control of Mobile Robot
+  Networks.
+\newblock IEEE Transactions on Automatic Control. 2017;62(7):3109-21.
+
+\bibitem{bafarassat2026aoi}
+Bafarassat M, Coleri S.
+\newblock Reliability- and Connectivity-Constrained Age-of-Information
+  Optimization for {UAV} Swarm {IoT} Data Collection.
+\newblock IEEE Internet of Things Journal. 2026.
+\newblock Early access; arXiv:2608.00061.
+
+\bibitem{yang2024dapso}
+Yang L, Hao Y, Xu J, Li M.
+\newblock Multi-{UAV} Collaborative Target Search Method in Unknown Dynamic
+  Environment.
+\newblock Sensors. 2024;24(23):7639.
+
+\bibitem{niu2026eventbayes}
+Niu D, Yi P, Hong Y.
+\newblock Distributed Event-Driven {Bayesian} Search for Multi-{UAV} Systems
+  with Spatially Correlated Targets.
+\newblock Sensors. 2026;26(16):5189.
+
+\bibitem{yu2022mappo}
+Yu C, Velu A, Vinitsky E, Gao J, Wang Y, Bayen A, et~al.
+\newblock The Surprising Effectiveness of {PPO} in Cooperative Multi-Agent
+  Games.
+\newblock In: Advances in Neural Information Processing Systems (NeurIPS).
+  vol.~35; 2022. p. 24611-24.
+
+\bibitem{tr36777}
+{3GPP}.
+\newblock Enhanced {LTE} Support for Aerial Vehicles.
+\newblock 3rd Generation Partnership Project; 2017. TR 36.777, V15.0.0.
+
+\bibitem{itup1411}
+{ITU-R}. Propagation Data and Prediction Methods for the Planning of
+  Short-Range Outdoor Radiocommunication Systems and Radio Local Area Networks;
+  2023.
+\newblock Recommendation ITU-R P.1411-12.
+
+\bibitem{clerc2002}
+Clerc M, Kennedy J.
+\newblock The Particle Swarm---Explosion, Stability, and Convergence in a
+  Multidimensional Complex Space.
+\newblock IEEE Transactions on Evolutionary Computation. 2002;6(1):58-73.
+
+\end{thebibliography}

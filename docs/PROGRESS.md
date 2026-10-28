@@ -734,3 +734,18 @@ Experiment-dependent items 3 and 6 were not resolved, but their wording was made
 
   The draft was not edited, per the instructions.
 - **Author details:** e-mails and affiliations taken from the v1 source in `SENTINEL_DRAFT__Copy_/main.tex`.
+
+### 2026-10-28 — ICIUS revision rebuilt in the IOS Press template (per `icius_ios_template_prompt.md`)
+- **New `src/SENTINEL/paper_icius_ios/`.** It contains the template files from `Template_for_IOS_Press_manuscripts.zip` (cls, tmpl, sample tex). The zip had no `vancouver.bst`; with the user's approval, TeX Live's copy is used.
+- **Generator `scripts/make_ios.py`:**
+  - 133 macros and 4 tables at 8 pt (mean ± 95 % CI half-width, Wilcoxon-Holm), single column, captions above;
+  - the T_h figure re-rendered with the PGF backend so all fonts are Type 1. `type1ec`/cm-super is missing, so usetex failed. The figure is grayscale-safe with an "urban rubble" legend, but was dropped from the paper for space;
+  - `docs/icius2026_extended_results.md` with everything the paper omits.
+- **θ.** `REPORT_VALUE_THETA_S = 300` is now a named constant in `sim.py`. There is no behaviour change: a stored run reproduces exactly and 396 tests pass.
+- **Paper and highlighted version.** `main.pdf` and `main_highlighted.pdf` (`\HIGHLIGHT` switch, blue = revised, tables coloured via `\@tableboxreset`): 6 pages, A4, page 6 full, 0 overfull boxes, 0 undefined references, 13 fonts all Type 1 and embedded, no Type 3. 14 references. Fixes 1–9 applied (fix 8 n/a: node graph dropped).
+- **Response.** `response_to_reviewers.md` was rewritten with IOS numbering and exported via `scripts/md2pdf.py` (no pandoc) to an A4, 5-page, Type 1 PDF.
+- **Hygiene:**
+  - response files ignored; `paper/` and `paper_icius/` responses untracked, but they remain in the remote history;
+  - README gets the ICIUS line, the broken response link is removed, and the link-violation total is corrected to 65 / 1,317,947;
+  - no LICENSE file;
+  - upstream `42c6e80` is the PR #2 merge commit (tree identical to `9ababff`); not merged.
