@@ -16,6 +16,7 @@ import e4_capture as C  # noqa: E402
 import e4_detector as D  # noqa: E402
 import e4_render as R  # noqa: E402
 import e5_fit as F  # noqa: E402
+import make_fitted_configs as MC  # noqa: E402
 from sentinel_core.detector_model import DetectorModel, Target  # noqa: E402
 from sentinel_sim import world as W  # noqa: E402
 
@@ -169,3 +170,35 @@ def test_truncated_normal_fit():
     c = c[c >= F.FLOOR]
     mu, s = F.truncnorm_fit(c)
     assert mu == pytest.approx(0.3, abs=0.02) and s == pytest.approx(0.1, abs=0.02)
+
+
+# ------------------------------------------------------------------ E5 false-alarm conversion
+@pytest.mark.parametrize('n_world', [30, 480])
+def test_fitted_false_alarms_per_debris_item_match_the_measured_rate(n_world):
+    """Measured: 0.02 reported false alarms per debris item in view. The simulator, with the
+    fitted fp_rate for a world of n_world debris items, must report the same rate per item in
+    view, whatever the world size (each candidate lands on any of the world's items and is
+    reported only above the 0.25 floor)."""
+    fp_mu, fp_sigma, in_view, looks = 0.17, 0.16, 5, 8000
+    per = F.fp_per_debris_item(40, 2000, fp_mu, fp_sigma)
+    det = DetectorModel(fp_rate=per * n_world, fp_mu=fp_mu, fp_sigma=fp_sigma)
+    clutter = np.vstack([np.zeros((in_view, 2)), np.full((n_world - in_view, 2), 1.0e4)])
+    rng = np.random.default_rng(3)
+    fa = sum(sum(1 for _, _, k in det.look([], np.array([0.0, 0.0, 30.0]), 12.0, rng, clutter)
+                 if k < 0) for _ in range(looks))
+    assert fa / (looks * in_view) == pytest.approx(0.02, rel=0.12)
+
+
+def test_debris_in_view_counts_items_hidden_in_rubble():
+    """A debris item under the camera counts as in view even without a rendered box."""
+    meta = {'x': 50.0, 'y': 50.0, 'z': 30.0, 'yaw': 0.3, 'vis': [], 'full': []}
+    assert F.debris_in_frame(meta, [[50.0, 51.0], [90.0, 90.0], [50.0, 20.0]]) == 1
+
+
+def test_fitted_configs_set_fp_rate_per_world_size():
+    fitted = {'c_max': 0.9, 'sigma': 0.1, 'fp_per_debris_item': 0.05, 'fp_mu': 0.2, 'fp_sigma': 0.1}
+    cfg = MC.configs(fitted)
+    rob, e6 = cfg['robust_fitted']['base']['detector'], cfg['e6_fastsim']['base']['detector']
+    assert rob['fp_rate'] == pytest.approx(0.05 * 480) and e6['fp_rate'] == pytest.approx(0.05 * 30)
+    assert 'fp_per_debris_item' not in rob and rob['c_max'] == 0.9
+    DetectorModel(**rob)

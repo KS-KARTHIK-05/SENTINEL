@@ -1,4 +1,5 @@
-"""PX4 offboard interface for one UAV.
+"""
+PX4 offboard interface for one UAV.
 
 Publishes the true world-frame pose (fixing v1, whose telemetry was always
 (0, 0)) and flies to world-frame setpoints produced by ``emps_agent``.
@@ -35,7 +36,8 @@ class FlightCommander(Node):
         st_topic = self.declare_parameter('status_topic', 'fmu/out/vehicle_status_v4').value
         self.sys_id = self.uav + 1
 
-        self.pub_mode = self.create_publisher(OffboardControlMode, 'fmu/in/offboard_control_mode', 10)
+        self.pub_mode = self.create_publisher(OffboardControlMode,
+                                              'fmu/in/offboard_control_mode', 10)
         self.pub_sp = self.create_publisher(TrajectorySetpoint, 'fmu/in/trajectory_setpoint', 10)
         self.pub_cmd = self.create_publisher(VehicleCommand, 'fmu/in/vehicle_command', 10)
         self.pub_pose = self.create_publisher(PointStamped, 'sentinel/pose', 10)

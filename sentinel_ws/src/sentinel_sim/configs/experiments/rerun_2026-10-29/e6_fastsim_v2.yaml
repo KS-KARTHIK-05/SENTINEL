@@ -1,0 +1,30 @@
+# Baseline re-run (29 Oct, PLAN.md section 9): configs/experiments/overnight/e6_fastsim_v2.yaml restricted to B0-B4, B6
+# (and fusion variants), tuned values from configs/tuned_v4.yaml.
+tuned_file: configs/tuned_v4.yaml
+base:
+  n_uav: 3
+  duration_s: 300
+  channel:
+    profile: urban_rubble
+  map:
+    kind: generate
+    size: 100
+    n_targets: 20
+    base: true
+  failures:
+    kind: single
+    t: 150
+    uav: 1
+  detector:
+    c_max: 0.9281922868782493
+    gamma: 0.42548275462475227
+    r_ref: 32.46748388778415
+    r_scale: 5.311378256168288
+    sigma: 0.1606915547432223
+    kappa: 0.41461177704361835
+    fp_mu: 0.1723562550182011
+    fp_sigma: 0.16031430161951665
+    fp_rate: 1.106807272287808
+methods:
+- B0_pso
+seeds: 10

@@ -1,4 +1,5 @@
-"""Wireless channel emulator for SITL runs.
+"""
+Wireless channel emulator for SITL runs.
 
 Every beacon published on ``/px4_i/sentinel/beacon_out`` is delivered to
 ``/px4_j/sentinel/beacon_in`` only if the sampled SINR of link i->j exceeds the
@@ -104,7 +105,8 @@ class CommEmulator(Node):
             return False
         ps, pr = self.pos[s], self.pos[r]
         obs = int(self.world.obstructions(ps, pr)[0])
-        sig = self.sampler.rx_power_mw(s, r, ps, pr, obs) * 10 ** (self.tx_offset_db.get(s, 0.0) / 10)
+        sig = (self.sampler.rx_power_mw(s, r, ps, pr, obs)
+               * 10 ** (self.tx_offset_db.get(s, 0.0) / 10))
         return self.sampler.sinr_db(sig, self._interference_mw(s, r)) >= self.profile.gamma_th_db
 
     def _route(self, s, msg: Beacon):

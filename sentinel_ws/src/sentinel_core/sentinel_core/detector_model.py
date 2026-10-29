@@ -12,10 +12,16 @@ when viewed from that side and less occluded from the opposite side:
     occ = clip(occ0 + kappa * sin(theta) * cos(az - block_dir), 0, 1)
 
 (theta: off-nadir angle, az: azimuth of the UAV seen from the target). Buried
-targets have occ = 1 from every viewpoint. False positives from warm clutter
-arrive as a Poisson process per look with low confidences. The parameters are set
-by hand to reproduce the qualitative behaviour of the onboard detector (they are not
-fitted to detector outputs) and are swept in the detection-uncertainty study (E6).
+targets have occ = 1 from every viewpoint. False positives from warm clutter:
+each look draws Poisson(fp_rate) candidates; with a clutter list, each candidate
+lands on an item drawn from the whole world's clutter and is dropped unless that
+item is inside the footprint, and it is reported only if its confidence
+N(fp_mu, fp_sigma) reaches report_min. The expected reported false positives per
+look per clutter item in the footprint are therefore
+fp_rate / len(clutter_xy) * P(c >= report_min), so fp_rate depends on the world's
+clutter count. The default parameters are set by hand to reproduce the qualitative
+behaviour of the onboard detector and are swept in the detection-uncertainty study
+(E6); scripts/overnight/e5_fit.py fits them to detector outputs.
 """
 from __future__ import annotations
 
@@ -41,7 +47,7 @@ class DetectorModel:
     r_scale: float = 60.0
     sigma: float = 0.08
     kappa: float = 0.8
-    fp_rate: float = 0.02           # expected false positives per look
+    fp_rate: float = 0.02           # false-positive candidates per look (see module docstring)
     fp_mu: float = 0.22
     fp_sigma: float = 0.08
     report_min: float = 0.25        # detector NMS / confidence floor

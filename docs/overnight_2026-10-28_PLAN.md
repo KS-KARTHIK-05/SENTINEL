@@ -239,3 +239,93 @@ Pilot wall times per mission with 18 parallel workers:
   - Worlds 4–9 were generated with the same generator. The victim positions of all ten worlds equal those of the fast simulator's world generator for the same seeds, which C2 uses.
 - **Kept:** worlds 0–2 of E6 and all of E8r. Their truth files in the install and source folders are byte-identical, and Gazebo used the source worlds throughout. The aborted world-3 run is redone from the start.
 - **Order change:** C1 and C2 continue in `resume_queue.sh`, and D2 runs in `resume_d2.sh`.
+
+**29 Oct, 13:50 — E5 false-alarm conversion corrected; C1 and C2 re-run (pre-submission check).**
+- **Check run first** (`scripts/overnight/e5_check.py`, results in `results/e5_recheck_2026-10-29/check_before/`). The fitted model was run through the simulator's own `DetectorModel.look` on the E4 frames (same camera poses, victims and debris, 200 draws) and compared with the fine-tuned YOLO26n on the same frames.
+  - Victim recall and confidence agree within a factor of 2.
+  - False alarms per frame (≥ 0.25), real val 0.018 (10 in 546 frames), real test 0.0055 (3 in 545):
+    - with 480 debris items per world (the 400 m worlds of C1): 0.011 val, 0.012 test;
+    - with 30 items per world (the 100 m worlds of C2): 0.17 val, 0.19 test, about 10× (val) and 34× (test) the real rate.
+- **Cause: the conversion to `fp_rate`, not the simulator.** `fp_rate` is the mean number of false-alarm *candidates* per look, before the 0.25 floor. Each candidate lands on a debris item drawn from the **whole world** and counts only if that item is in the footprint. The intent stated in §6 (expected false alarms per look per debris item in view equal λ_d) was missed three ways:
+  1. **Floor applied twice.** λ_d counts reported false alarms (≥ 0.25), but the simulator applies the floor again to N(fp_mu, fp_sigma) (latent normal, 0.172 ± 0.160), so only 31 % pass. The candidate rate must be λ_d / P(c ≥ 0.25).
+  2. **Denominator.** λ_d divided by visible debris *boxes* (0.85 per val frame). The simulator draws at every debris item in its footprint, and about half the items lie inside the rubble they are generated at and render no box (1.58 items per val frame by projection). The denominator is now the number of the world's debris items that project into the frame.
+  3. **World size in C2.** `fp_rate` = λ_d × 480 holds only in worlds with 480 items. `make_fitted_configs.py` copied it unchanged into the E6 fast-simulator config, whose 100 m worlds have 30 items: 16× the rate per item.
+  - In C1, (1) and (2) partly cancel (0.31 × 1.85 ≈ 0.58×). C2 is off by about 10×.
+- **Fix:**
+  - `e5_fit.py` stores the world-independent rate per debris item in view (`fp_per_debris_item`, after (1) and (2)).
+  - `make_fitted_configs.py` sets `fp_rate` per config from the number of debris items its worlds have (480 for C1, 30 for C2, checked on the world generator).
+  - The victim parameters, data, definitions and the analysis are unchanged. Tests cover the conversion: simulated false alarms per debris item in view equal λ_d in worlds of 30 and 480 items.
+- **Re-run into `results/e5_recheck_2026-10-29/`** (new folder; the first results stay untouched and are reported as superseded):
+  - E5 fit;
+  - the check, which must now match the real rate in both world sizes;
+  - C1 (`robust_fitted_v2`: same methods, settings, seeds 0–29, tuned values and statistics);
+  - C2 (`e6_fastsim_v2`).
+  - Paper, highlighted build, letter and extended results are regenerated from the new C1/C2. The PX4 side of E6 (real YOLO26n in the loop) does not use the model and is unchanged.
+
+**29 Oct, 15:20 — Baselines B0–B4 and B6 re-tuned and re-run (fusion-rule inconsistency found by the reproducibility check).**
+- **Finding.** After the `detector_model.py` docstring edit, stored hand-set-detector missions were re-run (`check_reproduce.py`). Every SENTINEL, B5, B7, B8 and sensitivity row is bit-identical, but rows of B0–B4 and B6 in E1–E4 and E6 are not.
+- **Cause, confirmed.**
+  - These rows date from before Amendment A3 (14 Oct). At that time the ledger's fusion rule was a module global defaulting to naive Bayes.
+  - Since A3, every run sets the rule per run, and the default is corroborative for every method. `fusion=False` drops extra views only at local sensing, so gossip-merged views are still fused, and the rule changes baseline confirmations. A3's note ("baseline rows are unchanged and valid") was wrong.
+  - On the current code with `fusion_rule=naive_bayes`, every failing mission reproduces bit-identically. The only remaining differences are the three link-preservation columns, whose definition changed on 22 Oct (metric only).
+  - No commit since 680e05e reproduces these rows, and no library has changed since 15 Oct.
+- **Tuning check on the current code** (`tune_check.py`, tuning objective = mean report value on the tuning scenarios, seeds 1000–1002):
+
+  | Method | Recorded | On HEAD |
+  |---|---|---|
+  | SENTINEL (A4, 15 Oct) | 0.2966 | 0.2966 |
+  | B5 (16 Oct, with its policy) | 0.2332 | 0.2332 |
+  | B7 (28 Oct) | 0.2307 | 0.2307 |
+  | B8 (28 Oct) | 0.2720 | 0.2720 |
+  | B0 (round 1, 10 Oct) | 0.285 | 0.242 |
+  | B1 | 0.288 | 0.274 |
+  | B2 | 0.298 | 0.269 |
+  | B3 | 0.209 | 0.230 |
+  | B4 | 0.062 | 0.059 |
+  | B6 | 0.183 | 0.188 |
+
+  SENTINEL, B5, B7 and B8 are unchanged on HEAD and keep their values. B0–B4 and B6 were tuned on 10 Oct code and are re-tuned.
+- **Decision (user, 29 Oct):**
+  - Re-tune B0–B4 and B6 on HEAD with the same protocol: Optuna TPE seed 0, 30 trials, the same objective, scenarios and tuning seeds, one method at a time as for B7/B8.
+  - Then re-run every row of B0–B4, B6 and their fusion variants, in every experiment containing them, so all tables use one tuning:
+    - pre-A3 rows: E1, E2, E3 (main tables), E4, E6, E6c, E8-fast, E11;
+    - post-A3 rows with the old tuned values: E9, E11b, E12 (Table 4), C1 (robustness, `robust_fitted_v2`), C2 (`e6_fastsim_v2`).
+  - Same specs (base, grid, seeds 0–29 or as specified), same statistics, 8,023 missions in total.
+- **Kept:** SENTINEL, B5, B7, B8 and every other row; they reproduce on HEAD.
+- **Mechanics:**
+  - `scripts/overnight/run_baseline_rerun.sh` (resumable queue, two attempts per job, done markers, completeness check), starting after the C1 queue:
+    - re-tune → `configs/tuned_baselines_v4.yaml`;
+    - `configs/tuned_v4.yaml` = `tuned_v3.yaml` with B0–B4/B6 replaced (`merge_tuned_v4.py` checks that nothing else changed);
+    - configs `configs/experiments/rerun_2026-10-29/` (`make_rerun_configs.py`);
+    - results in `results/baseline_rerun_2026-10-29/<experiment>/`.
+  - `make_ios.py` replaces the affected rows by the re-run rows, asserting the same cells and seeds. The original result folders stay untouched; the superseded rows are archived as a copy, and the extended results report them as superseded.
+- **Pilot** (one cell, one seed, two methods per experiment, old tuned values): all 13 configs run and pass the completeness check, and their run IDs equal the stored rows', so cells and seeds line up.
+- **Estimate:** about 155 CPU-h from the stored run times, about 8–9 h on 19 workers plus about 20 min of re-tuning. After C1 (about 16:30), the queue should finish around 02:00–03:00.
+- **Before launch:** reproducibility check on every result folder the paper uses (all methods, two seeds each: `results/baseline_rerun_2026-10-29/repro_before/`).
+- **After the queue:** archive, regenerate, re-run every claim check, then update the paper, highlighted build, letter and extended results, check and commit.
+- **15:25 addition — E7 no-projection ablation.**
+  - The reproducibility check also flags `abl_no_projection` in `e7_ablation` (15 Oct).
+  - Seed 0 differs only in `link_reliable_start_frac` (metric definition, 22 Oct). Seed 29 also differs in coverage, path length and deliveries.
+  - Cause: since 22 Oct the agent evaluates `_tethered(t)` also when the projection is off, to count link violations for this ablation. That call stamps `tether_until` for a delivering, connected UAV, which other UAVs pick up through beacons, so the ablation's behaviour changed slightly.
+  - Its rows in E12 (Table 4) were run after the change and reproduce. Baselines are not affected: strict connectivity returns before the stamp.
+  - The 120 rows of `abl_no_projection` in E7 (extended results) are added to the queue (`r_e7_ablation`) with SENTINEL's unchanged tuned values.
+- **16:38 — reproducibility check complete; no further stale group.**
+  - The five N = 50 folders, checked in parallel (two seeds each), finished at 16:38.
+  - `e1_scalability`: only B0–B4 and B6 differ (10 of 16 missions); SENTINEL and B5 are identical.
+  - `e11_dense_diag`: only B0 differs (2 of 12); SENTINEL and all four ablations are identical.
+  - `e11b_dense_fusion` (16 of 16), `b7b8_scalability` (4 of 4) and `b7b8_dense_fusion` (4 of 4) are identical.
+  - With the earlier folders, every differing row belongs to the two groups already in the queue (pre-A3 baseline rows and E7 `abl_no_projection`). The queue is unchanged.
+- **16:57 — re-tune result.** `r0_retune` finished in 15 min (30 TPE trials per method, seed 0, objective and tuning seeds as before); `tuned_v4.yaml` = `tuned_v3.yaml` with B0–B4/B6 replaced (merge asserted that nothing else changed).
+  - Tuning objective on the released code, old values → re-tuned values (re-checked from the merged file with `tune_check.py`, identical to Optuna's best value): B0 0.242 → 0.289, B1 0.274 → 0.272, B2 0.269 → 0.273, B3 0.230 → 0.240, B4 0.059 → 0.046, B6 0.188 → 0.189 (SENTINEL 0.297, unchanged).
+  - For B1 and B4 the 30-trial search ended slightly below the old values' objective (B1 by 0.002, B4 by 0.013; B4 stays the weakest method by far). The protocol is kept as decided (same budget for every method, SENTINEL included, no warm start from earlier values); this is reported, not corrected.
+- **30 Oct, 04:10 — baseline re-run complete.** All 14 experiment jobs DONE on attempt 1 (queue end 04:09:27); 8,143 runs, each folder passes the completeness check, no errors in the logs. Superseded rows archived as copies (`results/baseline_rerun_2026-10-29/superseded_rows/`, README); `make_ios.py` replaces them on read (`rerun()`, asserting the same cells and seeds and the old/new tuned values).
+- **30 Oct, 04:15 — deviation: PX4 checks keep B0's earlier values on both sides.** Both PX4 checks (E8r, and E6 with YOLO26n) flew B0 with `configs/tuned.yaml` (= `tuned_v3`). Their fast-simulator side must use the same values, so it does not use the re-tuned B0: E8r's fast B0 was re-run with the `tuned_v3` values on the released code (3 runs, `results/baseline_rerun_2026-10-29/sitl_match/e8_fastsim/`; same run IDs and results as the stored rows, only the timing column differs), and E6's fast side uses the C2 v2 rows (released code, `tuned_v3` values). `make_ios.py` asserts that these B0 configs carry the PX4 runs' values. The re-tuned fast-side numbers (E8r worlds B0 0.62, E6 worlds B0 0.94) are given in the extended results.
+- **30 Oct, 04:20 — claims that changed with the re-run rows** (every sentence now has a generated assertion in `make_ios.py`):
+  - Table 2 (urban failures): SENTINEL over the best baseline 23–29 % → 7–18 %; not significant against B2 under Poisson crashes (was significant against all).
+  - Table 3 (400 m): B2 has the highest mean at N = 3 (0.23 vs. 0.20, not significant); SENTINEL significantly above all from N = 10 (was N = 3 to 50).
+  - 200 m: a baseline (B0, B1, B3) has the highest mean at every N, never significantly (was SENTINEL except N = 20).
+  - Table 4: urban, B2 + fusion no longer significantly behind (0.549 vs. 0.575); dense, baselines + fusion 0.784–0.851, B4 + fusion significantly above SENTINEL in Table 4's Holm family (p_holm = 0.018) but not with Holm over all nine (B1, B3, B4 p_holm = 0.08). The text follows Table 4, the less favourable reading; both are in the extended results.
+  - E9: the mesh stays connected in 89 of 90 runs (one B0 run split for 4 % of the mission; was all runs).
+  - Robustness (fitted detector model): SENTINEL highest mean in 4 of 6 settings (behind B0 with 30 % simultaneous crashes, B3 with cascading), −1.5 to +3.4 %, never significant.
+  - Unchanged: channel profiles (significantly above all in open, suburban, urban), no original-form baseline significantly ahead of SENTINEL in any cell, attribution of the gains to fusion and delivery, link-preservation result.
+  - The conclusion's "most settings" is now generated: highest mean in 19 of 26 channel, failure and swarm-size settings.

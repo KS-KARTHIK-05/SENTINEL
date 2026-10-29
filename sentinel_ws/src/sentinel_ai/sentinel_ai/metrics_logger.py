@@ -1,4 +1,5 @@
-"""Ground-truth metrics for SITL runs (same definitions as the fast simulator).
+"""
+Ground-truth metrics for SITL runs (same definitions as the fast simulator).
 
 Writes ``series.csv`` (1 Hz) and ``summary.json`` into ``out_dir``; the summary
 is refreshed every 10 s so an interrupted run still leaves results.

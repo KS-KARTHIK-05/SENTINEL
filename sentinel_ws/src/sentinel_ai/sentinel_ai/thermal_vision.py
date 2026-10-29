@@ -1,4 +1,5 @@
-"""Onboard thermal perception for one UAV.
+"""
+Onboard thermal perception for one UAV.
 
 Runs the detector on the nadir thermal image and publishes every detection
 geolocated to the world frame (``sentinel/targets``). v1 published a
@@ -68,7 +69,8 @@ class ThermalVision(Node):
         self.pub_dbg = (self.create_publisher(Image, 'sentinel/thermal_annotated', 2)
                         if self.debug else None)
         self.create_subscription(PointStamped, 'sentinel/pose', self._on_pose, 10)
-        self.create_subscription(VehicleAttitude, 'fmu/out/vehicle_attitude', self._on_att, PX4_QOS)
+        self.create_subscription(VehicleAttitude, 'fmu/out/vehicle_attitude', self._on_att,
+                                 PX4_QOS)
         self.create_subscription(Image, image_topic, self._on_image, qos_profile_sensor_data)
         self.create_timer(5.0, self._publish_stats)
 
@@ -109,7 +111,8 @@ class ThermalVision(Node):
         for d in dets:
             x0, y0 = int(d.u - d.w / 2), int(d.v - d.h / 2)
             x1, y1 = int(d.u + d.w / 2), int(d.v + d.h / 2)
-            colour = (0, 200, 0) if d.conf >= 0.70 else (0, 200, 255) if d.conf >= 0.40 else (0, 0, 255)
+            colour = ((0, 200, 0) if d.conf >= 0.70
+                      else (0, 200, 255) if d.conf >= 0.40 else (0, 0, 255))
             cv2.rectangle(vis, (x0, y0), (x1, y1), colour, 2)
             cv2.putText(vis, f'victim {d.conf:.2f}', (x0, max(12, y0 - 4)),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.45, colour, 1, cv2.LINE_AA)

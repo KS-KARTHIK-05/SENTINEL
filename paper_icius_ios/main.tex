@@ -49,9 +49,9 @@ PSO (EM-PSO) plans waypoints, confirmed victims trigger delivery, weak detection
 second view, and an outage-based Signal-Spring keeps delivery links reliable. In about
 \nMissions{} simulated missions with a \nFreq\,GHz outage channel, \nEoneNmin--\nEoneNmax{} UAVs, six
 failure settings and \nBaseWord{} tuned baselines, SENTINEL reports \nEthreeGainLo--\nEthreeGainHi\,\% more
-victims within 60\,s than the best baseline in urban rubble (\nRobGainLo--\nRobGainHi\,\% with a
-detector model fitted to rendered-frame detector outputs), and an always-connected mesh reports far
-fewer in time.
+victims within 60\,s than the best baseline in urban rubble, but does not differ significantly from the
+strongest baselines on a denser area or with a detector model fitted to rendered-frame detector outputs
+(\nRobDiffLo{} to \nRobDiffHi\,\%); an always-connected mesh reports far fewer in time.
 \end{revised}
 \end{abstract}
 
@@ -196,17 +196,17 @@ over separate seeds (SENTINEL: $T_h=\nTh$\,s, $\lambda_0=\nLamZero$, $\beta=\nBe
 \paragraph{Results.} SENTINEL leads in all four channel profiles, significantly against all
 except in the severe one (open \nChOpenS{} vs.\ \nChOpenB, suburban \nChSubS{} vs.\ \nChSubB, urban
 \nChUrbS{} vs.\ \nChUrbB, severe \nChSevS{} vs.\ \nChSevB). In urban rubble it
-reports \nEthreeGainLo--\nEthreeGainHi\,\% more victims than the best baseline in every failure setting
-(Table~\ref{tab:e3}). At \nArea\,m it beats every baseline
-significantly from \nEoneNmin{} to \nEoneNmax{} UAVs (Table~\ref{tab:e1}); on a denser \nDenseArea\,m
-area its mean is highest except at \nEoneTwoHundredNotTop, but at no size significantly above all
-\nBaseWord{} ($N=\nDenseN$: \nEoneDenseS{} vs.\ \nEoneDenseBest, \nEoneDenseBestName).
+reports \nEthreeGainLo--\nEthreeGainHi\,\% more victims than the best baseline in every failure setting,
+significantly except against \nEthreeNotSig{} (Table~\ref{tab:e3}). At \nArea\,m its mean is highest
+except at \nEoneFourNotTop{} (not significant), and it beats every baseline significantly from
+$N=\nEoneSigFrom$ to \nEoneNmax{} (Table~\ref{tab:e1}); on a denser \nDenseArea\,m area a baseline
+(\nEoneTwoHundredTopNames) has the highest mean at every size, never significantly.
 \end{revised}
 \begin{revised}
 \paragraph{Where the Gains Come From.} Removing fusion (\nUrbNofus) or delivery (\nUrbNodel) lowers
 the urban share significantly from \nUrbS{} (Table~\ref{tab:attr}); a mesh kept connected at all times
 falls to \nStrictLo--\nStrictHi. With SENTINEL's fusion rule the best urban baseline rises from
-\nUrbBestOrig{} to \nUrbBestFus{} (\nUrbBestFusName) yet all \nBaseWord{} stay significantly behind; in a
+\nUrbBestOrig{} to \nUrbBestFus{} (\nUrbBestFusName), no longer significantly behind, while the others are; in a
 dense \nDenseN-UAV swarm baselines with fusion reach \nDenseFusLo--\nDenseFusHi{} and \nDenseSigAbove{}
 leads significantly.
 \end{revised}
@@ -218,13 +218,14 @@ share unchanged. Varying $\lambda_0$ (\nSensLamLo--\nSensLamHi), $\beta$ (\nSens
 or $\varepsilon$ (\nSensEpsLo--\nSensEpsHi), or a distance spring ($R_{\max}=\nSensRmaxLo$--\nSensRmaxHi\,m)
 changes the share by $\le$\,\nSensMaxDelta, never significantly.
 
-\paragraph{PX4/Gazebo and the First Scenario.} \nEightN{} PX4 UAVs flew SENTINEL and B0 on
+\paragraph{PX4/Gazebo and the First Scenario.} \nEightN{} PX4 UAVs flew SENTINEL and B0 (earlier tuning) on
 \nEightWorlds{} \nEightArea\,m worlds with one crash; reported victims, packet delivery and connected
 time agree with the fast simulator within \nEightMaxDiff; B0 is slightly ahead in both
 (\nEightSitlB{} vs.\ \nEightSitlS{} in Gazebo). With the fine-tuned YOLO26n (below) in the loop on \nSixN{} such worlds,
 SENTINEL reports \nSixS{} and B0 \nSixB{} (difference $\nSixDiff$, 95\,\% CI $\nSixDiffLo$ to
 $\nSixDiffHi$, $p=\nSixP$; fast simulator \nSixFastS{} vs.\ \nSixFastB).
-In the first version's \nNineArea\,m, \nNineN-UAV scenario all methods stay connected; confirmed
+In the first version's \nNineArea\,m, \nNineN-UAV scenario the mesh stays connected in \nNineConnRuns{} of
+\nNineRuns{} runs (one B0 run is split for \nNineDisPct\,\% of the mission); confirmed
 victims are \nNineS{} for SENTINEL, \nNineBzero{} for B0 (not significantly fewer) and \nNineBone{} for
 the first version (significantly fewer); its retention and discovery figures are withdrawn.
 
@@ -235,8 +236,8 @@ On Gazebo-rendered thermal frames at 25--30\,m (not real footage) it reaches \nR
 \nRdTestWorlds{} unseen worlds, and \nRdFMap{} after fine-tuning on \nRdTrainWorlds{} others, with recall
 \nRdFRecLoOpen{} (open) and \nRdFRecLoOcc{} (partly occluded) at confidence 0.40 and \nRdFFaLo{} false
 alarms per frame on warm debris. With the in-loop model fitted to these outputs (no re-tuning),
-SENTINEL keeps the highest mean in the six urban settings of Table~\ref{tab:e3}, but leads the best
-baseline, \nRobBestName, by only \nRobGainLo--\nRobGainHi\,\%, never significantly.
+SENTINEL has the highest mean in \nRobNtop{} of the six urban settings of Table~\ref{tab:e3} and
+differs from the best baseline by \nRobDiffLo{} to \nRobDiffHi\,\%, never significantly.
 \end{revised}
 
 \section{Limitations and \kept{Conclusion}}
@@ -244,10 +245,10 @@ baseline, \nRobBestName, by only \nRobGainLo--\nRobGainHi\,\%, never significant
 Results are simulated with published channel ranges and no flights; detector accuracy at 25--30\,m is
 measured on rendered frames only, and the loop uses a detector model hand-set or fitted to detector
 outputs on rendered frames. Victims within the \nGate\,m association gate
-can merge, MAPPO used one reward design, and no embedded latency was measured. SENTINEL reported more victims within 60\,s
-than \nBaseWord{} tuned baselines in most settings (with the fitted detector model by
-\nRobGainLo--\nRobGainHi\,\%, not significantly) and was never significantly worse
-than any baseline in its original form. Fusion and information-triggered delivery produced the gains (in dense swarms fusion
+can merge, MAPPO used one reward design, and no embedded latency was measured. SENTINEL had the highest
+share reported within 60\,s in \nTopN{} of \nTopTotal{} channel, failure and swarm-size settings (none on
+the denser area; \nRobNtop{} of 6 with the fitted detector model) and was never significantly worse than
+any baseline in its original form. Fusion and information-triggered delivery produced the gains (in dense swarms fusion
 alone); the outage spring and link preservation are a safety property, cutting violations
 \nViolFold-fold.
 \end{revised}

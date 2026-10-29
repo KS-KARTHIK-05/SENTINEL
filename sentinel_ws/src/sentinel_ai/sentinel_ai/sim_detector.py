@@ -1,4 +1,5 @@
-"""Model-based perception for SITL cross-validation (experiment E8).
+"""
+Model-based perception for SITL cross-validation (experiment E8).
 
 Publishes ``sentinel/targets`` from the ground-truth victim positions of the
 generated world, passed through the same stochastic detector model as the fast

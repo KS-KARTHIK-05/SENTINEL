@@ -1,0 +1,30 @@
+# Baseline re-run (29 Oct, PLAN.md section 9): configs/experiments/e4_dynamic.yaml restricted to B0-B4, B6
+# (and fusion variants), tuned values from configs/tuned_v4.yaml.
+tuned_file: configs/tuned_v4.yaml
+base:
+  n_uav: 8
+  duration_s: 600
+  map:
+    kind: generate
+    size: 400
+    n_targets: 25
+    base: true
+  channel:
+    profile: urban_rubble
+  failures:
+    kind: poisson
+    rate: 0.01
+  policy_path: configs/mappo_policy.npz
+grid:
+  map.n_moving:
+  - 0
+  - 5
+  - 15
+methods:
+- B0_pso
+- B1_v1
+- B2_commpso
+- B3_lambda2
+- B4_potential
+- B6_lawnmower
+seeds: 30

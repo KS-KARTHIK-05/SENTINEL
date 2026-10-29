@@ -1,4 +1,5 @@
-"""Decentralised SENTINEL agent node (one per UAV).
+"""
+Decentralised SENTINEL agent node (one per UAV).
 
 Wraps ``sentinel_core.agent.SentinelAgent`` (the exact code evaluated in the
 fast simulator): consumes the UAV pose and geolocated detections, exchanges

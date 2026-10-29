@@ -933,3 +933,142 @@ Experiment-dependent items 3 and 6 were not resolved, but their wording was made
   - R2: E8r re-run, with a disclosure of the outdated earlier build, and E6;
   - equation references updated; PDF re-exported (6 pages, Type 1).
 - **Tests:** `sentinel_core` 396 pass and `sentinel_sim` 41 pass (39 overnight + 2 pose-check). `sentinel_ai`'s ament flake8 (7 long lines) and pep257 lints fail; they predate this work (files unchanged since 22 Oct).
+
+### 2026-10-29 13:50 — Pre-submission check of the E5 fitted detector model
+- **Request:** verify the fitted detector model before submission; change no result until the check is done.
+- **Check** (`scripts/overnight/e5_check.py`, `results/e5_recheck_2026-10-29/check_before/`):
+  - the fitted model ran through the simulator's `DetectorModel.look` on the E4 val/test frames (same poses, victims, debris), next to the fine-tuned YOLO26n;
+  - recall at 0.40/0.70 and mean confidence agree within a factor of 2;
+  - false alarms per frame agree in 480-item worlds (C1: 0.011–0.012 vs. 0.018 val / 0.0055 test) but are about 10–34× too high in the 30-item worlds of C2.
+- **Cause: the conversion to `fp_rate`** (three errors; details in PLAN.md §9, 29 Oct 13:50):
+  - the 0.25 floor was applied twice;
+  - visible debris boxes were used as the denominator instead of debris items in view;
+  - the 400 m-scaled rate was copied into the 100 m E6 config.
+- **Plan:** fix with tests, re-run the fit, check, C1 and C2 into `results/e5_recheck_2026-10-29/`, then regenerate the paper and letter.
+- **Fix (14:00):**
+  - `e5_fit.py`: debris items in view by projection; candidate rate = reported rate / P(c ≥ 0.25); stores `fp_per_debris_item`.
+  - `make_fitted_configs.py`: `fp_rate` per configuration from its worlds' debris count; writes `*_v2.yaml`.
+  - `detector_model.py`: docstring and comment state the unit of `fp_rate`; the code's AST is identical to HEAD.
+  - New tests: the simulated rate per debris item in view equals the measured rate in 30- and 480-item worlds (they fail under the old conversion); debris hidden in rubble counts as in view; configs scale `fp_rate` with world size.
+  - Re-fit: victim parameters, log-likelihoods and calibration are bit-identical. The false-alarm rate is now 0.0116 reported per item in view, P(report) 0.31, 0.0369 candidates per item, so `fp_rate` is 17.7 in 400 m worlds (was 10.3) and 1.11 in 100 m worlds (was 10.3).
+  - Check after the fix (`check_after/`): false alarms per frame 0.019 (400 m) and 0.018 (100 m) vs. the detector's 0.018 on the val (fit) frames. On the test frames, 0.0195 vs. 0.0055 (3 detector false alarms).
+  - C2 re-run (`e6_fastsim_v2`): SENTINEL 0.935, B0 0.930 (superseded run: 0.900 vs. 0.935). C1 re-run (`robust_fitted_v2`, 1800 missions) is running.
+- **Archive:** the pre-fix fit, C1, C2, their configs, done markers and logs were moved to `results/overnight_2026-10-28/superseded_fp_conversion/` (README there), like `firstpass_stale_frames/`. Nothing was deleted. The committed pre-fix configs carry a SUPERSEDED header line.
+- **`sentinel_ai` lint** (7 flake8 long lines, 11 pep257 D213):
+  - lines wrapped, and multi-line docstring summaries moved to the second line;
+  - for all 10 files, the code AST without docstrings is identical to HEAD, and the docstring words are identical;
+  - `ament_flake8` and `ament_pep257` report no problems, and the package tests pass (2 passed, copyright skipped).
+- **ROS install:**
+  - before the rebuild, the install used by E6 and E8r (built 28 Oct 20:35) was byte-identical to HEAD (31 of 31 `sentinel_ai`/`sentinel_core` modules and the launch file);
+  - rebuilt with `colcon build --packages-select sentinel_core sentinel_ai`; the install now equals the working tree (31 of 31, no extra files);
+  - **E6 and E8r ran on code functionally identical to the current source:** the only differences are formatting and docstrings (identical ASTs).
+- **Reproducibility check of the hand-set-detector results (requested after the `detector_model.py` edit):** FAILS for some stored baseline rows. Stopped before regenerating, and asked the user.
+  - **Method:** `check_reproduce.py`, one stored mission per method per folder (`results/e5_recheck_2026-10-29/repro/`).
+  - **Identical:**
+    - SENTINEL, B5 and the sensitivity variants everywhere;
+    - all B7/B8 folders;
+    - `e12_attribution` (14 of 14);
+    - B4 and B6 in `e1_scalability`.
+  - **Different:** B0, B1, B3 (and B2 link columns) in `e1_scalability`; B0–B4 and B6 in `e2_channel`/`e3_failures` (one mission each; not every mission differs).
+  - **Not caused by today's edits:** the `detector_model.py` code AST is identical to HEAD. Bisection over 680e05e…4baadd3 shows that no committed version reproduces these rows. No Python library has changed since 15 Oct.
+  - **Cause, confirmed:**
+    - The B0–B4 and B6 rows of E1–E4, E6, E6c, E8-fast and E11 date from before Amendment A3 (14 Oct). At that time the ledger's fusion rule was a module global defaulting to naive Bayes.
+    - Since A3, every run sets the rule per run, and the default is corroborative for every method. Baselines have `fusion=False`, which drops extra views only at local sensing; views merged by gossip are still fused, so the rule changes baseline confirmations whenever several UAVs see a victim.
+    - A3's note "baseline rows are unchanged and valid" was therefore wrong.
+    - Re-running the failing missions on current code with `fusion_rule=naive_bayes` reproduces every one bit-identically. The only remaining differences are the three link-preservation columns, whose definition changed on 22 Oct (metric only).
+  - **Consequence:**
+    - In Tables 2–3 and the channel results, B0–B4 and B6 used naive-Bayes combination of merged views, while SENTINEL, B5, B7, B8 and every run from 22 Oct on (Table 4's E12/E11b, robustness C1) used the corroborative rule.
+    - Affected baseline rows: 4,680 in E1–E3 (about 74 CPU-h), plus E4 (540), E6/E6c (720), E8-fast (3) and E11 (30).
+  - **Status:** C1 keeps running (current code, unaffected). Nothing regenerated or committed.
+
+### 2026-10-29 15:25 — Baseline re-tune and re-run prepared (fusion-rule inconsistency)
+- **User decision:** re-tune B0–B4/B6 on HEAD (same protocol), then re-run every row of B0–B4, B6 and their fusion variants in every experiment (pre-A3 rows plus post-A3 rows with the old tuned values: 8,023 missions). Details in PLAN.md §9 (29 Oct 15:20).
+- **Tuning objective on HEAD** (`tune_check.py`):
+  - SENTINEL 0.2966, B5 0.2332 (with its policy; 0.2586 without a policy file, a check error), B7 0.2307, B8 0.2720: all as recorded, so not re-tuned;
+  - B0–B4/B6 changed (e.g. B0 0.285 → 0.242, B2 0.298 → 0.269).
+- **Extra stale group:** E7 `abl_no_projection` (behaviour changed by the 22 Oct tether-window edit) is added to the queue, 120 rows.
+- **Scripts:**
+  - `run_baseline_rerun.sh` (queue);
+  - `merge_tuned_v4.py`, `make_rerun_configs.py`;
+  - `tune_check.py`;
+  - `check_reproduce.py` gained `--spread-seeds` and `--jobs`.
+- **Pilot:** all 13 configs complete and pass the completeness check; all 26 pilot runs have the stored rows' run IDs (cells and seeds line up).
+- **Queue launched** at 15:29:57: `setsid nohup bash run_baseline_rerun.sh 4011496` (queue PID/PGID 4089446). It waits for the C1 queue (PID 4011496, 980 of 1800 at launch) and then re-tunes and runs.
+  - Log: `results/baseline_rerun_2026-10-29/progress.log`; per-job logs in `logs/`.
+  - The reproducibility check of the five N = 50 folders is still running. Any further stale group gets its own follow-up job with the same done-marker protocol (the running script is not edited) and a PLAN.md §9 note.
+
+### 2026-10-29 16:40 — Reproducibility check complete (N = 50 folders)
+- The five slow folders finished at 16:38 (two seeds each, run in parallel; `results/baseline_rerun_2026-10-29/repro_before/summary.txt`):
+  - `e1_scalability`: 6 identical, 10 different; the different missions are all B0–B4/B6, SENTINEL and B5 are identical.
+  - `e11_dense_diag`: 10 identical, 2 different (B0 only); SENTINEL and the ablations are identical.
+  - `e11b_dense_fusion` 16/16, `b7b8_scalability` 4/4, `b7b8_dense_fusion` 4/4 identical.
+- **No further stale group.** Every differing row across all folders is in the two groups already queued (pre-A3 B0–B4/B6 rows; E7 `abl_no_projection`). Queue unchanged; PLAN.md §9 noted.
+- C1 at 1760 of 1800; the baseline queue (PID 4089446) is still waiting on it.
+
+### 2026-10-29 16:41 — C1 v2 (robustness, corrected false-alarm rate) complete; baseline queue started
+- **C1 v2** `c1_e5_robust_v2` DONE 16:40:44, attempt 1, 165 min; 1800/1800 runs, completeness check passed (`results/e5_recheck_2026-10-29/robust_fitted_v2/`). The C1/C2 queue (PID 4011496) ended normally.
+- **Baseline queue** (PID 4089446) noticed C1's exit at 16:40:57 and started `r0_retune` (B0 first, 30 trials, 16 workers).
+- **Interim robustness result (not final; C1's baseline rows are re-run with re-tuned values in `r_robust_fitted_v2`).** With the corrected fp_rate and the stored C1 v2 baseline rows (old tuned values):
+  - SENTINEL's difference to the best baseline per setting (none, single, 30 % simultaneous, cascading, Poisson ×2, brownout): +0.6, −1.6, −1.3, −0.8, +1.8, +0.8 %. **SENTINEL no longer has the highest mean in 3 of 6 settings.** No difference is significant (no significant win over all baselines, no significant loss).
+  - Best baseline per setting: B3, B3, B2, B0, B2, B2. SENTINEL is significantly ahead of B1, B4, B7 in all 6 settings, B5 in 5; never significantly ahead of B0, B2, B3, B6, B8.
+  - SENTINEL means 0.61–0.85 (pre-fix 0.65–0.88). Pre-fix: +2.2 to +7.5 %, best baseline B2 everywhere, never significant.
+  - **Consequence for the text:** "keeps the highest mean in every setting ... leads by only ..., never significantly" does not hold on this interim result. `make_ios.py` asserts that sentence structure and will stop rather than print it; the abstract, Detector, Limitations/Conclusion and letter sentences will be rewritten to the final (re-run) result.
+- **make_ios.py:** `rerun(df, exp)` replaces the re-run methods' rows by `results/baseline_rerun_2026-10-29/<exp>/` rows, asserting that each re-run config equals a stored one except for the method's tuned values (old values in the stored rows, `tuned_v4` values in the re-run rows). Tested on the pilot rows (5 experiments) and on two negative cases (a missing stored row; wrong tuned values): both rejected. `load(..., orig=True)` keeps the stored rows (for the superseded comparison). Tuned values now read from `tuned_v4.yaml`.
+- **Reproducibility check of the N = 50 folders** finished 16:38 (see entry 16:40): no further stale group.
+
+### 2026-10-29 17:03 — Baselines re-tuned (B0–B4, B6)
+- `r0_retune` DONE 16:56:54 (15 min, attempt 1), then `r0_merge` and `r0_configs`; `r_e3_failures` started 16:56:54 (2,160 runs, 19 workers).
+- **Tuning objective on HEAD, old → new values** (`results/baseline_rerun_2026-10-29/tune_check_old_values.log`, `tune_check_new_values.log`; the new values reproduce Optuna's best value exactly from `tuned_v4.yaml`):
+  | method | old values | re-tuned |
+  |---|---|---|
+  | B0 PSO | 0.2418 | 0.2888 |
+  | B1 first version | 0.2740 | 0.2719 |
+  | B2 comm.-aware PSO | 0.2693 | 0.2726 |
+  | B3 λ2 control | 0.2299 | 0.2396 |
+  | B4 edge potentials | 0.0590 | 0.0465 |
+  | B6 sweep | 0.1881 | 0.1889 |
+  | SENTINEL (not re-tuned) | 0.2966 | 0.2966 |
+- **B1 and B4:** the 30-trial search ended slightly below the old values (−0.002 and −0.013). Kept per protocol (equal budget, no warm start); noted in PLAN.md §9.
+- **Parameter values, old → new:**
+  - B0: sector_bias 2.784 → 2.678, w_goal 1.568 → 1.397
+  - B1: sector_bias 1.565 → 0.313, w_goal 0.198 → 1.262, lam0 0.320 → 0.017, r_max 63.9 → 67.0
+  - B2: sector_bias 0.214 → 2.538, w_goal 1.775 → 0.064, eps0 0.067 → 0.288, lam0 0.282 → 0.083
+  - B3: sector_bias 1.832 → 0.189, w_goal 1.667 → 1.364, gain 1.013 → 1.353, lam_min 0.0021 → 0.0010
+  - B4: sector_bias 0.135 → 1.449, w_goal 0.351 → 0.878, gain 0.103 → 0.134, hyst 13.7 → 14.6
+  - B6: lane_factor 1.505 → 1.744
+- **Superseded rows archived** (copies; originals untouched): 8,143 rows in 14 files, `results/baseline_rerun_2026-10-29/superseded_rows/` with README (`archive_superseded_rows.py`).
+- Bisection worktrees under the scratchpad removed (all clean).
+
+### 2026-10-30 04:30 — Baseline re-run finished; paper, letter and extended results regenerated
+- **Queue:** all 17 jobs DONE on attempt 1 (re-tune 16:57; experiments 16:57–04:09); 8,143 runs, all complete, no errors. Queue PID 4089446 exited normally.
+- **`make_ios.py`:**
+  - replaces the superseded rows by the re-run rows (`rerun()`, cells, seeds and tuned values asserted);
+  - PX4 checks: the fast side keeps B0's earlier values, matching the PX4 runs (E8r B0 re-run with `tuned_v3` on HEAD: 3 runs, same run IDs and results as stored, only timing differs; E6 uses the C2 v2 rows); asserted; re-tuned fast-side numbers in the extended file;
+  - new generated checks for every rewritten sentence: robustness (highest mean in k < 6 settings, no significant win or loss), E3 (all gains > 0, one non-significant pair), 400 m (top from N = 5, significant from N = 10), 200 m (a baseline top at every N), urban fusion (only the best is not significantly behind), dense fusion (Table 4 family; nine-way result recorded), E9 (one disconnected B0 run), conclusion (no original-form baseline significantly ahead anywhere; highest mean in 19 of 26 settings);
+  - mission count includes the C1/C2 v2 runs again (17,000);
+  - extended file: new section "Baseline re-run (29–30 Oct 2026): superseded rows" (cause, tuning objective old/new, per-experiment superseded vs re-run means, headline comparisons old → new);
+  - flake8 count back to HEAD's 11 after the edits; outputs unchanged by the style fixes.
+- **`md2pdf.py`:** a table with a long last column now wraps it (`p{0.68\linewidth}`); removes the letter's only overfull box (the B0–B8 table, pre-existing).
+- **Paper (`main.tex`):** abstract, Results, Where the Gains Come From, PX4 paragraph ("B0 (earlier tuning)", E9 connectivity), Detector, Conclusion rewritten to the generated results; trimmed to 6 pages.
+- **Letter (`response_to_reviewers.md`, git-ignored):** fusion-rule sentence (Traceability); R1.1 false-alarm sentence (matches on the fitting frames 0.019 vs. 0.018; about 3.5× on the test worlds, 0.0195 vs. 0.0055, 3 detector false alarms), occluded recall 0.60 vs. 0.80 at 0.70, unit-error sentence, robustness bullet; R1.2 main results, 200 m, fusion, B7, information loss; R2 B0 earlier tuning, E6 fast side 0.93 vs. 0.93; R3.1 connectivity and E9 values. PDF re-exported.
+- **Old → new (paper)**; E5 = false-alarm conversion fix, R = baseline re-run:
+  | where | number | old | new | cause |
+  |---|---|---|---|---|
+  | abstract, Results, letter | urban failure settings, SENTINEL over best baseline | 23–29 % | 7–18 % (not significant vs. B2 under Poisson) | R |
+  | abstract, Detector, Conclusion, letter | robustness with the fitted model | +2 to +7 %, highest mean in 6 of 6 | −1.5 to +3.4 %, highest in 4 of 6, never significant | E5 + R |
+  | Detector | best baseline in robustness | B2 | B0/B2/B3 | E5 + R |
+  | Results | 400 m, significantly above all | N = 3–50 | N = 10–50; N = 3 B2 0.23 vs. 0.20 | R |
+  | Results | 200 m highest mean | SENTINEL except N = 20 (B7) | a baseline at every N (B0, B1, B3), never significant | R |
+  | Results | channel, best baseline suburban / urban / severe | 0.456 (B0) / 0.475 (B3) / 0.377 | 0.504 (B3) / 0.509 (B0) / 0.381 | R |
+  | Gains | best urban baseline + fusion | 0.507 (B3), significantly behind | 0.549 (B2), not significantly behind | R |
+  | Gains | B2 in E2 urban (UrbBestOrig) | 0.475 (B3) | 0.480 (B2) | R |
+  | Gains | dense, baselines + fusion | 0.815–0.865 | 0.784–0.851 (B4 significant in Table 4) | R |
+  | Link Preservation | violations / link-steps / rate | 69 / 1,345,211 / 5.1e-5 | 74 / 1,348,166 / 5.5e-5 | E5 (C1 SENTINEL rows) |
+  | PX4 | E6 fast side SENTINEL vs. B0 | 0.90 vs. 0.93 | 0.93 vs. 0.93 | E5 |
+  | PX4 / E9 | connected runs; B0; B1 | all; 0.67; 0.63 | 89 of 90; 0.68; 0.65 | R |
+  | Conclusion | "most settings" | (text) | 19 of 26 | R |
+  | Tables 2–4 | B0–B4, B6 rows and best-baseline entries | | re-run values | R |
+- **Claim checks:** see PLAN.md §9 (30 Oct 04:20). The pre-registered "never significantly worse" rule still holds (no original-form baseline significantly ahead in any cell).
+- **Checks:** both builds 6 pages, A4, all fonts Type 1 and embedded, tables `\footnotesize` (8 pt), 0 overfull, 0 undefined references; letter 6 pages, A4, Type 1, 0 overfull; `lint_language.py` 0 issues (paper, letter, extended); no first-version numbers, no "Fig."; grep for "2–7 %", "0.90 vs. 0.93", "0.900", "0.935", "10.3", "500 times", "23–29", "0.507", "0.815–0.865", "0.792", "0.76 vs. 0.74": none in the paper, highlighted build or letter; in the extended file only inside the note marked superseded. Tests: `sentinel_core` 396 pass, `sentinel_sim` 45 pass, `sentinel_ai` 2 pass (flake8, pep257), 1 skipped.
+- **PDFs:** `paper_icius_ios/main.pdf` and `main_highlighted.pdf` built 2026-10-30 04:24:45; `response_to_reviewers.pdf` 04:21:25.
+- **Commit:** local commit on `revision-v2` ("Fitted false-alarm conversion fix and baseline re-run; paper regenerated"), author KARTHIK K S, no co-author trailer; not pushed. The response letter stays git-ignored.

@@ -1,0 +1,29 @@
+# Baseline re-run (29 Oct, PLAN.md section 9): configs/experiments/e12_attribution.yaml restricted to B0-B4, B6
+# (and fusion variants), tuned values from configs/tuned_v4.yaml.
+tuned_file: configs/tuned_v4.yaml
+base:
+  duration_s: 600
+  map:
+    kind: generate
+    size: 400
+    n_targets: 25
+    base: true
+  failures:
+    kind: poisson
+    rate: 0.01
+  policy_path: configs/mappo_policy.npz
+grid:
+  channel.profile:
+  - urban_rubble
+  - severe
+  n_uav:
+  - 4
+  - 8
+methods:
+- B0_pso_fusion
+- B1_v1_fusion
+- B2_commpso_fusion
+- B3_lambda2_fusion
+- B4_potential_fusion
+- B6_lawnmower_fusion
+seeds: 30

@@ -1,0 +1,20 @@
+# Baseline re-run (29 Oct, PLAN.md section 9): configs/experiments/e8_fastsim.yaml restricted to B0-B4, B6
+# (and fusion variants), tuned values from configs/tuned_v4.yaml.
+tuned_file: configs/tuned_v4.yaml
+base:
+  n_uav: 3
+  duration_s: 300
+  map:
+    kind: generate
+    size: 100
+    n_targets: 20
+    base: true
+  channel:
+    profile: urban_rubble
+  failures:
+    kind: single
+    t: 150
+    uav: 1
+methods:
+- B0_pso
+seeds: 3

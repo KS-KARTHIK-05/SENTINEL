@@ -1,4 +1,5 @@
-"""Model-agnostic thermal detector with per-stage latency measurement.
+"""
+Model-agnostic thermal detector with per-stage latency measurement.
 
 Any Ultralytics-loadable artefact works (YOLOv8/YOLO11/YOLO26 ``.pt``,
 ``.onnx`` or TensorRT ``.engine``), so a new model is swapped in through the

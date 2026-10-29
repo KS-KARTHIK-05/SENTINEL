@@ -1,4 +1,5 @@
-"""Failure injection for SITL runs (replaces v1's hard-coded kill of UAV 1).
+"""
+Failure injection for SITL runs (replaces v1's hard-coded kill of UAV 1).
 
 ``schedule`` is a JSON list of events {"t": s, "uav": i, "kind": crash|link_cut|brownout,
 "drop_db": x}, with t relative to node start. A crash force-disarms the vehicle

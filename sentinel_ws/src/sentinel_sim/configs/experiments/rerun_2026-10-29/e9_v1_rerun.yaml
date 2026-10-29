@@ -1,0 +1,22 @@
+# Baseline re-run (29 Oct, PLAN.md section 9): configs/experiments/e9_v1_rerun.yaml restricted to B0-B4, B6
+# (and fusion variants), tuned values from configs/tuned_v4.yaml.
+tuned_file: configs/tuned_v4.yaml
+base:
+  n_uav: 3
+  duration_s: 300
+  map:
+    kind: disaster_25
+    base: false
+  channel:
+    profile: urban_rubble
+  failures:
+    kind: single
+    t: 100
+    uav: 1
+  agent:
+    v_max: 2.0
+    footprint_r: 8.0
+methods:
+- B1_v1
+- B0_pso
+seeds: 30

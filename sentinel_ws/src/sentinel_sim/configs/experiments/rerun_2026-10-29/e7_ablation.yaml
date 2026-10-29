@@ -1,0 +1,23 @@
+# Baseline re-run (29 Oct, PLAN.md section 9): configs/experiments/e7_ablation.yaml restricted to B0-B4, B6
+# (and fusion variants), tuned values from configs/tuned_v4.yaml.
+tuned_file: configs/tuned_v4.yaml
+base:
+  duration_s: 600
+  map:
+    kind: generate
+    size: 400
+    n_targets: 25
+    base: true
+  failures:
+    kind: poisson
+    rate: 0.01
+grid:
+  channel.profile:
+  - urban_rubble
+  - severe
+  n_uav:
+  - 4
+  - 8
+methods:
+- abl_no_projection
+seeds: 30

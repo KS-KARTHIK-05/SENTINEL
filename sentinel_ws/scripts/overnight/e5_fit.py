@@ -12,10 +12,13 @@ Model (as in the simulator): c ~ clip(N(mu, sigma^2), 0, 1), reported if c >= 0.
 mu = c_max (1 - occ)^gamma exp(-max(0, r - r_ref) / r_scale). The parameters
 (c_max, gamma, r_ref, r_scale, sigma, kappa) are fitted by maximum likelihood with the
 non-reports as left-censored observations (Tobit). False alarms: predictions that match no
-victim; their rate per warm-debris item in view, times the mean number of debris items in the
-400 m evaluation worlds (seeds 0-29), gives the simulator's ``fp_rate`` (the simulator draws
-false alarms at debris items, so the expected number per look matches the rendered rate per
-debris item in view). Their confidences give fp_mu and fp_sigma (normal truncated at 0.25).
+victim. Their confidences give fp_mu and fp_sigma (normal truncated at 0.25). The simulator draws
+Poisson(``fp_rate``) false-alarm candidates per look, each at a debris item drawn from the whole
+world (kept only if that item is in the footprint) and reported only if its confidence
+N(fp_mu, fp_sigma) reaches 0.25. The fit therefore stores ``fp_per_debris_item``: the reported
+false alarms per debris item in view (every item of the world that projects into the frame,
+visible or not, as in the simulator) divided by P(c >= 0.25). ``make_fitted_configs.py`` turns it
+into ``fp_rate`` for the number of debris items in each configuration's worlds.
 
 Goodness of fit on the test worlds (``preds_<tag>_test.jsonl``): observed vs predicted
 P(c >= 0.25), P(c >= 0.40) and P(c >= 0.70) per slant-range bin and occlusion class, for the
@@ -29,11 +32,15 @@ import argparse
 import json
 import math
 import os
+import sys
 
 import numpy as np
 from scipy import optimize, stats
 
 from sentinel_core.detector_model import DetectorModel
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from e4_capture import project  # noqa: E402
 
 FLOOR = 0.25
 FIT_KEYS = ('c_max', 'gamma', 'r_ref', 'r_scale', 'sigma', 'kappa')
@@ -49,7 +56,8 @@ def _inside(pt, box, pad=4.0):
 
 def observations(root: str, tag: str, split: str):
     """Rows (r, sin_theta, cos(az - block_dir), occ0, conf or nan, world, k, label) and
-    false-alarm records (conf, n_debris_in_view)."""
+    false-alarm records (conf, None); one (None, n) record per frame gives n, the world's debris
+    items that project into the frame."""
     obs, fas, frames = [], [], 0
     metas, truths = {}, {}
     for line in open(os.path.join(root, f'preds_{tag}_{split}.jsonl')):
@@ -81,16 +89,32 @@ def observations(root: str, tag: str, split: str):
             sin_t = horiz / r
             az = math.atan2(v[1], v[0])
             obs.append((r, sin_t, math.cos(az - t['block_dir']), t['occ0'], conf, w, p['k'], lab))
-        n_debris = sum(1 for b in meta['vis'] if b[0] == DEBRIS)
+        n_debris = debris_in_frame(meta, truth['clutter'])
         for i, b in enumerate(preds):
             if i in used:
                 continue
             c = centres[i]
             if any(_inside(c, fb[1:]) for fb in meta['full'] if fb[0] != DEBRIS):
                 continue
-            fas.append((b[4], n_debris))
+            fas.append((b[4], None))
         fas.append((None, n_debris))            # one marker per frame: debris items in view
     return obs, fas, frames
+
+
+def debris_in_frame(meta: dict, clutter) -> int:
+    """Debris items of the world whose position projects into the frame, whether rendered visible
+    or hidden in rubble (the simulator draws false alarms at every debris item in its footprint)."""
+    n = 0
+    for c in clutter:
+        u, v = project(meta['x'], meta['y'], meta['z'], meta['yaw'], c[0], c[1])
+        n += 0 <= u < W_IMG and 0 <= v < H_IMG
+    return n
+
+
+def fp_per_debris_item(n_fa: int, debris_in_view: int, fp_mu: float, fp_sigma: float) -> float:
+    """Simulator false-alarm candidates per look per debris item in view: the reported rate
+    (confidence >= FLOOR) divided by the share of candidates the simulator reports."""
+    return n_fa / max(1, debris_in_view) / float(stats.norm.sf(FLOOR, fp_mu, fp_sigma))
 
 
 def _mu(theta: dict, r, sin_t, cosd, occ0):
@@ -155,15 +179,6 @@ def calibration(theta_fit, theta_hand, X, occ_class, bins):
     return rows
 
 
-def debris_mean_400(seeds=range(30)) -> float:
-    from sentinel_sim import world as W
-    n = []
-    for s in seeds:
-        r_world = np.random.default_rng(np.random.SeedSequence(s).spawn(5)[0])
-        n.append(len(W.generate(400.0, 25, r_world, base=True).clutter_xy))
-    return float(np.mean(n))
-
-
 def truncnorm_fit(c: np.ndarray) -> tuple[float, float]:
     def nll(z):
         mu, s = z
@@ -190,10 +205,10 @@ def main():
     fa_conf = np.array([c for c, _ in fas_v if c is not None])
     debris_in_view = sum(n for c, n in fas_v if c is None)
     per_debris = len(fa_conf) / max(1, debris_in_view)
-    n_debris_400 = debris_mean_400()
     fp_mu, fp_sigma = truncnorm_fit(fa_conf) if len(fa_conf) >= 5 else (hand.fp_mu, hand.fp_sigma)
-    fitted = {**theta, 'fp_rate': per_debris * n_debris_400, 'fp_mu': fp_mu,
-              'fp_sigma': fp_sigma}
+    fitted = {**theta, 'fp_per_debris_item': fp_per_debris_item(len(fa_conf), debris_in_view,
+                                                                fp_mu, fp_sigma),
+              'fp_mu': fp_mu, 'fp_sigma': fp_sigma}
     occ_t = np.array(['open' if o[3] == 0 else 'partly occluded' for o in obs_t])
     bins = [20.0, 27.0, 30.0, 32.0, 35.0, 45.0]
     at_bound = [k for k in FIT_KEYS
@@ -206,7 +221,8 @@ def main():
         'val': {'frames': frames_v, 'victim_views': len(Xv),
                 'reported': int(np.sum(~np.isnan(Xv[:, 4]))), 'loglik': ll_v,
                 'false_alarms': int(len(fa_conf)), 'debris_in_view': int(debris_in_view),
-                'fa_per_debris_in_view': per_debris, 'mean_debris_400m_worlds': n_debris_400,
+                'fa_per_debris_in_view': per_debris,
+                'p_reported_fa': float(stats.norm.sf(FLOOR, fp_mu, fp_sigma)),
                 'slant_range_m': [float(Xv[:, 0].min()), float(Xv[:, 0].max())]},
         'test': {'frames': frames_t, 'victim_views': len(Xt),
                  'loglik_fitted': loglik(theta, Xt), 'loglik_hand_set': loglik(theta_hand, Xt),

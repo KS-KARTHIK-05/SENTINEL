@@ -1,7 +1,9 @@
-"""Launch the SENTINEL ROS 2 stack against a running SITL (scripts/launch_sitl.sh).
+"""
+Launch the SENTINEL ROS 2 stack against a running SITL (scripts/launch_sitl.sh).
 
     ros2 launch sentinel_ai swarm_launch.py n_uav:=3 world:=sentinel_d25_s0 \
-        method:=sentinel model_path:=/path/to/model.pt failures:='[{"t":100,"uav":1,"kind":"crash"}]'
+        method:=sentinel model_path:=/path/to/model.pt \
+        failures:='[{"t":100,"uav":1,"kind":"crash"}]'
 
 Per UAV i (namespace /px4_i): ros_gz image bridge, thermal_vision, flight_commander,
 emps_agent. Global: clock bridge, comm_emulator, chaos_monkey, metrics_logger.
@@ -41,7 +43,8 @@ def _setup(context):
     nodes = [
         Node(package='ros_gz_bridge', executable='parameter_bridge', name='clock_bridge',
              arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'], output='log'),
-        Node(package='sentinel_ai', executable='comm_emulator', parameters=[shared], output='screen'),
+        Node(package='sentinel_ai', executable='comm_emulator', parameters=[shared],
+             output='screen'),
         Node(package='sentinel_ai', executable='chaos_monkey',
              parameters=[{**common, 'schedule': a['failures']}], output='screen'),
         Node(package='sentinel_ai', executable='metrics_logger',
@@ -95,7 +98,8 @@ def generate_launch_description():
         DeclareLaunchArgument('t_hold_s', default_value=''),
         DeclareLaunchArgument('tuned_yaml', default_value=''),
         DeclareLaunchArgument('run_dir',
-                              default_value=os.environ.get('SENTINEL_RUN_DIR', '~/.ros/sentinel_sitl')),
+                              default_value=os.environ.get('SENTINEL_RUN_DIR',
+                                                           '~/.ros/sentinel_sitl')),
         DeclareLaunchArgument('out_dir', default_value='~/.ros/sentinel_sitl/metrics'),
     ]
     return LaunchDescription(args + [OpaqueFunction(function=_setup)])

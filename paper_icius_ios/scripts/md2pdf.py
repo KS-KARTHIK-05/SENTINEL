@@ -71,6 +71,14 @@ def convert(md: str) -> str:
         while list_depth > to:
             body.append(r'\end{itemize}'); list_depth -= 1
 
+    def end_table(at: int, last: list) -> None:
+        # a long last column wraps instead of running into the margin
+        if max(map(len, last), default=0) > 60:
+            body[at] = re.sub(r'\{tabular\}\{(l+)\}', lambda m: '{tabular}{' + m.group(1)[:-1]
+                              + r'p{0.68\linewidth}}', body[at])
+        body.append(r'\bottomrule\end{tabular}\end{center}')
+
+    table_at, last_col = 0, []
     for ln in lines[i:]:
         s = ln.rstrip()
         if s.lstrip().startswith('|'):
@@ -80,14 +88,16 @@ def convert(md: str) -> str:
             if not in_table:
                 if not ln.startswith(' '):
                     close_lists()
+                table_at, last_col = len(body), []
                 body.append(r'\begin{center}\small\begin{tabular}{' + 'l' * len(cells) + r'}\toprule')
                 body.append(' & '.join(r'\textbf{' + esc(c) + '}' for c in cells) + r' \\\midrule')
                 in_table = True
             else:
                 body.append(' & '.join(esc(c) for c in cells) + r' \\')
+                last_col.append(cells[-1])
             continue
         if in_table:
-            body.append(r'\bottomrule\end{tabular}\end{center}'); in_table = False
+            end_table(table_at, last_col); in_table = False
         m = re.match(r'^( *)- (.*)', s)
         if m:
             depth = len(m.group(1)) // 2 + 1
@@ -119,7 +129,7 @@ def convert(md: str) -> str:
             body.append(esc(s))
     close_lists()
     if in_table:
-        body.append(r'\bottomrule\end{tabular}\end{center}')
+        end_table(table_at, last_col)
     title = esc(head[0].lstrip('# '))
     meta = r'\\'.join(esc(h) for h in head[1:])
     return (r"""\documentclass[10pt,a4paper]{article}

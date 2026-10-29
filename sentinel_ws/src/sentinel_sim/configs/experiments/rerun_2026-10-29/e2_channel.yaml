@@ -1,0 +1,29 @@
+# Baseline re-run (29 Oct, PLAN.md section 9): configs/experiments/e2_channel.yaml restricted to B0-B4, B6
+# (and fusion variants), tuned values from configs/tuned_v4.yaml.
+tuned_file: configs/tuned_v4.yaml
+base:
+  n_uav: 8
+  duration_s: 600
+  map:
+    kind: generate
+    size: 400
+    n_targets: 25
+    base: true
+  failures:
+    kind: poisson
+    rate: 0.01
+  policy_path: configs/mappo_policy.npz
+grid:
+  channel.profile:
+  - open
+  - suburban
+  - urban_rubble
+  - severe
+methods:
+- B0_pso
+- B1_v1
+- B2_commpso
+- B3_lambda2
+- B4_potential
+- B6_lawnmower
+seeds: 30

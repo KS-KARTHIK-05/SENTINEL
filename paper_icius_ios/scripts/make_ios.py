@@ -15,6 +15,7 @@ import glob
 import inspect
 import json
 import os
+import sys
 
 import numpy as np
 import pandas as pd
@@ -33,10 +34,22 @@ RES = os.path.expanduser('~/sentinel_ws/results')
 OUT = os.path.join(HERE, '..', 'generated')
 FIG = os.path.join(HERE, '..', 'figures')
 EXT = os.path.join(HERE, '..', '..', 'docs', 'icius2026_extended_results.md')
-TUNED = os.path.join(HERE, '..', '..', 'sentinel_ws', 'src', 'sentinel_sim', 'configs', 'tuned_v3.yaml')
+CONFIGS = os.path.join(HERE, '..', '..', 'sentinel_ws', 'src', 'sentinel_sim', 'configs')
+TUNED = os.path.join(CONFIGS, 'tuned_v4.yaml')      # B0-B4/B6 re-tuned 29 Oct, the rest as tuned_v3
+TUNED_OLD = os.path.join(CONFIGS, 'tuned_v3.yaml')
 # overnight experiments 2026-10-28 (plan: docs/overnight_2026-10-28_PLAN.md): B7/B8 runs are merged into
 # the experiments whose settings they repeat; the other folders are read on their own.
 OVN = os.path.join(RES, 'overnight_2026-10-28')
+# pre-submission check of the E5 fitted detector model (29 Oct, plan section 9): corrected false-alarm
+# conversion, E5 fit, check against the real detector, C1 (robustness) and C2 (E6 fast side) re-run
+E5R = os.path.join(RES, 'e5_recheck_2026-10-29')
+E5OLD = os.path.join(OVN, 'superseded_fp_conversion')       # the pre-fix fit, C1 and C2 (archived)
+# baseline re-run (29 Oct, plan section 9): the rows of B0-B4, B6 and their fusion variants (and E7's
+# no-projection ablation) are replaced by rows re-run on the released code with re-tuned values
+RERUN = os.path.join(RES, 'baseline_rerun_2026-10-29')
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'sentinel_ws', 'scripts', 'overnight'))
+import make_rerun_configs as RC  # noqa: E402
+RERUN_EXPS = {os.path.basename(e): RC.METHODS.get(e, RC.AFFECTED) for e in RC.SPECS}
 OVN_MERGE = {'e3_failures': 'b7b8_failures', 'e1_scalability': 'b7b8_scalability', 'e2_channel': 'b7b8_channel',
              'e12_attribution': 'b7b8_attribution', 'e11b_dense_fusion': 'b7b8_dense_fusion'}
 REF = 'sentinel'
@@ -56,20 +69,76 @@ def mac(name: str, value) -> None:
     macros[name] = str(value)
 
 
-def load(exp: str) -> pd.DataFrame:
+def _strip(cfg: str, paths: set) -> str:
+    c = json.loads(cfg)
+    for path in paths:
+        d = c
+        for k in path[:-1]:
+            d = d.get(k, {})
+        d.pop(path[-1], None)
+    return json.dumps(c, sort_keys=True)
+
+
+def _leaves(d: dict, pre: tuple = ()) -> list:
+    return [x for k, v in d.items()
+            for x in (_leaves(v, pre + (k,)) if isinstance(v, dict) else [(pre + (k,), v)])]
+
+
+def _get(cfg: str, path: tuple):
+    d = json.loads(cfg)
+    for k in path:
+        d = d[k]
+    return d
+
+
+def rerun(df: pd.DataFrame, exp: str) -> pd.DataFrame:
+    """Replace the re-run methods' rows of an experiment by the baseline re-run's rows. Asserts that
+    the re-run has exactly the stored rows' cells and seeds: each re-run config equals a stored one
+    except for the method's tuned values, which are the old values in the stored and the new ones in
+    the re-run config."""
+    if exp not in RERUN_EXPS:
+        return df
+    methods = RERUN_EXPS[exp] & set(df.cfg_method)
+    new = pd.read_parquet(os.path.join(RERUN, exp, 'summary.parquet'))
+    assert set(new.cfg_method) == methods, (exp, set(new.cfg_method) ^ methods)
+    old = df[df.cfg_method.isin(methods)]
+    t_old, t_new = yaml.safe_load(open(TUNED_OLD)), yaml.safe_load(open(TUNED))
+
+    def keys(d: pd.DataFrame, tuned: dict) -> list:
+        out = []
+        for cfg, m in zip(d.config, d.cfg_method):
+            b = m[:-len('_fusion')] if m.endswith('_fusion') else m
+            if b not in RC.BASELINES:
+                out.append(_strip(cfg, set()))
+                continue
+            for path, v in _leaves(tuned[b]):
+                assert _get(cfg, path) == v, (exp, m, path)
+            out.append(_strip(cfg, {p for p, _ in _leaves(t_old[b]) + _leaves(t_new[b])}))
+        return sorted(out)
+    k_old, k_new = keys(old, t_old), keys(new, t_new)
+    assert len(set(k_old)) == len(k_old) and k_old == k_new, exp
+    return pd.concat([df[~df.cfg_method.isin(methods)], new], ignore_index=True)
+
+
+def load(exp: str, orig: bool = False) -> pd.DataFrame:
+    """An experiment's rows; unless ``orig``, with the baseline re-run's rows (see ``rerun``)."""
     paths = [os.path.join(RES, exp, 'summary.parquet')]
     if exp in OVN_MERGE:
         paths.append(os.path.join(OVN, OVN_MERGE[exp], 'summary.parquet'))
     df = pd.concat([pd.read_parquet(p) for p in paths], ignore_index=True)
     assert not df.run_id.duplicated().any(), exp
+    if not orig:
+        df = rerun(df, exp)
     cfg = df.config.map(json.loads)
     df['fail'] = cfg.map(lambda c: c.get('failures', {}).get('kind', 'none'))
     df['th'] = cfg.map(lambda c: c.get('agent', {}).get('t_hold_s'))
     return df
 
 
-def load_ovn(exp: str) -> pd.DataFrame:
-    df = pd.read_parquet(os.path.join(OVN, exp, 'summary.parquet'))
+def load_ovn(exp: str, root: str = OVN, orig: bool = False) -> pd.DataFrame:
+    df = pd.read_parquet(os.path.join(root, exp, 'summary.parquet'))
+    if not orig and root != E5OLD:
+        df = rerun(df, exp)
     df['fail'] = df.config.map(json.loads).map(lambda c: c.get('failures', {}).get('kind', 'none'))
     return df
 
@@ -77,7 +146,7 @@ def load_ovn(exp: str) -> pd.DataFrame:
 CLAIMS: dict[str, object] = {}       # outcome of every re-checked claim (printed, and in the extended file)
 
 
-SEEDS = int(load('e2_channel').cfg_seed.nunique())
+SEEDS = int(load('e2_channel', orig=True).cfg_seed.nunique())
 
 
 def per_seed(df: pd.DataFrame, method: str, metric: str = M) -> np.ndarray:
@@ -123,6 +192,7 @@ def build(cols: list[tuple[str, dict]], rows: list[str], names: dict, tags: dict
     return tex, mdr
 
 
+TOP: list[tuple[str, bool]] = []    # (cell, SENTINEL has the highest mean) over the main comparisons
 WORSE: list[str] = []                # cells where a baseline in its original form is significantly ahead
 
 
@@ -222,6 +292,9 @@ def e2() -> None:
         CLAIMS[f'channel {prof}: best baseline'] = SHORT[bb]
         CLAIMS[f'channel {prof}: not significant vs'] = [SHORT[m] for m in BASE if r[m]['p_holm'] >= 0.05]
         never_worse_check(f'channel {prof}', s, {m: per_seed(g, m) for m in BASE})
+        TOP.append((f'channel {prof}', s.mean() > per_seed(g, bb).mean()))
+    # "leads in all four channel profiles, significantly against all except in the severe one"
+    assert all(t for c, t in TOP if c.startswith('channel')) and sig_all == [True, True, True, False], sig_all
 
 
 # ----------------------------------------------------------------------------- failures (E3)
@@ -230,6 +303,9 @@ def e3() -> None:
     order = [('none', 'none', 'none'), ('single', 'single', 'single crash'),
              ('simultaneous', 'simult.', '30 % simultaneous'), ('cascading', 'casc.', 'cascading'),
              ('poisson', 'Poisson', 'Poisson ×2'), ('brownout', 'brown.', 'brownout')]
+    lab_ = {'none': 'no failures', 'single': 'a single crash', 'simultaneous': 'simultaneous crashes',
+            'cascading': 'cascading crashes', 'poisson': 'Poisson crashes', 'brownout': 'brownout'}
+    ns_urb = []
     for prof in ['urban_rubble', 'severe']:
         df = full[full.cfg_profile == prof]
         cols, gains = [], []
@@ -241,12 +317,18 @@ def e3() -> None:
             never_worse_check(f'failures {prof} {k}', data[REF], {m: data[m] for m in BASE})
             r = paired_wilcoxon_holm(data[REF], {m: data[m] for m in BASE})
             CLAIMS[f'failures {prof} {k}: not significant vs'] = [SHORT[m] for m in BASE if r[m]['p_holm'] >= 0.05]
+            TOP.append((f'failures {prof} {k}', gains[-1] > 0))
+            if prof == 'urban_rubble':
+                ns_urb += [f'{SHORT[m]} under {lab_[k]}' for m in BASE if r[m]['p_holm'] >= 0.05]
         tex, mdr = build(cols, [REF] + BASE, NAMES)
         md_table(f'Victims reported within 60 s under six failure settings ({prof.replace("_", " ")}, 400 m, N = 8)',
                  ['Method'] + [lab for *_, lab in order], mdr, MDSTAT)
         CLAIMS[f'failures {prof}: gain over best baseline [%]'] = [round(100 * x, 1) for x in gains]
         if prof == 'urban_rubble':
             mac('EthreeGainLo', f'{100 * min(gains):.0f}'); mac('EthreeGainHi', f'{100 * max(gains):.0f}')
+            # "X-Y % more ... in every failure setting, significantly except against <one baseline> under <one>"
+            assert min(gains) > 0 and len(ns_urb) == 1, (gains, ns_urb)
+            mac('EthreeNotSig', ns_urb[0])
             for m, k in ((REF, 'S'), ('B7_wall', 'Bseven'), ('B8_relay', 'Beight')):
                 means = [np.mean(d[m]) for _, d in cols]
                 mac(f'EthreeRange{k}Lo', f'{min(means):.2f}'); mac(f'EthreeRange{k}Hi', f'{max(means):.2f}')
@@ -286,11 +368,23 @@ def e1() -> None:
                   f'({size}\\,m, urban, Poisson failures); statistics as in Table~\\ref{{tab:e3}}.'
                   '}\\label{tab:e1}\\centering\n'
                   + tabular('lccccc', head, tex, '3pt') + '\\end{table}\n')
+            top4, sig4 = [], []
             for n in ns:
                 g = a[a.cfg_n_uav == n]
                 r = paired_wilcoxon_holm(per_seed(g, REF), {m: per_seed(g, m) for m in BASE})
                 CLAIMS[f'swarm 400 m N={n}: not significant vs'] = [SHORT[m] for m in BASE
                                                                     if r[m]['p_holm'] >= 0.05]
+                bb = max(BASE, key=lambda m: per_seed(g, m).mean())
+                top4.append(per_seed(g, REF).mean() > per_seed(g, bb).mean())
+                sig4.append(all(r[m]['p_holm'] < 0.05 for m in BASE))
+                TOP.append((f'swarm 400 m N={n}', top4[-1]))
+                if not top4[-1]:
+                    mac('EoneFourNotTop', f'$N={n}$, {SHORT[bb]} {per_seed(g, bb).mean():.2f} vs.\\ '
+                                          f'{per_seed(g, REF).mean():.2f}')
+            # "highest mean from N=a, significantly above every baseline from N=b": both hold from a size on
+            i, j = top4.index(True), sig4.index(True)
+            assert all(top4[i:]) and all(sig4[j:]) and i == 1 and j > i, (top4, sig4)
+            mac('EoneTopFrom', ns[i]); mac('EoneSigFrom', ns[j])
         else:
             sig = []
             for n in ns:
@@ -308,12 +402,16 @@ def e1() -> None:
                 gg = a[a.cfg_n_uav == n]
                 top = max([REF] + BASE, key=lambda m: per_seed(gg, m).mean())
                 CLAIMS[f'swarm 200 m N={n}: highest mean'] = SHORT.get(top, top)
+                TOP.append((f'swarm 200 m N={n}', top == REF))
                 if top != REF:
                     nottop.append(f'$N={n}$ ({SHORT[top]})')
                     mac('EoneTwoHundredNotTopS', f'{per_seed(gg, REF).mean():.2f}')
                     mac('EoneTwoHundredNotTopB', f'{per_seed(gg, top).mean():.2f}')
             mac('EoneTwoHundredNotTop', ', '.join(nottop) if nottop else 'none')
             mac('EoneTwoHundredNnotTop', len(nottop))
+            # "a baseline has the highest mean at every size (names), none significantly" (WORSE checks the latter)
+            assert len(nottop) == len(ns), nottop
+            mac('EoneTwoHundredTopNames', ', '.join(sorted({CLAIMS[f'swarm 200 m N={n}: highest mean'] for n in ns})))
     comp = df[df.cfg_method == REF].groupby(['cfg_map_size', 'cfg_n_uav']).compute_ms_mean.mean()
     mac('CompLo', f'{comp.min():.0f}'); mac('CompHi', f'{comp.max():.0f}')
 
@@ -398,13 +496,20 @@ def attribution() -> None:
         CLAIMS[f'urban N={n}: baselines + fusion not significantly behind'] = [
             SHORT[b] for b in BASE
             if not (r[b]['p_holm'] < 0.05 and per_seed(g, b + '_fusion').mean() < per_seed(g, REF).mean())]
+    # "rises ... (best), no longer significantly behind SENTINEL; the other baselines stay significantly behind"
+    assert CLAIMS['urban N=8: baselines + fusion not significantly behind'] == [SHORT[bfu]]
     mac('NBase', len(BASE))
     mac('BaseWord', {7: 'seven', 8: 'eight', 9: 'nine'}[len(BASE)])
     dfus = {b: per_seed(e11b, b + '_fusion').mean() for b in BASE}
     r = paired_wilcoxon_holm(dense[REF], {b: per_seed(e11b, b + '_fusion') for b in BASE})
     above = [b for b in BASE if r[b]['p_holm'] < 0.05 and dfus[b] > dense[REF].mean()]
+    CLAIMS['dense: baselines + fusion significantly above SENTINEL (Holm over all nine)'] = [SHORT[b] for b in above]
+    # the text follows Table 4 (Holm over its rows): the best baseline with fusion significantly above SENTINEL
+    rt = paired_wilcoxon_holm(dense[REF], {k: dense[k] for k in ('nofus', 'best', 'bestf')})
+    assert rt['bestf']['p_holm'] < 0.05 and dense['bestf'].mean() > dense[REF].mean()
+    CLAIMS['dense: best baseline + fusion significantly above SENTINEL (Table 4)'] = tags[('bestf', hd)]
     mac('DenseFusLo', f'{min(dfus.values()):.3f}'); mac('DenseFusHi', f'{max(dfus.values()):.3f}')
-    mac('DenseSigAbove', ', '.join(SHORT[b] for b in above))
+    mac('DenseSigAbove', tags[('bestf', hd)])
     mac('DenseS', f'{dense[REF].mean():.3f}'); mac('DenseNofus', f'{dense["nofus"].mean():.3f}')
     mac('DenseNaive', f'{per_seed(d50, "abl_naive_fusion").mean():.3f}')
     g = sel(e7, 'urban_rubble', 8)
@@ -428,9 +533,10 @@ def safety() -> None:
         tot += float(d.preserved_link_steps.sum())
     # overnight runs (plan section 4): SENTINEL-family runs with the default epsilon, without the E3 reference
     # (a duplicate of E7) and without the epsilon variants (violations counted against their own epsilon)
-    for exp, keep in (('sensitivity', lambda m: m.startswith(('sentinel_lam0', 'sentinel_beta', 'abl_distance'))),
-                      ('robust_fitted', lambda m: m == REF)):
-        d = load_ovn(exp)
+    for exp, root, keep in (
+            ('sensitivity', OVN, lambda m: m.startswith(('sentinel_lam0', 'sentinel_beta', 'abl_distance'))),
+            ('robust_fitted_v2', E5R, lambda m: m == REF)):
+        d = load_ovn(exp, root)
         d = d[d.cfg_method.map(keep)]
         bad += float((d.link_violation_rate.fillna(0) * d.preserved_link_steps).sum())
         tot += float(d.preserved_link_steps.sum())
@@ -524,7 +630,14 @@ def e9_e8() -> None:
     assert r['B1_v1']['p_holm'] < 0.05 and r['B0_pso']['p_holm'] >= 0.05
     mac('NineS', f'{v[REF].mean():.2f}'); mac('NineBzero', f'{v["B0_pso"].mean():.2f}')
     mac('NineBone', f'{v["B1_v1"].mean():.2f}')
-    assert e9.frac_connected.min() == 1.0
+    # "the mesh stays connected throughout in k of n runs (one B0 run is split for x % of the mission)"
+    g9 = e9[e9.cfg_method.isin([REF, 'B0_pso', 'B1_v1'])]
+    dis = g9[g9.frac_connected < 1]
+    assert len(dis) == 1 and dis.cfg_method.iloc[0] == 'B0_pso', dis[['cfg_method', 'cfg_seed', 'frac_connected']]
+    mac('NineConnRuns', len(g9) - len(dis)); mac('NineRuns', len(g9))
+    mac('NineDisPct', f'{100 * (1 - dis.frac_connected.iloc[0]):.0f}')
+    CLAIMS['E9: runs not always connected'] = [
+        f'{SHORT[m]} seed {s}: {f:.3f}' for m, s, f in zip(dis.cfg_method, dis.cfg_seed, dis.frac_connected)]
     assoc = e9.groupby('cfg_method').assoc_loss.mean()
     mac('NineAssocLo', f'{100 * assoc.min():.0f}'); mac('NineAssocHi', f'{100 * assoc.max():.0f}')
     # the PX4 numbers come from the re-run on the current code (sitl_e8r_e6); the 15 Oct E8 runs used a stale
@@ -549,6 +662,9 @@ def setup() -> None:
             if not os.path.basename(os.path.dirname(f)).endswith('_oldmetric'))
     n += sum(len(pd.read_parquet(f)) for f in glob.glob(os.path.join(OVN, '*', 'summary.parquet'))
              if not os.path.basename(os.path.dirname(f)).startswith('pilot'))
+    # C1/C2 with the corrected false-alarm rate (the baseline re-run replaces rows one for one)
+    n += sum(len(pd.read_parquet(os.path.join(E5R, e, 'summary.parquet')))
+             for e in ('robust_fitted_v2', 'e6_fastsim_v2'))
     tv = yaml.safe_load(open(TUNED))
     mac('BsevenGoal', f'{tv["B7_wall"]["agent"]["w_goal"]:.2f}')
     mac('BeightRho', f'{tv["B8_relay"]["agent_attrs"]["rho"]:.2f}')
@@ -713,17 +829,37 @@ def detector_e4_e5() -> None:
                   f'{e["fa_debris_per_frame@0.4"]:.2f} / {e["fa_debris_per_frame@0.7"]:.2f} |')
     md.append(f'\nGround-truth victims in the test frames: {ev["finetuned"]["gt"]["open"]} open, '
               f'{ev["finetuned"]["gt"]["partly occluded"]} partly occluded.\n')
-    # E5 fit
-    fit = json.load(open(os.path.join(OVN, 'e5', 'fit.json')))
+    # E5 fit (re-run 29 Oct with the corrected false-alarm conversion; victim parameters unchanged)
+    fit = json.load(open(os.path.join(E5R, 'e5', 'fit.json')))
+    fit0 = json.load(open(os.path.join(E5OLD, 'e5', 'fit.json')))
     f, h = fit['fitted'], fit['hand_set']
+    assert all(f[k] == fit0['fitted'][k] for k in ('c_max', 'gamma', 'r_ref', 'r_scale', 'sigma', 'kappa'))
+    rb = load_ovn('robust_fitted_v2', E5R)
+    six_fast = load_ovn('e6_fastsim_v2', E5R)
+    rate = {}
+    for name, d in (('400', rb), ('100', six_fast)):
+        v = d.cfg_det_fp_rate.unique()
+        assert len(v) == 1
+        rate[name] = float(v[0])
     md.append('### In-loop detector model fitted to detector outputs (E5)\n')
     md.append(f'Fitted by censored maximum likelihood to the fine-tuned detector on the val worlds '
               f'({fit["val"]["victim_views"]} victim views in {fit["val"]["frames"]} frames, slant range '
               f'{fit["val"]["slant_range_m"][0]:.0f}–{fit["val"]["slant_range_m"][1]:.0f} m). Parameters at a bound '
               f'(not identifiable in that range): {", ".join(fit["at_bound"]) or "none"}. False alarms: '
-              f'{fit["val"]["fa_per_debris_in_view"]:.3f} per warm-debris item in view.\n')
+              f'{fit["val"]["false_alarms"]} in {fit["val"]["frames"]} val frames, '
+              f'{fit["val"]["fa_per_debris_in_view"]:.4f} reported per warm-debris item in view (every debris item '
+              f'of the world that projects into the frame, visible or hidden in rubble, as the simulator counts '
+              f'them). The simulator reports a false-alarm candidate only if its confidence N(fp_mu, fp_sigma) '
+              f'reaches 0.25 (probability {fit["val"]["p_reported_fa"]:.2f}), so the candidate rate is '
+              f'{f["fp_per_debris_item"]:.4f} per look and debris item in view, and fp_rate (candidates per look, '
+              f'spread over all debris items of the world) is {rate["400"]:.2f} in the 400 m worlds (480 items) '
+              f'and {rate["100"]:.2f} in the 100 m worlds (30 items).\n')
     md.append('| parameter | hand-set | fitted |\n|---|---|---|')
-    for k in ('c_max', 'gamma', 'r_ref', 'r_scale', 'sigma', 'kappa', 'fp_rate', 'fp_mu', 'fp_sigma'):
+    for k in ('c_max', 'gamma', 'r_ref', 'r_scale', 'sigma', 'kappa'):
+        md.append(f'| {k} | {h[k]:.3g} | {f[k]:.3g} |')
+    md.append(f'| fp_rate, 400 m worlds | {h["fp_rate"]:.3g} | {rate["400"]:.3g} |')
+    md.append(f'| fp_rate, 100 m worlds | {h["fp_rate"]:.3g} | {rate["100"]:.3g} |')
+    for k in ('fp_mu', 'fp_sigma'):
         md.append(f'| {k} | {h[k]:.3g} | {f[k]:.3g} |')
     md.append(f'\nTest log-likelihood: fitted {fit["test"]["loglik_fitted"]:.1f}, hand-set '
               f'{fit["test"]["loglik_hand_set"]:.1f} ({fit["test"]["victim_views"]} victim views).\n')
@@ -733,6 +869,56 @@ def detector_e4_e5() -> None:
         md.append(f'| {row["class"]} | {row["range_m"]} | {row["n"]} | ' + ' | '.join(
             f'{row[f"obs@{t}"]:.2f} / {row[f"fit@{t}"]:.2f} / {row[f"hand@{t}"]:.2f}' for t in (0.25, 0.4, 0.7)) + ' |')
     md.append('')
+    # check: the simulator's DetectorModel.look on the same frames vs the real detector
+    ca = json.load(open(os.path.join(E5R, 'check_after', 'check.json')))
+    cb = json.load(open(os.path.join(E5R, 'check_before', 'check.json')))
+    md.append('**Check against the real detector (same frames).** The simulator\'s `DetectorModel.look` run on the '
+              'E4 frames (same camera poses, victims and debris; 200 draws), next to the fine-tuned YOLO26n on '
+              'those frames (`scripts/overnight/e5_check.py`). Recall: share of in-image, non-buried victim views '
+              'reported at or above the threshold (open / partly occluded); confidence: mean over reported views.\n')
+    md.append('| frames | detector | false alarms per frame ≥ 0.25 / ≥ 0.40 | recall ≥ 0.40 | recall ≥ 0.70 | '
+              'mean confidence |\n|---|---|---|---|---|---|')
+
+    def crow(split, name, x):
+        oc = ('open', 'partly occluded')
+        fa = ' / '.join(f'{v:.4f}' if v == 0 or v >= 1e-3 else f'{v:.1e}'
+                        for v in (x['fa_per_frame@0.25'], x['fa_per_frame@0.4']))
+        return (f'| {split} | {name} | {fa} | '
+                + ' | '.join(' / '.join(f'{x[k][c]:.2f}' for c in oc)
+                             for k in ('recall@0.4', 'recall@0.7', 'mean_conf_reported')) + ' |')
+    for split in ('val', 'test'):
+        r = ca[split]['real']
+        md.append(crow(split, f'YOLO26n ({r["fa_count@0.25"]} false alarms)', r))
+        md.append(crow(split, 'fitted model, 400 m worlds', ca[split]['sim']['detector_fitted@480']))
+        md.append(crow(split, 'fitted model, 100 m worlds', ca[split]['sim']['detector_fitted@30']))
+        md.append(crow(split, 'first conversion, 400 m worlds (superseded)', cb[split]['sim']['detector_fitted@480']))
+        md.append(crow(split, 'first conversion, 100 m worlds (superseded)', cb[split]['sim']['detector_fitted@30']))
+        md.append(crow(split, 'hand-set model, 400 m worlds', cb[split]['sim']['hand@480']))
+    rv, rt = ca['val']['real'], ca['test']['real']
+    k_v, k_t = rv['fa_count@0.25'], rt['fa_count@0.25']
+    p_vt = float(stats.binomtest(k_t, k_v + k_t, rt['frames'] / (rv['frames'] + rt['frames'])).pvalue)
+    md.append(f'\nThe fit uses the val frames ({k_v} false alarms); the test frames have {k_t} '
+              f'(exact conditional test of equal rates p = {p_vt:.2f}), so the model\'s false-alarm rate is about '
+              f'{ca["test"]["sim"]["detector_fitted@480"]["fa_per_frame@0.25"] / rt["fa_per_frame@0.25"]:.1f}× the '
+              f'test frames\' rate. Buried victims (no rendered signature): YOLO26n reported none of '
+              f'{rv["buried"]["views"] + rt["buried"]["views"]} in-image views; the fitted model reports '
+              f'{100 * ca["test"]["sim"]["detector_fitted@480"]["buried"]["reported_share"]:.0f} % of them at '
+              f'confidence ≥ 0.25 (mean 0 plus noise σ = {f["sigma"]:.2f}), almost all below the 0.40 band.\n')
+    sa = ca['test']['sim']['detector_fitted@480']
+    for sp, x in (('Val', rv), ('Test', rt)):
+        mac(f'Chk{sp}FaReal', f'{x["fa_per_frame@0.25"]:.3f}'); mac(f'Chk{sp}FaN', x['fa_count@0.25'])
+        for wd, tag in ((480, 'C'), (30, 'E')):
+            mac(f'Chk{sp}FaSim{tag}', f'{ca[sp.lower()]["sim"][f"detector_fitted@{wd}"]["fa_per_frame@0.25"]:.3f}')
+            mac(f'Chk{sp}FaOld{tag}', f'{cb[sp.lower()]["sim"][f"detector_fitted@{wd}"]["fa_per_frame@0.25"]:.3f}')
+    for k, tk in (('recall@0.4', 'Lo'), ('recall@0.7', 'Hi'), ('mean_conf_reported', 'Conf')):
+        for c, ck in (('open', 'Open'), ('partly occluded', 'Occ')):
+            mac(f'ChkTest{tk}{ck}Real', f'{rt[k][c]:.2f}'); mac(f'ChkTest{tk}{ck}Sim', f'{sa[k][c]:.2f}')
+    mac('ChkValTestP', f'{p_vt:.2f}')
+    mac('FitFpRateC', f'{rate["400"]:.1f}'); mac('FitFpRateE', f'{rate["100"]:.2f}')
+    mac('FitFpRateOld', f'{fit0["fitted"]["fp_rate"]:.1f}'); mac('FitPrep', f'{fit["val"]["p_reported_fa"]:.2f}')
+    mac('FitFaDebris', f'{fit["val"]["fa_per_debris_in_view"]:.3f}')
+    mac('FitFaDebrisOld', f'{fit0["val"]["fa_per_debris_in_view"]:.3f}')
+    mac('FitFaRatio', f'{rate["400"] / h["fp_rate"]:,.0f}'.replace(',', '\\,'))
     # first pass (superseded: stale rendered frames in worlds 107, 110-115, see the plan's section 9)
     fp = os.path.join(OVN, 'firstpass_stale_frames')
     fe = json.load(open(os.path.join(fp, 'e4', 'eval_finetuned_test.json')))
@@ -747,9 +933,55 @@ def detector_e4_e5() -> None:
               'Archived in results/overnight_2026-10-28/firstpass_stale_frames/.\n')
     mac('FitLLf', f'{fit["test"]["loglik_fitted"]:.0f}'); mac('FitLLh', f'{fit["test"]["loglik_hand_set"]:.0f}')
     mac('FitCmax', f'{f["c_max"]:.2f}'); mac('FitSigma', f'{f["sigma"]:.2f}')
-    mac('FitFaDebris', f'{fit["val"]["fa_per_debris_in_view"]:.2f}')
     # E5 robustness (Table 2 urban settings, fitted detector)
-    rb = load_ovn('robust_fitted')
+    rob = _robust(rb)
+    _, mdr = build(rob['cols'], [REF] + BASE, NAMES)
+    md_table('Robustness: failure settings with the detector model fitted to detector outputs (urban rubble, '
+             '400 m, N = 8, tuned values unchanged)', ['Method'] + [h_ for h_, _ in rob['cols']], mdr, MDSTAT)
+    gains, bests, behind, allsig = rob['gains'], rob['bests'], rob['behind'], rob['allsig']
+    sgn = lambda x: f'{100 * x:+.1f}'.replace('-', '$-$')  # noqa: E731
+    mac('RobDiffLo', sgn(min(gains))); mac('RobDiffHi', sgn(max(gains)))
+    smeans = [np.mean(d[REF]) for _, d in rob['cols']]
+    mac('RobSLo', f'{min(smeans):.2f}'); mac('RobSHi', f'{max(smeans):.2f}')
+    mac('RobNsig', sum(allsig)); mac('RobNset', len(rob['cols']))
+    ntop = sum(g > 0 for g in gains)
+    mac('RobNtop', ntop)
+    # the paper says "highest mean in k of the six settings, k < 6, differences to the best baseline from
+    # lo to hi, none significant": SENTINEL behind somewhere, no significant win over all baselines in any
+    # setting and no significant loss to any baseline
+    assert 0 < ntop < len(gains) and sum(allsig) == 0 and not rob['losses'], (gains, allsig, rob['losses'])
+    mac('RobBestName', '/'.join(sorted({SHORT[b] for b in bests})))
+    mac('RobTopLoss', ', '.join(f'{h_} ({SHORT[b]})'.replace(' %', '\\,\\%') for (h_, _), g, b in
+                                zip(rob['cols'], gains, bests) if g <= 0))
+    never = [SHORT[m] for m in BASE if behind[m] == 0]
+    mac('RobNeverBehind', ', '.join(never) if never else 'none')
+    always = [SHORT[m] for m in BASE if behind[m] == len(gains)]
+    mac('RobAlwaysBehind', ', '.join(always) if always else 'none')
+    CLAIMS['robustness: best baseline per setting'] = [SHORT[b] for b in bests]
+    CLAIMS['robustness: settings in which each baseline is significantly behind'] = {SHORT[m]: v for m, v in behind.items()}
+    CLAIMS['robustness: gain range [%]'] = [round(100 * x, 1) for x in gains]
+    CLAIMS['robustness: settings with the highest SENTINEL mean'] = f'{ntop} of {len(gains)}'
+    CLAIMS['robustness: settings with SENTINEL significantly above all'] = sum(allsig)
+    CLAIMS['robustness: significant losses of SENTINEL'] = rob['losses']
+    # superseded robustness and E6 fast-side runs (first false-alarm conversion)
+    old = _robust(load_ovn('robust_fitted', E5OLD))
+    os_ = [np.mean(d[REF]) for _, d in old['cols']]
+    fs0 = load_ovn('e6_fastsim', E5OLD).pivot(index='cfg_seed', columns='cfg_method', values='tdr_base')
+    mac('RobOldGainLo', f'{100 * min(old["gains"]):.0f}'); mac('RobOldGainHi', f'{100 * max(old["gains"]):.0f}')
+    mac('RobOldSLo', f'{min(os_):.2f}'); mac('RobOldSHi', f'{max(os_):.2f}')
+    mac('SixFastOldS', f'{fs0[REF].mean():.2f}'); mac('SixFastOldB', f'{fs0["B0_pso"].mean():.2f}')
+    md.append(f'Superseded (first false-alarm conversion, fp_rate {fit0["fitted"]["fp_rate"]:.1f} in both world '
+              'sizes; plan section 9, 29 Oct): with it, SENTINEL\'s lead over the best baseline was '
+              f'{100 * min(old["gains"]):.1f}–{100 * max(old["gains"]):.1f} % (best baseline per setting: '
+              f'{", ".join(SHORT[b] for b in old["bests"])}; settings with SENTINEL significantly above all: '
+              f'{sum(old["allsig"])}; significant losses: {", ".join(old["losses"]) or "none"}), SENTINEL '
+              f'{min(os_):.2f}–{max(os_):.2f}; E6 fast side SENTINEL {fs0[REF].mean():.2f}, '
+              f'B0 {fs0["B0_pso"].mean():.2f}. Archived in '
+              'results/overnight_2026-10-28/superseded_fp_conversion/.\n')
+
+
+def _robust(rb: pd.DataFrame) -> dict:
+    """Per failure setting: SENTINEL and B0-B8, gain over the best baseline, Holm tests."""
     order = [('none', 'none'), ('single', 'single crash'), ('simultaneous', '30 % simultaneous'),
              ('cascading', 'cascading'), ('poisson', 'Poisson ×2'), ('brownout', 'brownout')]
     cols, gains, allsig, losses, bests, behind = [], [], [], [], [], {m: 0 for m in BASE}
@@ -765,24 +997,20 @@ def detector_e4_e5() -> None:
         allsig.append(all(r[m]['p_holm'] < 0.05 and np.mean(data[m]) < np.mean(data[REF]) for m in BASE))
         losses += [f'{h_}: {SHORT[m]}' for m in BASE
                    if r[m]['p_holm'] < 0.05 and np.mean(data[m]) > np.mean(data[REF])]
-    _, mdr = build(cols, [REF] + BASE, NAMES)
-    md_table('Robustness: failure settings with the detector model fitted to detector outputs (urban rubble, '
-             '400 m, N = 8, tuned values unchanged)', ['Method'] + [h_ for h_, _ in cols], mdr, MDSTAT)
-    mac('RobGainLo', f'{100 * min(gains):.0f}'); mac('RobGainHi', f'{100 * max(gains):.0f}')
-    smeans = [np.mean(d[REF]) for _, d in cols]
-    mac('RobSLo', f'{min(smeans):.2f}'); mac('RobSHi', f'{max(smeans):.2f}')
-    mac('RobNsig', sum(allsig)); mac('RobNset', len(order))
-    # the paper says "leads the best baseline, X, by only ..., never significantly": one best baseline,
-    # never significantly behind SENTINEL, and no setting in which SENTINEL is significantly ahead of all
-    assert len(set(bests)) == 1 and behind[bests[0]] == 0 and sum(allsig) == 0, (bests, behind, allsig)
-    mac('RobBestName', '/'.join(sorted({SHORT[b] for b in bests})))
-    never = [SHORT[m] for m in BASE if behind[m] == 0]
-    mac('RobNeverBehind', ', '.join(never) if never else 'none')
-    CLAIMS['robustness: best baseline per setting'] = [SHORT[b] for b in bests]
-    CLAIMS['robustness: settings in which each baseline is significantly behind'] = {SHORT[m]: v for m, v in behind.items()}
-    CLAIMS['robustness: gain range [%]'] = [round(100 * x, 1) for x in gains]
-    CLAIMS['robustness: settings with SENTINEL significantly above all'] = sum(allsig)
-    CLAIMS['robustness: significant losses of SENTINEL'] = losses
+    return {'cols': cols, 'gains': gains, 'allsig': allsig, 'losses': losses, 'bests': bests, 'behind': behind}
+
+
+def _sitl_fast(df: pd.DataFrame, b0_rows: str | None = None) -> pd.DataFrame:
+    """Fast-simulator side of a PX4 check: B0 with the values the PX4 runs used (configs/tuned.yaml), on the
+    released code. ``b0_rows``: a folder whose B0 rows replace the stored ones (same configs)."""
+    if b0_rows:
+        new = pd.read_parquet(os.path.join(b0_rows, 'summary.parquet'))
+        assert set(new.cfg_method) == {'B0_pso'} and set(new.run_id) == set(df[df.cfg_method == 'B0_pso'].run_id)
+        df = pd.concat([df[df.cfg_method != 'B0_pso'], new], ignore_index=True)
+    sitl = yaml.safe_load(open(os.path.join(CONFIGS, 'tuned.yaml')))['B0_pso']
+    for cfg in df[df.cfg_method == 'B0_pso'].config:
+        assert all(_get(cfg, path) == v for path, v in _leaves(sitl)), 'B0 values differ from the PX4 runs'
+    return df
 
 
 def _sitl_rows(folder: str, seeds) -> pd.DataFrame:
@@ -797,7 +1025,7 @@ def _sitl_rows(folder: str, seeds) -> pd.DataFrame:
 
 def sitl_e8r_e6() -> None:
     """E8r (original PX4 check re-run on the current code) and E6 (10 worlds, YOLO26n in the loop)."""
-    fast = load('e8_fastsim')
+    fast = _sitl_fast(load('e8_fastsim', orig=True), os.path.join(RERUN, 'sitl_match', 'e8_fastsim'))
     sitl = _sitl_rows(os.path.join(OVN, 'e8r_sitl'), range(3))
     f = fast.set_index(['cfg_seed', 'cfg_method'])
     cmp_rows = []
@@ -830,8 +1058,11 @@ def sitl_e8r_e6() -> None:
     m_, lo, hi = bootstrap_ci(d.values)
     mac('SixN', len(piv)); mac('SixS', f'{piv[REF].mean():.2f}'); mac('SixB', f'{piv["B0_pso"].mean():.2f}')
     mac('SixDiff', f'{m_:+.2f}'); mac('SixDiffLo', f'{lo:+.2f}'); mac('SixDiffHi', f'{hi:+.2f}'); mac('SixP', f'{p:.2f}')
-    fs = load_ovn('e6_fastsim').pivot(index='cfg_seed', columns='cfg_method', values='tdr_base')
+    fs = _sitl_fast(load_ovn('e6_fastsim_v2', E5R, orig=True)).pivot(index='cfg_seed', columns='cfg_method',
+                                                                     values='tdr_base')
     mac('SixFastS', f'{fs[REF].mean():.2f}'); mac('SixFastB', f'{fs["B0_pso"].mean():.2f}')
+    fs4 = load_ovn('e6_fastsim_v2', E5R).pivot(index='cfg_seed', columns='cfg_method', values='tdr_base')
+    f84 = load('e8_fastsim').groupby('cfg_method').tdr_base.mean()
     CLAIMS['E6: SITL S, B0, diff [CI], p; fast S, B0'] = (piv[REF].mean(), piv['B0_pso'].mean(), m_, lo, hi, p,
                                                           fs[REF].mean(), fs['B0_pso'].mean())
     md.append('### PX4/Gazebo check on 10 worlds with YOLO26n in the loop (E6)\n')
@@ -843,6 +1074,72 @@ def sitl_e8r_e6() -> None:
     md.append(f'\nMean SENTINEL − B0: {m_:+.3f} (95 % CI {lo:+.3f} to {hi:+.3f}), paired Wilcoxon p = {p:.3f}. '
               f'Fast simulator on the same worlds with the fitted detector model: SENTINEL {fs[REF].mean():.2f}, '
               f'B0 {fs["B0_pso"].mean():.2f}.\n')
+    md.append('Both PX4 checks flew B0 with the values tuned before the baseline re-run (configs/tuned.yaml), so '
+              'their fast-simulator side uses the same values on the released code (plan section 9, 30 Oct). With '
+              f'the re-tuned B0 the fast simulator gives B0 {f84["B0_pso"]:.2f} on the E8r worlds (SENTINEL '
+              f'{f84[REF]:.2f}) and {fs4["B0_pso"].mean():.2f} on the E6 worlds (SENTINEL {fs4[REF].mean():.2f}).\n')
+
+
+def rerun_note() -> None:
+    """Extended file: the baseline re-run of 29-30 Oct (plan section 9) and the rows it supersedes."""
+    def objectives(log: str) -> dict:
+        out = {}
+        for ln in open(os.path.join(RERUN, log)):
+            if ': objective ' in ln:
+                m, v = ln.split(': objective ')
+                out[m.strip()] = float(v.split()[0])
+        return out
+    o_old, o_new = objectives('tune_check_old_values.log'), objectives('tune_check_new_values.log')
+    md.append('### Baseline re-run (29–30 Oct 2026): superseded rows\n')
+    md.append('Before submission, re-running stored missions on the released code showed that the rows of B0–B4 '
+              'and B6 computed before Amendment A3 (14 Oct) did not reproduce: they combined views merged from other '
+              'UAVs with the earlier naive-Bayes rule, while SENTINEL, B5, B7, B8 and every later run use the '
+              'corroborative rule. '
+              'B0–B4 and B6 were therefore re-tuned on the released code with the same Optuna budget, objective and '
+              'tuning seeds, and every row of B0–B4, B6 and their fusion variants was re-run (E1–E4, E6, E6c, E8 fast '
+              'side, E9, E11, E11b, E12, robustness C1, E6 fast side C2), as was E7\'s no-projection ablation (its '
+              'behaviour changed on 22 Oct). Same cells and seeds; the superseded rows are archived in '
+              'results/baseline_rerun_2026-10-29/superseded_rows/ and the original folders are unchanged. All tables '
+              'above use the re-run rows; the PX4 checks keep B0\'s earlier values on both sides (see there).\n')
+    md.append('| method | tuning objective, old values | re-tuned |\n|---|---|---|')
+    for m in RC.BASELINES:
+        md.append(f'| {plain(NAMES[m])} | {o_old[m]:.4f} | {o_new[m]:.4f} |')
+    md.append(f'| {NAMES[REF]} (not re-tuned) | {o_old[REF]:.4f} | – |\n')
+    md.append('Mean share reported within 60 s (E9: confirmed victims) over all cells and seeds, '
+              'superseded → re-run:\n')
+    md.append('| experiment | method | superseded | re-run |\n|---|---|---|---|')
+    for spec in RC.SPECS:
+        exp = os.path.basename(spec)
+        old = pd.read_parquet(os.path.join(RERUN, 'superseded_rows', f'{exp}.parquet'))
+        new = pd.read_parquet(os.path.join(RERUN, exp, 'summary.parquet'))
+        met = M if old[M].notna().any() else 'tdr'
+        a, b = old.groupby('cfg_method')[met].mean(), new.groupby('cfg_method')[met].mean()
+        for m in sorted(a.index):
+            md.append(f'| {exp} | {m} | {a[m]:.3f} | {b[m]:.3f} |')
+    md.append('')
+    # headline comparisons with the superseded rows
+    full = {o: load('e3_failures', orig=o) for o in (True, False)}
+
+    def e3gain(df):
+        u = df[df.cfg_profile == 'urban_rubble']
+        return [np.mean(per_seed(u[u.fail == k], REF)) / max(np.mean(per_seed(u[u.fail == k], m)) for m in BASE) - 1
+                for k in ('none', 'single', 'simultaneous', 'cascading', 'poisson', 'brownout')]
+
+    def tops(df, size):
+        a = df[df.cfg_map_size == size]
+        best = [max([REF] + BASE, key=lambda m: per_seed(a[a.cfg_n_uav == n], m).mean())
+                for n in sorted(a.cfg_n_uav.unique())]
+        return [SHORT.get(t, 'SENTINEL') for t in best]
+    e1o, e1n = load('e1_scalability', orig=True), load('e1_scalability')
+    ro, rn = _robust(load_ovn('robust_fitted_v2', E5R, orig=True)), _robust(load_ovn('robust_fitted_v2', E5R))
+    g = lambda x: ', '.join(f'{100 * v:+.1f}' for v in x)  # noqa: E731
+    md.append('Headline comparisons, superseded → re-run rows:\n')
+    md.append(f'- Urban failure settings (Table 2), SENTINEL over the best baseline [%]: {g(e3gain(full[True]))} → '
+              f'{g(e3gain(full[False]))}.')
+    md.append(f'- Highest mean per swarm size N = 3, 5, 10, 20, 50 at 400 m: {", ".join(tops(e1o, 400))} → '
+              f'{", ".join(tops(e1n, 400))}; at 200 m: {", ".join(tops(e1o, 200))} → {", ".join(tops(e1n, 200))}.')
+    md.append(f'- Robustness with the fitted detector model (corrected false-alarm rate), SENTINEL over the best '
+              f'baseline [%]: {g(ro["gains"])} → {g(rn["gains"])}; significant in no setting in either case.\n')
 
 
 EXTRA = r"""
@@ -889,8 +1186,14 @@ if __name__ == '__main__':
                'Generated by `paper_icius_ios/scripts/make_ios.py` from the per-seed results; do not edit. '
                'This file holds the tables and results that the 6-page conference paper omits for space.', ''])
     channel(); setup(); e2(); e3(); e1(); attribution(); safety(); e10(); e9_e8(); perception()
-    sensitivity(); detector_e4_e5(); sitl_e8r_e6()
+    sensitivity(); detector_e4_e5(); sitl_e8r_e6(); rerun_note()
     mac('NeverWorse', 'yes' if not WORSE else 'no')
+    # the conclusion: "more victims ... than the baselines in most settings, never significantly worse"
+    ntop = sum(t for _, t in TOP)
+    assert not WORSE and ntop > len(TOP) / 2, (WORSE, ntop, len(TOP))
+    mac('TopN', ntop); mac('TopTotal', len(TOP))
+    CLAIMS['main comparisons with the highest SENTINEL mean'] = f'{ntop} of {len(TOP)}: not in ' + ', '.join(
+        c for c, t in TOP if not t)
     md.append('### Re-checked claims (overnight 2026-10-28, rules fixed in docs/overnight_2026-10-28_PLAN.md)\n')
     md.append('- Original-form baselines significantly ahead of SENTINEL in any cell of the main tables: '
               + ('; '.join(WORSE) if WORSE else 'none') + '.')

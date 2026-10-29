@@ -1,4 +1,5 @@
-"""Frame conventions.
+"""
+Frame conventions.
 
 * World: Gazebo ENU (x east, y north, z up); identical to the fast simulator.
 * PX4 local: NED centred at the vehicle's spawn point (x north, y east, z down).
@@ -31,7 +32,8 @@ def yaw_from_quat_ned(q) -> float:
 
 def pixel_to_world(u, v, width, height, hfov, uav_world_xyz, yaw_ned,
                    cam_axes=(-1.0, 1.0)) -> Tuple[float, float, float]:
-    """Flat-ground geolocation of an image point seen by a level nadir camera.
+    """
+    Flat-ground geolocation of an image point seen by a level nadir camera.
 
     Returns (x, y, slant_range) in the world ENU frame. ``cam_axes`` = (sign of
     -v along body-forward, sign of u along body-right).
