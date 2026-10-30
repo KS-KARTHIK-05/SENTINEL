@@ -386,7 +386,7 @@ Headline comparisons, superseded → re-run rows:
 - Highest mean per swarm size N = 3, 5, 10, 20, 50 at 400 m: SENTINEL, SENTINEL, SENTINEL, SENTINEL, SENTINEL → B2, SENTINEL, SENTINEL, SENTINEL, SENTINEL; at 200 m: SENTINEL, SENTINEL, SENTINEL, B7, SENTINEL → B0, B1, B3, B3, B3.
 - Robustness with the fitted detector model (corrected false-alarm rate), SENTINEL over the best baseline [%]: +0.6, -1.6, -1.3, -0.8, +1.8, +0.8 → +1.4, +0.3, -1.3, -1.5, +3.4, +1.1; significant in no setting in either case.
 
-### Re-checked claims (overnight 2026-10-28, rules fixed in docs/overnight_2026-10-28_PLAN.md)
+### Re-checked claims (overnight 2026-10-28, rules fixed in docs/analysis_plan_icius2026.md)
 
 - Original-form baselines significantly ahead of SENTINEL in any cell of the main tables: none.
 - channel open: SENTINEL significantly above every baseline: True

@@ -1,6 +1,6 @@
 # Overnight experiments 2026-10-28: plan and analysis plan (fixed before any result)
 
-> **File history.** First committed as `docs/overnight_2026-10-28_PLAN.md`; the generated [extended results](icius2026_extended_results.md) still cite that name. Sections 0–8 are the plan as fixed before any evaluation run, and section 9 records every later deviation with its date and reason. Claims quoted in the plan (for example "23–29 %") are those of the draft at the time; the current results are in the extended results. Edits for the public repository (30 Oct 2026): this note, and two wording changes ("the priority order of the task" → "the priority order fixed beforehand" in section 1; "Decision (user" → "Decision (authors" in section 9).
+> **File history.** First committed as `docs/overnight_2026-10-28_PLAN.md`. Sections 0–8 are the plan as fixed before any evaluation run, and section 9 records every later deviation with its date and reason. Claims quoted in the plan (for example "23–29 %") are those of the draft at the time; the current results are in the extended results. Edits for the public repository (30 Oct 2026): this note, and two wording changes ("the priority order of the task" → "the priority order fixed beforehand" in section 1; "Decision (user" → "Decision (authors" in section 9).
 
 **Written:** 20:40, 28 Oct 2026, before any evaluation run.
 - **Pilots used other seeds only:** fast simulator 900–901 with untuned B7/B8; render worlds 990–992; PX4 world 0 for 60 s. None of these is evaluation data.

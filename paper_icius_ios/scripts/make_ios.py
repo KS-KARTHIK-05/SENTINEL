@@ -37,7 +37,7 @@ EXT = os.path.join(HERE, '..', '..', 'docs', 'icius2026_extended_results.md')
 CONFIGS = os.path.join(HERE, '..', '..', 'sentinel_ws', 'src', 'sentinel_sim', 'configs')
 TUNED = os.path.join(CONFIGS, 'tuned_v4.yaml')      # B0-B4/B6 re-tuned 29 Oct, the rest as tuned_v3
 TUNED_OLD = os.path.join(CONFIGS, 'tuned_v3.yaml')
-# overnight experiments 2026-10-28 (plan: docs/overnight_2026-10-28_PLAN.md): B7/B8 runs are merged into
+# overnight experiments 2026-10-28 (plan: docs/analysis_plan_icius2026.md): B7/B8 runs are merged into
 # the experiments whose settings they repeat; the other folders are read on their own.
 OVN = os.path.join(RES, 'overnight_2026-10-28')
 # pre-submission check of the E5 fitted detector model (29 Oct, plan section 9): corrected false-alarm
@@ -641,7 +641,7 @@ def e9_e8() -> None:
     assoc = e9.groupby('cfg_method').assoc_loss.mean()
     mac('NineAssocLo', f'{100 * assoc.min():.0f}'); mac('NineAssocHi', f'{100 * assoc.max():.0f}')
     # the PX4 numbers come from the re-run on the current code (sitl_e8r_e6); the 15 Oct E8 runs used a stale
-    # install with naive-Bayes fusion (docs/overnight_2026-10-28_PLAN.md, section 7)
+    # install with naive-Bayes fusion (docs/analysis_plan_icius2026.md, section 7)
 
 
 def perception() -> None:
@@ -1194,7 +1194,7 @@ if __name__ == '__main__':
     mac('TopN', ntop); mac('TopTotal', len(TOP))
     CLAIMS['main comparisons with the highest SENTINEL mean'] = f'{ntop} of {len(TOP)}: not in ' + ', '.join(
         c for c, t in TOP if not t)
-    md.append('### Re-checked claims (overnight 2026-10-28, rules fixed in docs/overnight_2026-10-28_PLAN.md)\n')
+    md.append('### Re-checked claims (overnight 2026-10-28, rules fixed in docs/analysis_plan_icius2026.md)\n')
     md.append('- Original-form baselines significantly ahead of SENTINEL in any cell of the main tables: '
               + ('; '.join(WORSE) if WORSE else 'none') + '.')
     for k, v in CLAIMS.items():
