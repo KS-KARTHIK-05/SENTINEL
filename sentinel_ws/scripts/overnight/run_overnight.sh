@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Overnight queue 2026-10-28 (plan: ~/sentinel_ws/results/overnight_2026-10-28/PLAN.md).
+# Overnight queue 2026-10-28 (plan: docs/analysis_plan_icius2026.md).
 #
 #   setsid nohup bash run_overnight.sh > ~/sentinel_ws/results/overnight_2026-10-28/queue.log 2>&1 < /dev/null &
 #

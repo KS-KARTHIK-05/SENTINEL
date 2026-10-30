@@ -1,4 +1,4 @@
-# E6 detection-uncertainty sensitivity (R2.7). Detector parameters are perturbed around the
+# E6 detection-uncertainty sensitivity. Detector parameters are perturbed around the
 # calibrated model; thresholds of the SA band / confirmation are swept separately (e6b).
 tuned_file: configs/tuned.yaml
 base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, channel: {profile: urban_rubble}, failures: {kind: poisson, rate: 0.01}}

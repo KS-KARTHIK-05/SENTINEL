@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """tuned_v4.yaml = tuned_v3.yaml with B0-B4 and B6 replaced by their re-tune on the current code
-(29 Oct, PLAN.md section 9). SENTINEL, B7 and B8 keep their values (checked)."""
+(29 Oct, docs/analysis_plan_icius2026.md, section 9). SENTINEL, B7 and B8 keep their values (checked)."""
 import sys
 
 import yaml

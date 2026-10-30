@@ -1,4 +1,4 @@
-# E6b SA band / confirmation thresholds (R2.7).
+# E6b SA band / confirmation thresholds.
 tuned_file: configs/tuned.yaml
 base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, channel: {profile: urban_rubble}, failures: {kind: poisson, rate: 0.01}, detector: {sigma: 0.15}}
 grid:

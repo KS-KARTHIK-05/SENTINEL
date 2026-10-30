@@ -1,4 +1,4 @@
-# Baseline re-run (29 Oct, PLAN.md section 9): configs/experiments/overnight/robust_fitted_v2.yaml restricted to B0-B4, B6
+# Baseline re-run (29 Oct, docs/analysis_plan_icius2026.md, section 9): configs/experiments/overnight/robust_fitted_v2.yaml restricted to B0-B4, B6
 # (and fusion variants), tuned values from configs/tuned_v4.yaml.
 tuned_file: configs/tuned_v4.yaml
 base:

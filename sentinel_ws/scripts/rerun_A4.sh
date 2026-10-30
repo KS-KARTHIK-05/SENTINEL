@@ -34,6 +34,6 @@ done
 echo "=== E8 SITL $(date +%T)"
 [ -d $RES/e8_sitl ] && [ ! -d $RES/e8_sitl_A3explore ] && mv $RES/e8_sitl $RES/e8_sitl_A3explore
 "$ROOT/scripts/run_e8_sitl.sh" 300 3
-echo "=== make_results $(date +%T)"
-OMP_NUM_THREADS=2 python "$ROOT/scripts/make_results.py" 2>&1 | tail -1
+echo "=== make_ios $(date +%T)"
+OMP_NUM_THREADS=2 python "$ROOT/../paper_icius_ios/scripts/make_ios.py" 2>&1 | tail -1
 echo "ALL DONE $(date +%T)"

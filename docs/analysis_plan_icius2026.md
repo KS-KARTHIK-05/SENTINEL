@@ -1,5 +1,7 @@
 # Overnight experiments 2026-10-28: plan and analysis plan (fixed before any result)
 
+> **File history.** First committed as `docs/overnight_2026-10-28_PLAN.md`; the generated [extended results](icius2026_extended_results.md) still cite that name. Sections 0–8 are the plan as fixed before any evaluation run, and section 9 records every later deviation with its date and reason. Claims quoted in the plan (for example "23–29 %") are those of the draft at the time; the current results are in the extended results. Edits for the public repository (30 Oct 2026): this note, and two wording changes ("the priority order of the task" → "the priority order fixed beforehand" in section 1; "Decision (user" → "Decision (authors" in section 9).
+
 **Written:** 20:40, 28 Oct 2026, before any evaluation run.
 - **Pilots used other seeds only:** fast simulator 900–901 with untuned B7/B8; render worlds 990–992; PX4 world 0 for 60 s. None of these is evaluation data.
 - **Nothing below changes after results are seen.** Any deviation is added as a dated note at the end, with its reason.
@@ -59,7 +61,7 @@ Pilot wall times per mission with 18 parallel workers:
 
 **Total:** about 6.5 h. The whole list fits in the 10 h window, so **nothing is cut**.
 - **If a job fails twice:** it is reported as not completed.
-- **If time runs short:** the priority order of the task applies (B7/B8 tuning, Table 2, Table 3, channels, E3, E4, E5, E6), and E8r goes with E6.
+- **If time runs short:** the priority order fixed beforehand applies (B7/B8 tuning, Table 2, Table 3, channels, E3, E4, E5, E6), and E8r goes with E6.
 
 ## 2. E1: B7 hard distance wall
 
@@ -285,7 +287,7 @@ Pilot wall times per mission with 18 parallel workers:
   | B6 | 0.183 | 0.188 |
 
   SENTINEL, B5, B7 and B8 are unchanged on HEAD and keep their values. B0–B4 and B6 were tuned on 10 Oct code and are re-tuned.
-- **Decision (user, 29 Oct):**
+- **Decision (authors, 29 Oct):**
   - Re-tune B0–B4 and B6 on HEAD with the same protocol: Optuna TPE seed 0, 30 trials, the same objective, scenarios and tuning seeds, one method at a time as for B7/B8.
   - Then re-run every row of B0–B4, B6 and their fusion variants, in every experiment containing them, so all tables use one tuning:
     - pre-A3 rows: E1, E2, E3 (main tables), E4, E6, E6c, E8-fast, E11;

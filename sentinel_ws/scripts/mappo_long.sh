@@ -47,6 +47,6 @@ PY
   for e in e2_channel e3_failures e4_dynamic e1_scalability; do
     python -m sentinel_sim.runner configs/experiments/$e.yaml --out $RES/$e --jobs 18 --no-series --only-methods B5_mappo 2>&1 | grep -E "runs to do|ERROR"
   done
-  OMP_NUM_THREADS=2 python "$ROOT/scripts/make_results.py" 2>&1 | tail -1
+  OMP_NUM_THREADS=2 python "$ROOT/../paper_icius_ios/scripts/make_ios.py" 2>&1 | tail -1
 fi
 echo "MAPPO LONG DONE $(date +%T)"

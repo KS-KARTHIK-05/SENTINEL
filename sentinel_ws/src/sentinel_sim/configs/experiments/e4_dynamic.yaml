@@ -1,4 +1,4 @@
-# E4 dynamic obstacles (R2.4): moving tall debris blocking links and occluding victims.
+# E4 dynamic obstacles: moving tall debris blocking links and occluding victims.
 tuned_file: configs/tuned.yaml
 base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, channel: {profile: urban_rubble}, failures: {kind: poisson, rate: 0.01}, policy_path: configs/mappo_policy.npz}
 grid:

@@ -1,4 +1,4 @@
-"""Equal-budget hyperparameter tuning of every method (fair baselines, R2.6).
+"""Equal-budget hyperparameter tuning of every method (fair baselines).
 
 Every method gets the same Optuna TPE budget (``--trials``), evaluated on the
 same tuning scenarios with seeds disjoint from the evaluation seeds (1000+).

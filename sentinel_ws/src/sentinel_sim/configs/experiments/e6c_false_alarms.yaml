@@ -1,4 +1,4 @@
-# E6c realistic false alarms (R2.7). The default detector model gives warm clutter a low,
+# E6c realistic false alarms. The default detector model gives warm clutter a low,
 # noise-independent confidence (0.22 +- 0.08), so E6 could not show a false-alarm cost.
 # Here hot clutter scores higher (Gazebo test: best.pt scored warm debris at 0.66) and the
 # confidence noise also perturbs false positives.

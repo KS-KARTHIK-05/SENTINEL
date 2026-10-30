@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy the rows that the baseline re-run of 29 Oct supersedes (PLAN.md section 9) into
+"""Copy the rows that the baseline re-run of 29 Oct supersedes (docs/analysis_plan_icius2026.md, section 9) into
 ``results/baseline_rerun_2026-10-29/superseded_rows/<experiment>.parquet``. The original result
 folders are not changed; ``make_ios.py`` replaces these rows by the re-run rows when it reads them.
 

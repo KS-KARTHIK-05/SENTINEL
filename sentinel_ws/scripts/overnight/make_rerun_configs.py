@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Configs for the baseline re-run of 29 Oct (PLAN.md section 9): B0-B4, B6 and their fusion
+"""Configs for the baseline re-run of 29 Oct (docs/analysis_plan_icius2026.md, section 9): B0-B4, B6 and their fusion
 variants, re-tuned on the current code, in every experiment that contains them, plus E7's
 no-projection ablation (stale behaviour, see METHODS).
 
@@ -54,7 +54,8 @@ def main():
         new = rerun_spec(spec, a.tuned, a.pilot, METHODS.get(name, AFFECTED))
         dst = os.path.join(a.out, os.path.basename(name) + '.yaml')
         with open(dst, 'w') as f:
-            f.write(f'# Baseline re-run (29 Oct, PLAN.md section 9): {src} restricted to B0-B4, B6\n'
+            f.write('# Baseline re-run (29 Oct, docs/analysis_plan_icius2026.md, section 9): '
+                    f'{src} restricted to B0-B4, B6\n'
                     f'# (and fusion variants), tuned values from {a.tuned}.'
                     + (' PILOT.' if a.pilot else '') + '\n')
             yaml.safe_dump(new, f, sort_keys=False)

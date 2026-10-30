@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run the evaluation suite (REWORK_PLAN §6, Amendment A1). Resumable: the runner skips
+# Run the evaluation suite (Amendment A1, see docs/CHANGELOG.md). Resumable: the runner skips
 # completed runs. Usage: run_experiments.sh JOBS [extra runner args, e.g. --skip-methods B5_mappo]
 set -eo pipefail
 JOBS=${1:-18}; shift || true

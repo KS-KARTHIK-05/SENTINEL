@@ -39,7 +39,7 @@ METHODS = {
     'B4_potential': (PotentialAgent, _NO_COMM, dict(mode='none')),
     'B5_mappo': (MappoAgent, _NO_COMM, dict(mode='none')),
     'B6_lawnmower': (LawnmowerAgent, _NO_COMM, dict(mode='none')),
-    # reviewer-requested baselines (overnight 2026-10-28): hard 50 m wall, relay chain
+    # baselines added for the ICIUS revision (overnight 2026-10-28): hard 50 m wall, relay chain
     'B7_wall': (HardWallAgent, _NO_COMM, dict(mode='none')),
     'B8_relay': (RelayChainAgent, _NO_COMM, dict(mode='none')),
     # ablations of SENTINEL (E7)
@@ -66,7 +66,7 @@ for _b in ['B0_pso', 'B1_v1', 'B2_commpso', 'B3_lambda2', 'B4_potential', 'B5_ma
     _cls, _a, _s = METHODS[_b]
     METHODS[_b + '_fusion'] = (_cls, {**_a, 'fusion': True}, _s)
 
-# Sensitivity of the spring parameters (overnight 2026-10-28, reviewer request on lambda and
+# Sensitivity of the spring parameters (overnight 2026-10-28, lambda, beta, epsilon and
 # R_max): one parameter at a time around the tuned SENTINEL configuration. Each variant fixes
 # only its own parameter; everything else inherits SENTINEL's tuned values (runner). epsilon is
 # the outage target of both the spring (eps0) and the preserved-link radius R_eps (r_hard_eps).

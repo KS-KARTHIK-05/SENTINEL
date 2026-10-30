@@ -4,7 +4,7 @@ from sentinel_core.ledger import Ledger
 
 
 def test_ledger_never_exceeds_true_targets():
-    """Regression for the v1 '10 targets / 15 coordinates' inconsistency (R1.6)."""
+    """Regression: repeated sightings of one target merge into one entry (v1 duplicated them)."""
     rng = np.random.default_rng(0)
     targets = rng.uniform(0, 100, (10, 2))
     while np.min([np.linalg.norm(a - b) for i, a in enumerate(targets)

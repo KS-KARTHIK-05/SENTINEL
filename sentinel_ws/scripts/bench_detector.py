@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Perception benchmark for the SENTINEL thermal detector (Phase 5 / R1.5).
+"""Perception benchmark for the SENTINEL thermal detector (YOLO26n vs YOLOv8n on HIT-UAV).
 
 For each model:
 * accuracy: mAP50, mAP50-95, precision, recall. With ``--data`` they are

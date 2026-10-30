@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Baseline re-run (PLAN.md section 9, 29 Oct): re-tune B0-B4 and B6 on the current code (same
+# Baseline re-run (docs/analysis_plan_icius2026.md, section 9, 29 Oct): re-tune B0-B4 and B6 on the current code (same
 # Optuna budget, objective and tuning seeds), then re-run every row of B0-B4, B6 and their fusion
 # variants in every experiment that contains them. Same job protocol as resume_queue.sh (two
 # attempts, done markers, completeness check, resumable); waits for the C1 queue to finish.

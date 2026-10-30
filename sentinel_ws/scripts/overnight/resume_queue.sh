@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Resume the rest of the overnight queue (plan: results/overnight_2026-10-28/PLAN.md, deviations §9)
+# Resume the rest of the overnight queue (plan: docs/analysis_plan_icius2026.md, deviations in section 9)
 # with the same job names and done markers as run_overnight.sh.
 #
 #   setsid nohup bash resume_queue.sh > .../logs/resume_queue.out 2>&1 < /dev/null &
@@ -10,7 +10,7 @@
 # Simulator lane: C1, C2 once lane B has written the fitted configs; nice 19, so the PX4 runs keep
 #   CPU priority (fast-simulator results do not depend on load or worker count).
 # Stopped at 00:47 (D1 launch argument, lane B dataloader deadlock) and at 01:09 on 29 Oct (stale
-# rendered frames in worlds 107, 110-115; see PLAN.md §9).
+# rendered frames in worlds 107, 110-115; see docs/analysis_plan_icius2026.md, section 9).
 set -o pipefail
 RES=$HOME/sentinel_ws/results/overnight_2026-10-28
 ROOT=$HOME/sentinel_ws/src/SENTINEL/sentinel_ws

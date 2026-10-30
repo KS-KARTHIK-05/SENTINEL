@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Save raw thermal frames (no detector boxes) from a running Gazebo demo, for the paper figure.
+"""Save raw thermal frames (no detector boxes) from a running Gazebo demo, for the README figure.
 
 Uses the same radiometric conversion as ``thermal_vision`` (L16, 0.01 K per count, 270-330 K
 mapped to 8-bit white-hot), so the saved frames are exactly what the detector sees.

@@ -4,11 +4,12 @@ install/
 log/
 .catkin_tools/
 
-# Python compiled files
+# Python compiled files and packaging metadata (editable installs)
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.egg-info/
 .pytest_cache/
 .venv/
 venv/
@@ -20,31 +21,35 @@ HIT-UAV/
 *.jpeg
 *.png
 *.mp4
+# the README figures and the victim model's textures are kept
+!docs/figures/*.png
+!sentinel_ws/src/sentinel_gazebo/models/rescue_randy_thermal/materials/textures/*.png
+
+# Weights downloaded by Ultralytics and its run folders; only the trained weights in
+# sentinel_ws/src/sentinel_ai/models/ are kept
+*.pt
+*.onnx
+*.engine
+!sentinel_ws/src/sentinel_ai/models/*.pt
+!sentinel_ws/src/sentinel_ai/models/*.onnx
+runs/
+
+# Results, logs, pilots and archives live outside the repository (~/sentinel_ws/results)
+results/
+handover/
+*.parquet
+*.log
+*.zip
+*.tar.gz
 
 # OS specific files
 .DS_Store
 
-# LaTeX build files (main.pdf is kept)
-paper/*.aux
-paper/*.log
-paper/*.fls
-paper/*.fdb_latexmk
-paper/*.blg
-paper/*.out
-paper/*.synctex.gz
-
-# LaTeX build files of the ICIUS revision (main.pdf is kept)
-paper_icius/*.aux
-paper_icius/*.log
-paper_icius/*.fls
-paper_icius/*.fdb_latexmk
-paper_icius/*.blg
-paper_icius/*.out
-
 # Reviews and response letters are confidential: never commit them
-paper/response_to_reviewers.*
-paper_icius*/response_to_reviewers.*
-# LaTeX build files of the IOS revision (main.pdf and main_highlighted.pdf are kept)
+response_to_reviewers.*
+*reviews*
+
+# LaTeX build files of the ICIUS paper (main.pdf and main_highlighted.pdf are kept)
 paper_icius_ios/*.aux
 paper_icius_ios/*.log
 paper_icius_ios/*.fls

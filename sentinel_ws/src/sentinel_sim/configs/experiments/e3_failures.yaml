@@ -1,4 +1,4 @@
-# E3 failure models (R2.3, R2.4): none, single, 30% simultaneous, cascading, high-rate Poisson, brownout.
+# E3 failure models: none, single, 30% simultaneous, cascading, high-rate Poisson, brownout.
 tuned_file: configs/tuned.yaml
 base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, policy_path: configs/mappo_policy.npz}
 grid:

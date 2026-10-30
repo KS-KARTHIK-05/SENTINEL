@@ -1,4 +1,4 @@
-# E2 communication conditions (R1.4, R2.5).
+# E2 communication conditions.
 tuned_file: configs/tuned.yaml
 base: {n_uav: 8, duration_s: 600, map: {kind: generate, size: 400, n_targets: 25, base: true}, failures: {kind: poisson, rate: 0.01}, policy_path: configs/mappo_policy.npz}
 grid:

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Re-run C1 (E5 robustness) and C2 (E6 fast-simulator side) with the corrected false-alarm
-# conversion (results/overnight_2026-10-28/PLAN.md §9, 29 Oct 13:50). Same job protocol as
+# conversion (docs/analysis_plan_icius2026.md, section 9, 29 Oct 13:50). Same job protocol as
 # resume_queue.sh (two attempts, done markers, completeness check); new results folder.
 #
 #   setsid nohup bash run_e5_recheck.sh > .../e5_recheck_2026-10-29/logs/queue.out 2>&1 < /dev/null &

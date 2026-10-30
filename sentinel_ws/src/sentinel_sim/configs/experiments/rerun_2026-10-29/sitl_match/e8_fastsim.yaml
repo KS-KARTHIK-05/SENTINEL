@@ -1,5 +1,5 @@
 # Fast-simulator side of the PX4 check (E8r), B0 with the values the PX4 runs used
-# (configs/tuned.yaml = tuned_v3.yaml), on the released code (PLAN.md section 9, 30 Oct).
+# (configs/tuned.yaml = tuned_v3.yaml), on the released code (docs/analysis_plan_icius2026.md, section 9, 30 Oct).
 tuned_file: configs/tuned_v3.yaml
 base:
   n_uav: 3
